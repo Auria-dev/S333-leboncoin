@@ -7,17 +7,18 @@
 
     <title>@yield('title', ' leboncoin')</title>
 
-    <style> </style>
+    <link rel="stylesheet" href="{{ URL::asset('css/app.css') }}">
 </head>
 
 <body>
     <header>
-        <h1>@yield('title', 'Bienvenue')</h1>
+        <h1>@yield('title', 'Leboncoin')</h1>
     </header>
 
     <nav>
         @section('nav')
             <ul>
+                <li><a href="{{ url('/') }}">Accueil</a></li>
                 <li><a href="{{ url('/recherche') }}">Rechercher</a></li>
             </ul>
         @show

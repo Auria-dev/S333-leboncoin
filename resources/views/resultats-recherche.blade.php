@@ -1,8 +1,13 @@
 
+@extends('layout')
 
+@section('title', 'Résultat(s)')
 
-@foreach($annonces as $annonce)
+@section('content')
+  @foreach($annonces as $annonce)
     <div>
-        {{ $annonce->titre_annonce  }} <br> {{ $annonce->ville->nomville }} <br><br>
+      {{ $annonce->titre_annonce  }} <br> {{ $annonce->ville->nomville }} <br><br>
     </div>
-@endforeach
+  @endforeach
+@endsection
+
