@@ -15,7 +15,7 @@ use App\Http\Controllers\RechercheController;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('home');
 });
 
 Route::get('/recherche', [RechercheController::class, 'index']);
