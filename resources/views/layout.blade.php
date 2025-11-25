@@ -7,10 +7,10 @@
 
     <title>@yield('title', ' leboncoin')</title>
 
-    <link rel="stylesheet" href="{{ URL::asset('css/app.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
 
-<body>
+<body class="container">
     <header>
         <h1>@yield('title', 'Leboncoin')</h1>
     </header>
@@ -27,7 +27,7 @@
     <main>
         @yield('content')
     </main>
-
+    
     <footer>
         &copy; {{ date('Y') }}
     </footer>
