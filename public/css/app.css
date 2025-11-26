@@ -15,7 +15,7 @@
     --focus-ring: 0 0 0 3px rgba(28, 28, 30, 0.1);
     --accent-color: #ff5900;
 
-    --spacing: 2rem;
+    --spacing: 1rem;
     --radius: 8px;
 }
 
@@ -101,6 +101,10 @@ main > p {
     display: inline-block;
 }
 
+p {
+    text-align: center;
+}
+
 main > p:first-of-type {
     margin-top: 0;
 }
@@ -140,7 +144,7 @@ input[type="time"],
 select,
 textarea {
     display: block;
-    width: 100%;
+    /* width: 100%; */
     padding: 0.8rem 1rem;
     font-family: inherit;
     font-size: 1rem;
@@ -246,7 +250,6 @@ input[type="radio"]:checked::before {
 
 /* Range Slider */
 input[type="range"] {
-    -webkit-appearance: none;
     width: 100%;
     background: transparent;
     margin: 1rem 0;

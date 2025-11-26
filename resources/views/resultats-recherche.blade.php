@@ -5,7 +5,7 @@
 @section('content')
 
 <style>
-.results-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(300px, 1fr));gap:var(--spacing);width:100%;margin-top:2rem}
+.results-grid{display:flex;flex-direction: column;gap:var(--spacing);width:100%;margin-top:2rem}
 .annonce-card .annonce-info{background-color:#fff;display:flex;flex-direction:column; width: 100%;}
 .annonce-card{gap: 1rem;background-color:#fff;border:1px solid var(--input-border);border-radius:var(--radius);padding:1.5rem;display:flex;flex-direction:row;transition:transform 0.2s ease, box-shadow 0.2s ease}
 .annonce-card:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0, 0, 0, 0.05);border-color:var(--text-muted)}
@@ -15,9 +15,10 @@
 .annonce-details{margin-top:auto;padding-top:1rem;border-top:1px solid var(--bg-body)}
 .annonce-location{font-size:0.9rem;color:var(--text-muted);display:flex;align-items:center;gap:0.5rem;margin-top:0.5rem;}
 .icon-pin{width:16px;height:16px;stroke:var(--text-muted)}
-.annonce-photo {width: 30%; border: 1px solid var(--input-border); border-radius: 8px;}
+.annonce-photo {min-width: 30%; border: 1px solid var(--input-border); border-radius: 8px; overflow: hidden;}
 .df {display:flex; justify-content: space-between; align-items:end;}
 .fdr {flex-direction: row;}
+.scroll {height: 70vh; overflow: scroll; display: flex; gap: 1rem; flex-direction: column;}
 </style>
 
 
@@ -38,8 +39,30 @@ Champs de la table "annonce":
     "date_publication"
 -->
 
-
 <div class="results-grid">
+    <p>{{ count($annonces) }} résultats</p>
+
+    <form method="POST" action="{{ url('resultats') }}">
+        @csrf
+        <input 
+            value="{{ $ville }}"
+            type="text" 
+            id="search" 
+            name="search" 
+            style="display: none;"/>
+
+        <label for="filtreTypeHebergement">Filtrer par type</label>
+        <select name="filtreTypeHebergement" id="filtreTypeHebergement">
+            <option value="">Tous les types</option>
+            
+            @foreach($types as $th)
+                <option value="{{ $th->nom_type_hebergement }}">{{ $th->nom_type_hebergement }}</option>
+            @endforeach
+        </select>
+        <input type="submit" value="Filtrer"/>
+    </form>
+
+    <div class="scroll">
     @foreach($annonces as $annonce)
         <article class="annonce-card">
             <div class="annonce-photo">
@@ -67,17 +90,31 @@ Champs de la table "annonce":
             </div>
         </article>
     @endforeach
+    </div>
 </div>
 
 @endsection
 
 <!-- 
-user story:
+user story 1:
 En tant que visiteur, je veux effectuer une recherche d’annonces par la localisation (le lieu) afin d’obtenir
  la liste des annonces avec leur présentation générale (pas de photo juste 
  - lieu, 
  - précisions, 
  - type (T2…)
  - adresse précise 
- - date de dépôt.
+ - date de dépôt).
+-->
+
+<!-- 
+user story 2:
+En tant que visiteur, je veux effectuer une recherche d’annonces par la localisation (le lieu) afin d’obtenir 
+la liste des annonces avec leur présentation générale 
+    (présentation complète, photo, prix minimum)
+-->
+
+<!-- 
+user story 3:
+En tant que visiteur, je veux effectuer une recherche d’annonces par la localisation, 
+puis filtrer par type d’hébergement afin d’obtenir la liste des annonces avec leur présentation générale
 -->
