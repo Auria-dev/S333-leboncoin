@@ -4,123 +4,84 @@
 
 @section('content')
 
-<style>
-    .results-grid{display:flex;flex-direction: column;gap:var(--spacing);width:100%;margin-top:2rem}
-    .annonce-card .annonce-info{background-color:#f3f4f6;display:flex;flex-direction:column; width: 100%;}
-    .annonce-card{gap: 1rem;background-color:#f3f4f6;border:1px solid var(--input-border);border-radius:var(--radius);padding:1rem;display:flex;flex-direction:row;transition:transform 0.2s ease, box-shadow 0.2s ease}
-    .annonce-card:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0, 0, 0, 0.05);border-color:var(--text-muted)}
-    .annonce-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem;gap:1rem;width: 100%;}
-    .annonce-title{font-size:1.1rem;font-weight:700;color:var(--text-main);line-height:1.3;margin:0}
-    .annonce-date{font-size:0.75rem;color:var(--text-muted);white-space:nowrap;background:var(--bg-body);padding:0.2rem 0.6rem;border-radius:4px;font-weight:600; height:fit-content;}
-    .annonce-details{margin-top:auto;padding-top:1rem;border-top:1px solid var(--bg-body);}
-    .annonce-details > p {text-align: left;}
-    .annonce-location{font-size:0.9rem;color:var(--text-muted);display:flex;align-items:center;gap:0.5rem;margin-top:0.5rem;}
-    .icon-pin{width:16px;height:16px;stroke:var(--text-muted)}
-    .scroll { display: flex; gap: 1rem; flex-direction: column;}
-    .df {display:flex; justify-content: space-between; align-items:end;}
-    .fdr {flex-direction: row; gap:1rem;}
-    a {color:inherit; text-decoration: none;}
-    .annonce-photo{min-width:30%;width:30%;align-self:stretch;border-radius:8px;overflow:hidden;background-color:#e0e0e0;border:1px dashed #a3a3a3;position:relative;}
-    .annonce-photo img{width:100%;height:100%;object-fit:cover;object-position:center;display:block;}
-</style>
+<div style="width: 100%;">
+    
+    <div class="results-header-form">
+        <form method="POST" action="{{ url('resultats') }}">
+            @csrf
+            <input 
+                value="{{ $ville ?? '' }}"
+                type="hidden" 
+                id="search" 
+                name="search" 
+            />
 
-
-<!-- 
-Champs de la table "annonce":
-    "idannonce"
-    "idtypehebergement"
-    "idville"
-    "idproprietaire"
-    "titre_annonce"
-    "prix_nuit"
-    "nb_nuit_min"
-    "nb_bebe_max"
-    "nb_personnes_max"
-    "nb_animaux_max"
-    "adresse_annonce"
-    "description_annonce"
-    "date_publication"
--->
-
-<div class="results-grid">
-    <form method="POST" action="{{ url('resultats') }}">
-        @csrf
-        <input 
-            value="{{ $ville }}"
-            type="text" 
-            id="search" 
-            name="search" 
-            style="display: none;"/>
-
-        <label for="filtreTypeHebergement">Filtrer par type</label>
-        <div class="df fdr">
-            <select name="filtreTypeHebergement" id="filtreTypeHebergement">
-                <option value="">Tous les types</option>
-                
-                @foreach($types as $th)
-                    <option value="{{ $th->nom_type_hebergement }}" {{ $typeSelectionner === $th->nom_type_hebergement ? 'selected="selected"':'' }}>{{ $th->nom_type_hebergement }}</option>
-                @endforeach
-            </select>
-            <input type="submit" value="Filtrer"/>
-        </div>
-    </form>
-
-    <p>{{ count($annonces) }} résultats</p>
+            <label for="filtreTypeHebergement">Filtrer par type</label>
+            <div class="filter-row">
+                <select name="filtreTypeHebergement" id="filtreTypeHebergement">
+                    <option value="">Tous les types</option>
+                    @if(isset($types))
+                        @foreach($types as $th)
+                            <option value="{{ $th->nom_type_hebergement }}" {{ (isset($typeSelectionner) && $typeSelectionner === $th->nom_type_hebergement) ? 'selected':'' }}>
+                                {{ $th->nom_type_hebergement }}
+                            </option>
+                        @endforeach
+                    @endif
+                </select>
+                <input type="submit" class="submit-btn" value="Filtrer"/>
+            </div>
+        </form>
+        
+        <p style="margin-top: 1rem; color: var(--text-muted); font-size: 0.9rem;">
+            {{ isset($annonces) ? count($annonces) : 0 }} résultats trouvés
+        </p>
+    </div>
 
     <div class="scroll">
-    @foreach($annonces as $annonce)
-        <a class="annonce-card" href="{{ url('annonce/'.strval($annonce->idannonce)) }}">
-            <div class="annonce-photo">
-                <img loading="lazy" src="{{ $annonce->photo[0]->nomphoto }}" alt="{{ $annonce->photo[0]->nomphoto }}"/>
-            </div>
-
-            <div class="annonce-info">
-                <div class="annonce-header">
-                    <h2 class="annonce-title">{{ $annonce->titre_annonce }}</h2>
-                    <p>{{ ceil($annonce->prix_nuit) }}€ / nuit</p>
-                </div>
+    @if(isset($annonces))
+        @foreach($annonces as $annonce)
+            <a class="annonce-card" href="{{ url('annonce/'.strval($annonce->idannonce)) }}">
                 
-                <div class="df fdr">
-                    <div class="annonce-details">
-                        {{ $annonce->idannonce }}
-                        <p>{{ $annonce->type_hebergement->nom_type_hebergement }} &bull; {{ $annonce->nb_personnes_max }} pers &bull; {{ $annonce->nb_bebe_max }} bébé</p>
-                        <p class="annonce-location">
-                            <svg class="icon-pin" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                            {{ $annonce->ville->nomville }} &bull; {{ $annonce->adresse_annonce }}
-                        </p>
-                    </div>
-                    <span class="annonce-date">
-                        {{ \Carbon\Carbon::parse($annonce->date_publication)->format('d M Y') }}
-                    </span>
+                <div class="annonce-photo">
+                    @if(isset($annonce->photo) && count($annonce->photo) > 0)
+                        <img loading="lazy" src="{{ $annonce->photo[0]->nomphoto }}" alt="Photo annonce"/>
+                    @else
+                        <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color: var(--text-muted);">
+                            Sans photo
+                        </div>
+                    @endif
                 </div>
-            </div>
-        </a>
-    @endforeach
+
+                <div class="annonce-info">
+                    <div class="annonce-header">
+                        <h2 class="card-title">{{ $annonce->titre_annonce }}</h2>
+                        <span class="card-price">{{ ceil($annonce->prix_nuit) }}€ / nuit</span>
+                    </div>
+                    
+                    <div class="card-meta">
+                        {{ $annonce->type_hebergement->nom_type_hebergement ?? 'Type inconnu' }} &bull; 
+                        {{ $annonce->nb_personnes_max }} pers &bull; 
+                        {{ $annonce->nb_bebe_max }} bébé
+                    </div>
+
+                    <div class="card-footer">
+                        <span class="location-badge">
+                            <svg class="icon-pin" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                            {{ $annonce->adresse_annonce }} &bull; {{ $annonce->ville->nomville ?? 'Ville' }}
+                        </span>
+                        
+                        <span class="date-badge">
+                            {{ \Carbon\Carbon::parse($annonce->date_publication)->format('d M Y') }}
+                        </span>
+                    </div>
+                </div>
+            </a>
+        @endforeach
+    @endif
     </div>
 </div>
 
 @endsection
-
-<!-- 
-user story 1:
-En tant que visiteur, je veux effectuer une recherche d’annonces par la localisation (le lieu) afin d’obtenir
- la liste des annonces avec leur présentation générale (pas de photo juste 
- - lieu, 
- - précisions, 
- - type (T2…)
- - adresse précise 
- - date de dépôt).
--->
-
-<!-- 
-user story 2:
-En tant que visiteur, je veux effectuer une recherche d’annonces par la localisation (le lieu) afin d’obtenir 
-la liste des annonces avec leur présentation générale 
-    (présentation complète, photo, prix minimum)
--->
-
-<!-- 
-user story 3:
-En tant que visiteur, je veux effectuer une recherche d’annonces par la localisation, 
-puis filtrer par type d’hébergement afin d’obtenir la liste des annonces avec leur présentation générale
--->
