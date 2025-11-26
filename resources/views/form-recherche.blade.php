@@ -16,12 +16,13 @@
                     id="search" 
                     name="search" 
                     placeholder="Ex: Paris, Lyon..." 
+                    style="width:100%;"
                     required
                 />
             </div>
 
             <div class="form-group">
-                <input type="submit" value="Rechercher"/>
+                <input type="submit" value="Rechercher" style="width:100%;"/>
             </div>
 
         </form>

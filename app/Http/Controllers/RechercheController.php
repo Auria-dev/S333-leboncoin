@@ -5,12 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Ville;
 use App\Models\Annonce;
-
-
+use App\Models\TypeHebergement;
 
 class RechercheController extends Controller {
 	function index() {
-		 return view("form-recherche");
+		return view("form-recherche");
 	}
 
 	function results(Request  $request) {
@@ -30,7 +29,7 @@ class RechercheController extends Controller {
 		 	 ->orderBy('nomville')
 			 ->limit(10)
 			 ->get();
-			 */
+		*/
 
 		//  return view ("resultats-recherche", ['annonces'=>$filteredAnnonces ]);
 
@@ -42,6 +41,18 @@ class RechercheController extends Controller {
 			) < 3;
 		});
 
-		return view ("resultats-recherche", ['annonces'=>$filteredAnnonces ]);
+		$types = TypeHebergement::all();
+
+		if ($request->filled('filtreTypeHebergement')) {
+			$filteredAnnonces = $filteredAnnonces->filter(function(Annonce $annonce) use ($request) {
+				return $annonce->type_hebergement->nom_type_hebergement === $request->get("filtreTypeHebergement");
+			});
+		}
+
+		return view ("resultats-recherche", [
+			'ville' => $request->get("search"),
+			'annonces' => $filteredAnnonces,
+			'types' => $types
+		]);
 	}
 }

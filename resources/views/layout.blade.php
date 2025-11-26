@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>@yield('title', ' leboncoin')</title>
-
+    <link rel="preload" href="{{ asset('css/app.css') }}" as="style">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
 
@@ -19,7 +19,7 @@
         @section('nav')
             <ul>
                 <li><a href="{{ url('/') }}">Accueil</a></li>
-                <li><a href="{{ url('/recherche') }}">Rechercher</a></li>
+                <li><a href="{{ url('/recherche') }}" >Rechercher</a></li>
             </ul>
         @show
     </nav>
