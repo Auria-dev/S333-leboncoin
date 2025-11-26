@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Annonce;
 
-
 class Annonce extends Model
 {
     use HasFactory;
@@ -16,5 +15,9 @@ class Annonce extends Model
 
     public function ville() {
         return $this->belongsTo(Ville::class, "idville");
+    }
+
+    public function type_hebergement() {
+        return $this->belongsTo(TypeHebergement::class, "idtypehebergement");
     }
 }
