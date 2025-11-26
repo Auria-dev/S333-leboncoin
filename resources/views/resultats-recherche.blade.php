@@ -16,11 +16,12 @@
     .annonce-details > p {text-align: left;}
     .annonce-location{font-size:0.9rem;color:var(--text-muted);display:flex;align-items:center;gap:0.5rem;margin-top:0.5rem;}
     .icon-pin{width:16px;height:16px;stroke:var(--text-muted)}
-    .annonce-photo { min-width: 30%; border-radius: 8px; overflow: hidden; background-color: #e0e0e0; border: 1px dashed #a3a3a3; }
     .scroll { display: flex; gap: 1rem; flex-direction: column;}
     .df {display:flex; justify-content: space-between; align-items:end;}
     .fdr {flex-direction: row; gap:1rem;}
     a {color:inherit; text-decoration: none;}
+    .annonce-photo{min-width:30%;width:30%;align-self:stretch;border-radius:8px;overflow:hidden;background-color:#e0e0e0;border:1px dashed #a3a3a3;position:relative;}
+    .annonce-photo img{width:100%;height:100%;object-fit:cover;object-position:center;display:block;}
 </style>
 
 
@@ -70,7 +71,7 @@ Champs de la table "annonce":
     @foreach($annonces as $annonce)
         <a class="annonce-card" href="{{ url('annonce/'.strval($annonce->idannonce)) }}">
             <div class="annonce-photo">
-                <img src="{{ $annonce->photo[0]->nomphoto }}" alt="{{ $annonce->photo[0]->nomphoto }}"/>
+                <img loading="lazy" src="{{ $annonce->photo[0]->nomphoto }}" alt="{{ $annonce->photo[0]->nomphoto }}"/>
             </div>
 
             <div class="annonce-info">
