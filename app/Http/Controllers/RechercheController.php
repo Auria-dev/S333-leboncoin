@@ -51,6 +51,7 @@ class RechercheController extends Controller {
 
 		return view ("resultats-recherche", [
 			'ville' => $request->get("search"),
+			'typeSelectionner' => $request->get("filtreTypeHebergement"),
 			'annonces' => $filteredAnnonces,
 			'types' => $types
 		]);

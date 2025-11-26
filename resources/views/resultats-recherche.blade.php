@@ -42,8 +42,6 @@ Champs de la table "annonce":
 -->
 
 <div class="results-grid">
-    <p>{{ count($annonces) }} résultats</p>
-
     <form method="POST" action="{{ url('resultats') }}">
         @csrf
         <input 
@@ -59,12 +57,14 @@ Champs de la table "annonce":
                 <option value="">Tous les types</option>
                 
                 @foreach($types as $th)
-                    <option value="{{ $th->nom_type_hebergement }}">{{ $th->nom_type_hebergement }}</option>
+                    <option value="{{ $th->nom_type_hebergement }}" {{ $typeSelectionner === $th->nom_type_hebergement ? 'selected="selected"':'' }}>{{ $th->nom_type_hebergement }}</option>
                 @endforeach
             </select>
             <input type="submit" value="Filtrer"/>
         </div>
     </form>
+
+    <p>{{ count($annonces) }} résultats</p>
 
     <div class="scroll">
     @foreach($annonces as $annonce)
