@@ -24,4 +24,8 @@ class Annonce extends Model
     public function photo() {
         return $this->hasMany(Photo::class, "idannonce");
     }
+
+    public function calendrier() {
+        return $this->hasMany(Calendrier::class, "idannonce");
+    }
 }
