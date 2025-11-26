@@ -5,21 +5,22 @@
 @section('content')
 
 <style>
-.results-grid{display:flex;flex-direction: column;gap:var(--spacing);width:100%;margin-top:2rem}
-.annonce-card .annonce-info{background-color:#fff;display:flex;flex-direction:column; width: 100%;}
-.annonce-card{gap: 1rem;background-color:#fff;border:1px solid var(--input-border);border-radius:var(--radius);padding:1rem;display:flex;flex-direction:row;transition:transform 0.2s ease, box-shadow 0.2s ease}
-.annonce-card:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0, 0, 0, 0.05);border-color:var(--text-muted)}
-.annonce-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem;gap:1rem;width: 100%;}
-.annonce-title{font-size:1.1rem;font-weight:700;color:var(--text-main);line-height:1.3;margin:0}
-.annonce-date{font-size:0.75rem;color:var(--text-muted);white-space:nowrap;background:var(--bg-body);padding:0.2rem 0.6rem;border-radius:4px;font-weight:600; height:fit-content;}
-.annonce-details{margin-top:auto;padding-top:1rem;border-top:1px solid var(--bg-body);}
-.annonce-details > p {text-align: left;}
-.annonce-location{font-size:0.9rem;color:var(--text-muted);display:flex;align-items:center;gap:0.5rem;margin-top:0.5rem;}
-.icon-pin{width:16px;height:16px;stroke:var(--text-muted)}
-.annonce-photo {min-width: 30%; border: 1px solid var(--input-border); border-radius: 8px; overflow: hidden;}
-.scroll { display: flex; gap: 1rem; flex-direction: column;}
-.df {display:flex; justify-content: space-between; align-items:end;}
-.fdr {flex-direction: row;}
+    .results-grid{display:flex;flex-direction: column;gap:var(--spacing);width:100%;margin-top:2rem}
+    .annonce-card .annonce-info{background-color:#f3f4f6;display:flex;flex-direction:column; width: 100%;}
+    .annonce-card{gap: 1rem;background-color:#f3f4f6;border:1px solid var(--input-border);border-radius:var(--radius);padding:1rem;display:flex;flex-direction:row;transition:transform 0.2s ease, box-shadow 0.2s ease}
+    .annonce-card:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0, 0, 0, 0.05);border-color:var(--text-muted)}
+    .annonce-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem;gap:1rem;width: 100%;}
+    .annonce-title{font-size:1.1rem;font-weight:700;color:var(--text-main);line-height:1.3;margin:0}
+    .annonce-date{font-size:0.75rem;color:var(--text-muted);white-space:nowrap;background:var(--bg-body);padding:0.2rem 0.6rem;border-radius:4px;font-weight:600; height:fit-content;}
+    .annonce-details{margin-top:auto;padding-top:1rem;border-top:1px solid var(--bg-body);}
+    .annonce-details > p {text-align: left;}
+    .annonce-location{font-size:0.9rem;color:var(--text-muted);display:flex;align-items:center;gap:0.5rem;margin-top:0.5rem;}
+    .icon-pin{width:16px;height:16px;stroke:var(--text-muted)}
+    .annonce-photo { min-width: 30%; border-radius: 8px; overflow: hidden; background-color: #e0e0e0; border: 1px dashed #a3a3a3; }
+    .scroll { display: flex; gap: 1rem; flex-direction: column;}
+    .df {display:flex; justify-content: space-between; align-items:end;}
+    .fdr {flex-direction: row; gap:1rem;}
+    a {color:inherit; text-decoration: none;}
 </style>
 
 
@@ -53,19 +54,21 @@ Champs de la table "annonce":
             style="display: none;"/>
 
         <label for="filtreTypeHebergement">Filtrer par type</label>
-        <select name="filtreTypeHebergement" id="filtreTypeHebergement">
-            <option value="">Tous les types</option>
-            
-            @foreach($types as $th)
-                <option value="{{ $th->nom_type_hebergement }}">{{ $th->nom_type_hebergement }}</option>
-            @endforeach
-        </select>
-        <input type="submit" value="Filtrer"/>
+        <div class="df fdr">
+            <select name="filtreTypeHebergement" id="filtreTypeHebergement">
+                <option value="">Tous les types</option>
+                
+                @foreach($types as $th)
+                    <option value="{{ $th->nom_type_hebergement }}">{{ $th->nom_type_hebergement }}</option>
+                @endforeach
+            </select>
+            <input type="submit" value="Filtrer"/>
+        </div>
     </form>
 
     <div class="scroll">
     @foreach($annonces as $annonce)
-        <article class="annonce-card">
+        <a class="annonce-card" href="{{ url('annonce/'.strval($annonce->idannonce)) }}">
             <div class="annonce-photo">
                 <img src="{{ $annonce->photo[0]->nomphoto }}" alt="{{ $annonce->photo[0]->nomphoto }}"/>
             </div>
@@ -78,6 +81,7 @@ Champs de la table "annonce":
                 
                 <div class="df fdr">
                     <div class="annonce-details">
+                        {{ $annonce->idannonce }}
                         <p>{{ $annonce->type_hebergement->nom_type_hebergement }} &bull; {{ $annonce->nb_personnes_max }} pers &bull; {{ $annonce->nb_bebe_max }} bébé</p>
                         <p class="annonce-location">
                             <svg class="icon-pin" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
@@ -89,7 +93,7 @@ Champs de la table "annonce":
                     </span>
                 </div>
             </div>
-        </article>
+        </a>
     @endforeach
     </div>
 </div>
