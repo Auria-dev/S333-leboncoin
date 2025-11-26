@@ -20,4 +20,8 @@ class Annonce extends Model
     public function type_hebergement() {
         return $this->belongsTo(TypeHebergement::class, "idtypehebergement");
     }
+
+    public function photo() {
+        return $this->hasMany(Photo::class, "idannonce");
+    }
 }

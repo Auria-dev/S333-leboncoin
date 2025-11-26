@@ -18,12 +18,12 @@ class RechercheController extends Controller {
 
 // 		 // Doc : Eloquent
 
-		 $annonces = Annonce::all(); // Objet de type "Collection"
-		 $filteredAnnonces = $annonces->filter(function (Annonce $annonce, int $key) {
-		       global $request;
-// 		       return strtolower($annonce->ville->nomville) == strtolower($request->get("search"));
-		       return levenshtein(strtolower($annonce->ville->nomville), strtolower($request->get("search"))) < 3;
-		 }); 
+// 		 $annonces = Annonce::all(); // Objet de type "Collection"
+// 		 $filteredAnnonces = $annonces->filter(function (Annonce $annonce, int $key) {
+// 		       global $request;
+// // 		       return strtolower($annonce->ville->nomville) == strtolower($request->get("search"));
+// 		       return levenshtein(strtolower($annonce->ville->nomville), strtolower($request->get("search"))) < 3;
+// 		 }); 
 
 		 /*
 		 $filteredAnnonces = Annonce::where('idville', 1)
@@ -32,6 +32,16 @@ class RechercheController extends Controller {
 			 ->get();
 			 */
 
-		 return view ("resultats-recherche", ['annonces'=>$filteredAnnonces ]);
+		//  return view ("resultats-recherche", ['annonces'=>$filteredAnnonces ]);
+
+		$annonces = Annonce::with('ville')->get();
+		$filteredAnnonces = $annonces->filter(function(Annonce $annonce) use ($request) {
+			return levenshtein(
+				strtolower($annonce->ville->nomville),
+				strtolower($request->get("search"))
+			) < 3;
+		});
+
+		return view ("resultats-recherche", ['annonces'=>$filteredAnnonces ]);
 	}
 }
