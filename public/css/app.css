@@ -613,3 +613,88 @@ input[type="submit"]:hover {
     display: inline-block;
     padding-right: 1rem;
 }
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    background: transparent;
+    bottom: 0;
+    color: transparent;
+    cursor: pointer;
+    height: auto;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: auto;
+    z-index: 999;
+}
+
+input[type="date"] {
+    -moz-appearance: textfield;
+    position: relative;
+}
+
+.flatpickr-day.selected, 
+.flatpickr-day.startRange, 
+.flatpickr-day.endRange, 
+.flatpickr-day.selected.inRange, 
+.flatpickr-day.startRange.inRange, 
+.flatpickr-day.endRange.inRange, 
+.flatpickr-day.selected:focus, 
+.flatpickr-day.startRange:focus, 
+.flatpickr-day.endRange:focus, 
+.flatpickr-day.selected:hover, 
+.flatpickr-day.startRange:hover, 
+.flatpickr-day.endRange:hover, 
+.flatpickr-day.selected.prevMonthDay, 
+.flatpickr-day.startRange.prevMonthDay, 
+.flatpickr-day.endRange.prevMonthDay, 
+.flatpickr-day.selected.nextMonthDay, 
+.flatpickr-day.startRange.nextMonthDay, 
+.flatpickr-day.endRange.nextMonthDay {
+    background: var(--primary) !important;
+    border-color: var(--primary) !important;
+    color: #fff;
+}
+
+.flatpickr-day.today {
+    border-color: var(--primary) !important;
+}
+.flatpickr-day.today:hover {
+    background: var(--primary) !important;
+    color: #fff !important;
+}
+
+.flatpickr-day:hover {
+    background: var(--primary-light) !important;
+    border-color: var(--primary-light) !important;
+}
+
+.flatpickr-months .flatpickr-month {
+    color: var(--text-color) !important;
+    fill: var(--text-color) !important;
+}
+
+.flatpickr-current-month {
+    display: flex !important;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.flatpickr-current-month .flatpickr-monthDropdown-months:hover {
+    background: #f0f0f0;
+}
+
+.flatpickr-current-month .numInputWrapper span.arrowUp:after {
+    border-bottom-color: var(--primary);
+}
+
+.flatpickr-current-month .numInputWrapper span.arrowDown:after {
+    border-top-color: var(--primary);
+}
+
+.flatpickr-current-month input.cur-year {
+    font-weight: 700;
+}
+.flatpickr-current-month input.cur-year:focus {
+    color: var(--primary);
+}
