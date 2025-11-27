@@ -7,7 +7,10 @@
 <div class="annonce-grid">
     
     <div class="carousel-placeholder">
-        [CARROUSEL AREA]
+        <img src="{{ $annonce->photo[0]->nomphoto }}" alt="" style="width:100%; height:auto;">
+        <div id="view-photos-overlay" onclick="openModal()">
+            Voir les photos
+        </div>
     </div>
 
     <div class="info-column">
@@ -63,4 +66,96 @@
     </div>
 </div>
 
+
+<div class="modal-overlay" id="modal-overlay" style="display: none;">
+    <div class="carrousel-conatainer">
+        <div class="carrousel-body">
+            <div class="carrousel-slide">
+                @forEach($annonce->photo as $photo)
+                    <div class="slide">
+                        <img src="{{ $photo->nomphoto }}" alt="" style="width:100%; height:auto;">
+                    </div>
+                @endforEach
+            </div>
+            <button id="prevBtn">&#8592;</button>
+            <button id="nextBtn">&rarr;</button>
+
+            <div class="dots"></div>
+            
+        </div>
+
+    </div>
+
+</div>
+
 @endsection
+@push('scripts')
+<script>
+
+    function openModal() {
+        document.getElementById('modal-overlay').style.display = 'flex';
+    }
+
+    window.onclick = function(event) {
+        var modal = document.getElementById('modal-overlay');
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+
+    const track = document.querySelector('.carrousel-slide');
+    const slides = document.querySelectorAll('.slide');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const dotsContainer = document.querySelector('.dots');
+
+    let currentIndex = 0;
+
+
+    slides.forEach((slide, index) => {
+        const dot = document.createElement('div');
+        dot.classList.add('dot');
+
+        if (index === 0) dot.classList.add('active');
+
+        dot.addEventListener('click', () => {
+            currentIndex = index;
+            updateCarousel();
+        });
+
+        dotsContainer.appendChild(dot);
+    });
+
+    const dots = document.querySelectorAll('.dot');
+
+    function updateCarousel() {
+
+        const slideWidth = slides[0].clientWidth;
+        track.scrollTo({
+            left: currentIndex * slideWidth,
+            behavior: 'smooth'
+        });
+        dots.forEach(dot => dot.classList.remove('active'));
+        dots[currentIndex].classList.add('active');
+    }
+
+    nextBtn.addEventListener('click', () => {
+        currentIndex++;
+        if (currentIndex >= slides.length) {
+            currentIndex = 0;
+        }
+        updateCarousel();
+    });
+
+    prevBtn.addEventListener('click', () => {
+        currentIndex--;
+        if (currentIndex < 0) {
+            currentIndex = slides.length - 1;
+        }
+        updateCarousel();
+    });
+
+    window.addEventListener('resize', updateCarousel);
+</script>
+@endpush

@@ -34,5 +34,7 @@
     <footer>
         &copy; {{ date('Y') }} Lumina Inc.
     </footer>
+
+    @stack('scripts')
 </body>
 </html>
