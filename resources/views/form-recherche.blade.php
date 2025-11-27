@@ -17,7 +17,7 @@
             />
         </div>
 
-        <div class="input-groupe">
+        <div class="full-width input-groupe">
             <label for="vyg">Dates voyage</label>
             
             <input 
