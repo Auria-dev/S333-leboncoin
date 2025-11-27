@@ -246,12 +246,10 @@ input[type="submit"]:hover {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
     border-radius: 10px;
     width: 1080px;
     height: 720px;
     position: relative;
-    animation: fadeIn 0.3s ease;
     overflow: hidden;
 }
 
@@ -268,10 +266,10 @@ input[type="submit"]:hover {
 
 .photo-list {
     margin-left: 15px;
+    margin-right: 15px;
     margin-top: 10px;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
-    height: auto;
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
     gap: 10px;
 }
 
@@ -279,6 +277,8 @@ input[type="submit"]:hover {
     overflow: hidden;
     border-radius: var(--radius-sm);
     cursor: pointer;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
 }
 
 .carousel-placeholder {
@@ -325,7 +325,7 @@ input[type="submit"]:hover {
 
 .slide {
     min-width: 100%;
-    height: 100%;
+    height: auto;
 }
 
 #prevBtn, #nextBtn {
