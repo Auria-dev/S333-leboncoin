@@ -78,14 +78,14 @@
     <div class="carrousel-conatainer">
         <div class="carrousel-body">
             <div class="carrousel-slide">
-                @forEach($annonce->photo as $photo)
+                @foreach($annonce->photo as $photo)
                     <div class="slide">
-                        <img src="{{ $photo->nomphoto }}" alt="" style="width:100%; height:auto;">
+                        <img src="{{ $photo->nomphoto }}" alt="Photo annonce">
                     </div>
-                @endforEach
+                @endforeach
             </div>
-            <button id="prevBtn">&#8592;</button>
-            <button id="nextBtn">&rarr;</button>
+            <button id="prevBtn"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-left-icon lucide-chevron-left"><path d="m15 18-6-6 6-6"/></svg></button>
+            <button id="nextBtn"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right-icon lucide-chevron-right"><path d="m9 18 6-6-6-6"/></svg></button>
 
             <div class="dots"></div>
             

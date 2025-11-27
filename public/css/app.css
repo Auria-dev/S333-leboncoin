@@ -266,15 +266,16 @@ input[type="submit"]:hover {
     backdrop-filter: blur(5px);
 }
 
-.modal-content {
+.modal-content,
+.carrousel-conatainer {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 10px;
-    width: 1080px;
-    height: 720px;
-    position: relative;
-    overflow: hidden;
+    width: 90vw;
+    height: 90vh;
+    max-width: 1080px;
+    max-height: 720px;
 }
 
 .modal-content img {
@@ -336,7 +337,6 @@ input[type="submit"]:hover {
     display: flex;
     width: 100%;
     height: 100%;
-    border-radius: 20px;
     overflow: hidden;
 }
 
@@ -350,7 +350,20 @@ input[type="submit"]:hover {
 
 .slide {
     min-width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.slide img {
+    border-radius: var(--radius-card);
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
     height: auto;
+    object-fit: contain;
+    display: block;
 }
 
 #prevBtn, #nextBtn {
@@ -360,9 +373,15 @@ input[type="submit"]:hover {
     background-color: rgba(0, 0, 0, 0.5);
     color: white;
     border: none;
-    padding: 10px;
+    padding: 0.4rem;
     cursor: pointer;
     z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.4rem;
+    transition: background-color 0.3s;
+    margin: 0 1rem;
 }
 
 #prevBtn {
