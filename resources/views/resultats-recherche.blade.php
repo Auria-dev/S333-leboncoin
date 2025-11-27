@@ -5,41 +5,48 @@
 @section('content')
 
 <div style="width: 100%;">
-    
     <div class="results-header-form">
         <form method="POST" action="{{ url('resultats') }}">
             @csrf
-            <input 
-                value="{{ $ville ?? '' }}"
-                type="hidden" 
-                id="search" 
-                name="search" 
-            />
 
             <div class="filter-row">
+                <div>
+                    <label for="filtreVille">Filtrer par ville</label>
+                    <input 
+                        value="{{ request('search') }}"
+                        type="text" 
+                        id="search" 
+                        name="search"
+                    />
+                </div>
+
                 <div>
                     <label for="filtreTypeHebergement">Filtrer par type</label>
                     <select name="filtreTypeHebergement" id="filtreTypeHebergement">
                         <option value="">Tous les types</option>
                         @if(isset($types))
                             @foreach($types as $th)
-                                <option value="{{ $th->nom_type_hebergement }}" {{ (isset($typeSelectionner) && $typeSelectionner === $th->nom_type_hebergement) ? 'selected':'' }}>
+                                <option 
+                                    value="{{ $th->nom_type_hebergement }}"
+                                    @selected(request('filtreTypeHebergement') == $th->nom_type_hebergement)
+                                >
                                     {{ $th->nom_type_hebergement }}
                                 </option>
                             @endforeach
                         @endif
                     </select>
                 </div>
+
                 <div>
                     <label for="filtrePrixMax">Prix max par nuit (€)</label>
                     <input 
                         type="number" 
                         id="filtrePrixMax" 
                         name="filtrePrixMax" 
-                        disabled
+                        {{-- 3. Prix Input --}}
+                        value="{{ request('filtrePrixMax') }}"
                         min="0" 
                         step="1" 
-                        value="{{ $prixMaxSelectionner ?? '' }}"
                         placeholder="Ex: 100"
                     />
                 </div>
@@ -54,8 +61,18 @@
                         data-target-end="datefin"
                     />
 
-                    <input type="hidden" name="datedebut" id="datedebut">
-                    <input type="hidden" name="datefin" id="datefin">
+                    <input 
+                        type="hidden" 
+                        name="datedebut" 
+                        id="datedebut" 
+                        value="{{ request('datedebut') }}"
+                    >
+                    <input 
+                        type="hidden" 
+                        name="datefin" 
+                        id="datefin" 
+                        value="{{ request('datefin') }}"
+                    >
                 </div>
                 
                 <input type="submit" class="submit-btn" value="Filtrer"/>
