@@ -17,26 +17,7 @@ class RechercheController extends Controller {
 	}
 
 	function results(Request  $request) {
-		// $request->get("search");
-
-// 		 // Doc : Eloquent
-
-// 		 $annonces = Annonce::all(); // Objet de type "Collection"
-// 		 $filteredAnnonces = $annonces->filter(function (Annonce $annonce, int $key) {
-// 		       global $request;
-// // 		       return strtolower($annonce->ville->nomville) == strtolower($request->get("search"));
-// 		       return levenshtein(strtolower($annonce->ville->nomville), strtolower($request->get("search"))) < 3;
-// 		 }); 
-
-		 /*
-		 $filteredAnnonces = Annonce::where('idville', 1)
-		 	 ->orderBy('nomville')
-			 ->limit(10)
-			 ->get();
-		*/
-
-		//  return view ("resultats-recherche", ['annonces'=>$filteredAnnonces ]);
-
+		// Doc : Eloquent
 		$annonces = Annonce::with('ville')->get();
 		$filteredAnnonces = $annonces->filter(function(Annonce $a) use ($request) {
 			return levenshtein(
@@ -49,14 +30,29 @@ class RechercheController extends Controller {
 		$datedebut = $request->get("datedebut");
 		$datefin = $request->get("datefin");
 
-
-		// TODO (auria): exclure les annonces qui ne sont pas libre sur l'entièreté de la durée
-		if ($datedebut || $datefin) {
+		if ($datedebut && $datefin) {
+			$debut = \Carbon\Carbon::parse($datedebut);
+        	$fin = \Carbon\Carbon::parse($datefin);
+			$jours_requis = $debut->diffInDays($fin) + 1;
+			$annonces_possibles = Calendrier::where('code_dispo', true)
+				->whereHas('date', function($q) use ($datedebut, $datefin) {
+					$q->whereBetween('date', [$datedebut, $datefin]);
+				})->select('idannonce')
+				->groupBy('idannonce')
+				->havingRaw('COUNT(*) = ?', [$jours_requis]) // havingRaw = raw SQL having clause
+				->pluck('idannonce')
+				->toArray();
+				$filteredAnnonces = $filteredAnnonces->filter(function(Annonce $a) use ($annonces_possibles) {
+					return in_array($a->idannonce, $annonces_possibles);
+				});
+		} else if ($datedebut || $datefin) {
 			$cal_libre = Calendrier::whereHas('date', function($q) use ($datedebut, $datefin) {
 				if ($datedebut) $q->where('date', '>=', $datedebut);
 				if ($datefin)   $q->where('date', '<=', $datefin);
-			})->where('code_dispo', true)->pluck('idannonce')->toArray();
-
+			})->where('code_dispo', true)
+			->pluck('idannonce')
+			->toArray();
+			
 			$filteredAnnonces = $filteredAnnonces->filter(function(Annonce $a) use ($cal_libre) {
 				return in_array($a->idannonce, $cal_libre);
 			});
