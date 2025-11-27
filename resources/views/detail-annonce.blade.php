@@ -5,12 +5,19 @@
 @section('content')
 
 <div class="annonce-grid">
-    
-    <div class="carousel-placeholder">
-        <img src="{{ $annonce->photo[0]->nomphoto }}" alt="" style="width:100%; height:auto;">
-        <div id="view-photos-overlay" onclick="openModal()">
-            Voir les photos
+
+    <div class="photo-column">
+        <div class="carousel-placeholder">
+            <img src="{{ $annonce->photo[0]->nomphoto }}" alt="" style="width:100%; height:auto;">
+            <div id="view-photos-overlay" onclick="openModal()">
+                Voir les photos
+            </div>
         </div>
+        <div class="photo-list">
+            @forEach($annonce->photo as $photo)
+                <img src="{{ $photo->nomphoto }}" alt="" style="width:100%; height:auto;" class="photo-item" data-index="{{ $loop->index }}">
+            @endforEach
+        </div>       
     </div>
 
     <div class="info-column">
@@ -94,6 +101,7 @@
 
     function openModal() {
         document.getElementById('modal-overlay').style.display = 'flex';
+
     }
 
     window.onclick = function(event) {
@@ -109,8 +117,27 @@
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
     const dotsContainer = document.querySelector('.dots');
+    const photoItems = document.querySelectorAll('.photo-item');
 
+    const itemPhoto = document.querySelectorAll('.photo-item');
+    
     let currentIndex = 0;
+
+
+
+    itemPhoto.forEach(item => {
+        item.addEventListener('click', () => {
+            const index = item.getAttribute('data-index');
+            currentIndex = parseInt(index);
+            track.style.scrollBehavior = 'auto';
+            document.getElementById('modal-overlay').style.display = 'flex';
+            updateCarousel();
+
+            setTimeout(() => {
+                track.style.scrollBehavior = 'smooth';
+            }, 50);
+        });
+    });
 
 
     slides.forEach((slide, index) => {
@@ -134,7 +161,7 @@
         const slideWidth = slides[0].clientWidth;
         track.scrollTo({
             left: currentIndex * slideWidth,
-            behavior: 'smooth'
+            behavior: 'auto'
         });
         dots.forEach(dot => dot.classList.remove('active'));
         dots[currentIndex].classList.add('active');

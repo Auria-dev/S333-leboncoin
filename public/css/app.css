@@ -261,6 +261,26 @@ input[type="submit"]:hover {
     object-fit: cover;
 }
 
+.photo-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.photo-list {
+    margin-left: 15px;
+    margin-top: 10px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+    height: auto;
+    gap: 10px;
+}
+
+.photo-item {
+    overflow: hidden;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+}
+
 .carousel-placeholder {
     position: relative;
     background-color: var(--primary-light);
