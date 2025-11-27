@@ -12,7 +12,30 @@ class GestionnaireDate {
 
         this.init();
     }
+    
+    chargerValeursInitiales() {
+        const targetStartId = this.input.getAttribute('data-target-start');
+        const targetEndId = this.input.getAttribute('data-target-end');
+        
+        const hiddenStart = targetStartId ? document.getElementById(targetStartId) : null;
+        const hiddenEnd = targetEndId ? document.getElementById(targetEndId) : null;
 
+        const parseDateSQL = (str) => {
+            if (!str) return null;
+            const parts = str.split('-');
+            return new Date(parts[0], parts[1] - 1, parts[2]);
+        };
+
+        if (hiddenStart && hiddenStart.value) {
+            this.selectionDebut = parseDateSQL(hiddenStart.value);
+            this.dateActuelle = new Date(this.selectionDebut);
+        }
+
+        if (this.isDual && hiddenEnd && hiddenEnd.value) this.selectionFin = parseDateSQL(hiddenEnd.value);
+        if (this.selectionDebut)                         this.majInput(); 
+        
+    }
+    
     init() {
         this.input.type = 'text';
         this.input.setAttribute('readonly', true);
@@ -34,11 +57,10 @@ class GestionnaireDate {
         });
 
         document.addEventListener('click', (e) => {
-            if (!this.wrapper.contains(e.target) && e.target !== this.input) {
-                this.fermerCalendrier();
-            }
+            if (!this.wrapper.contains(e.target) && e.target !== this.input) this.fermerCalendrier();
         });
 
+        this.chargerValeursInitiales();
         this.renderCalendrier(this.dateActuelle);
     }
 
@@ -102,14 +124,28 @@ class GestionnaireDate {
             }
         }
     }
+
     gererClickDate(annee, mois, jour) {
         const dateCliquee = new Date(annee, mois, jour);
 
         if (this.isDual) {
-            if (!this.selectionDebut || (this.selectionDebut && this.selectionFin)) {
+            if (this.selectionDebut && this.selectionFin) {
+                
+                if (dateCliquee < this.selectionDebut) {
+                    this.selectionDebut = dateCliquee;
+                } 
+                else if (dateCliquee > this.selectionFin) {
+                    this.selectionFin = dateCliquee;
+                } 
+                else {
+                    this.selectionDebut = dateCliquee;
+                    this.selectionFin = null;
+                }
+            } 
+            else if (!this.selectionDebut) {
                 this.selectionDebut = dateCliquee;
-                this.selectionFin = null;
-            } else {
+            } 
+            else {
                 this.selectionFin = dateCliquee;
                 if (this.selectionFin < this.selectionDebut) {
                     const temp = this.selectionDebut;
@@ -117,7 +153,8 @@ class GestionnaireDate {
                     this.selectionFin = temp;
                 }
             }
-        } else {
+        } 
+        else {
             this.selectionDebut = dateCliquee;
         }
 
@@ -226,6 +263,7 @@ class GestionnaireDate {
         footer.className = 'cal-footer';
         
         const btnValider = document.createElement('button');
+        btnValider.type = 'button';
         btnValider.className = 'cal-btn-valider';
         btnValider.innerText = 'Valider';
         
@@ -260,7 +298,7 @@ document.addEventListener('DOMContentLoaded', () => {
 </div>
 */
 
-//  OU 
+//  Ou si on veut une plage de dates
 
 /*
 <div class="input-groupe">
