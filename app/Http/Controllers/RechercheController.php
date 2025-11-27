@@ -67,10 +67,12 @@ class RechercheController extends Controller {
 		}
 
 		return view ("resultats-recherche", [
-			'ville' => $request->get("search"),
-			'typeSelectionner' => $request->get("filtreTypeHebergement"),
 			'annonces' => $filteredAnnonces,
+
+			// filtres
+			'ville' => $request->get("search"),
 			'types' => $types
+			'typeSelectionner' => $request->get("filtreTypeHebergement"),
 		]);
 	}
 }

@@ -158,6 +158,7 @@ input[type="password"],
 input[type="email"],
 input[type="date"],
 input[type="tel"],
+input[type="number"],
 select,
 textarea {
     display: block;
@@ -174,6 +175,13 @@ textarea {
     appearance: none;
 }
 
+input[disabled],
+select[disabled],
+textarea[disabled] {
+    cursor: not-allowed;
+    background-color: var(--bg-card);
+    color: var(--text-muted);
+}
 
 select {
     padding-right: 2.5rem;
@@ -496,6 +504,7 @@ input[type="submit"]:hover {
 
 .filter-row {
     display: flex;
+    align-items: end;
     gap: 1rem;
     margin-top: 0.75rem;
 }
@@ -507,6 +516,7 @@ input[type="submit"]:hover {
 
 .filter-row input[type="submit"] {
     width: auto;
+    height: fit-content;
 }
 
 
@@ -663,7 +673,7 @@ input[type="date"], input.date-custom-input {
     background-color: var(--bg-card);
     border: 1px solid var(--border-default);
     border-radius: var(--radius-input);
-    padding: 1rem 1.25rem;
+    /* padding: 1rem 1.25rem; */
     font-family: inherit;
     color: var(--text-main);
     font-size: 1rem;
@@ -815,10 +825,10 @@ input.date-custom-input {
 
 .input-groupe {
     position: relative;
-    margin-bottom: var(--spacing);
+    /* margin-bottom: var(--spacing); */
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    /* gap: 0.5rem; */
 }
 
 .cal-footer {

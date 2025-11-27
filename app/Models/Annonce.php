@@ -28,4 +28,8 @@ class Annonce extends Model
     public function calendrier() {
         return $this->hasMany(Calendrier::class, "idannonce");
     }
+
+    public function utilisateur() {
+        return $this->belongsTo(Utilisateur::class, "idutilisateur");
+    }
 }

@@ -16,18 +16,48 @@
                 name="search" 
             />
 
-            <label for="filtreTypeHebergement">Filtrer par type</label>
             <div class="filter-row">
-                <select name="filtreTypeHebergement" id="filtreTypeHebergement">
-                    <option value="">Tous les types</option>
-                    @if(isset($types))
-                        @foreach($types as $th)
-                            <option value="{{ $th->nom_type_hebergement }}" {{ (isset($typeSelectionner) && $typeSelectionner === $th->nom_type_hebergement) ? 'selected':'' }}>
-                                {{ $th->nom_type_hebergement }}
-                            </option>
-                        @endforeach
-                    @endif
-                </select>
+                <div>
+                    <label for="filtreTypeHebergement">Filtrer par type</label>
+                    <select name="filtreTypeHebergement" id="filtreTypeHebergement">
+                        <option value="">Tous les types</option>
+                        @if(isset($types))
+                            @foreach($types as $th)
+                                <option value="{{ $th->nom_type_hebergement }}" {{ (isset($typeSelectionner) && $typeSelectionner === $th->nom_type_hebergement) ? 'selected':'' }}>
+                                    {{ $th->nom_type_hebergement }}
+                                </option>
+                            @endforeach
+                        @endif
+                    </select>
+                </div>
+                <div>
+                    <label for="filtrePrixMax">Prix max par nuit (€)</label>
+                    <input 
+                        type="number" 
+                        id="filtrePrixMax" 
+                        name="filtrePrixMax" 
+                        disabled
+                        min="0" 
+                        step="1" 
+                        value="{{ $prixMaxSelectionner ?? '' }}"
+                        placeholder="Ex: 100"
+                    />
+                </div>
+        
+                <div class="input-groupe">
+                    <label for="filtreDates">Date du séjour</label>
+                    <input 
+                        type="date" 
+                        id="filtreDates"
+                        data-picker-dual="true"
+                        data-target-start="datedebut" 
+                        data-target-end="datefin"
+                    />
+
+                    <input type="hidden" name="datedebut" id="datedebut">
+                    <input type="hidden" name="datefin" id="datefin">
+                </div>
+                
                 <input type="submit" class="submit-btn" value="Filtrer"/>
             </div>
         </form>
