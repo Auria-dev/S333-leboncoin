@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RechercheController;
 use App\Http\Controllers\AnnonceController;
+use App\Http\Controllers\CompteController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,3 +24,6 @@ Route::get('/recherche', [RechercheController::class, 'index']);
 
 Route::post('/resultats', [RechercheController::class, 'results']);
 Route::get('/annonce/{id}', [AnnonceController::class, 'view']);
+
+Route::get('/login', [CompteController::class, 'login']);
+Route::get('/creation-compte', [CompteController::class, 'create']);
