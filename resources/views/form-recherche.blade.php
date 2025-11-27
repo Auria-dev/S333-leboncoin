@@ -18,6 +18,23 @@
         </div>
 
         <div class="full-width">
+            <label for="datedebut">Date début</label>
+            <input 
+                type="date" 
+                id="datedebut" 
+                name="datedebut" 
+            />
+        </div>
+        <div class="full-width">
+            <label for="datefin">Date fin</label>
+            <input 
+                type="date" 
+                id="datefin" 
+                name="datefin" 
+            />
+        </div>
+
+        <div class="full-width">
             <input type="submit" class="submit-btn" value="Rechercher" />
         </div>
     </form>
