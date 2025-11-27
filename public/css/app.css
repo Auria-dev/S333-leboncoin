@@ -545,7 +545,8 @@ input[type="date"] {
 }
 
 .flatpickr-current-month {
-    display: flex;
+    display: flex !important;
+    flex-direction: row;
     justify-content: space-around;
 }
 

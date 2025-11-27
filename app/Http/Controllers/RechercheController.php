@@ -49,6 +49,8 @@ class RechercheController extends Controller {
 		$datedebut = $request->get("datedebut");
 		$datefin = $request->get("datefin");
 
+
+		// TODO (auria): exclure les annonces qui ne sont pas libre sur l'entièreté de la durée
 		if ($datedebut || $datefin) {
 			$cal_libre = Calendrier::whereHas('date', function($q) use ($datedebut, $datefin) {
 				if ($datedebut) $q->where('date', '>=', $datedebut);
