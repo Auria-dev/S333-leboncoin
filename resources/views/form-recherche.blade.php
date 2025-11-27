@@ -3,9 +3,6 @@
 @section('title', 'Rechercher')
 
 @section('content')
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    
     <form method="post" action="{{ url('resultats') }}" style="width: 100%; max-width: 400px; margin: 0 auto;">
         @csrf
 
@@ -20,24 +17,21 @@
             />
         </div>
 
-        <div class="full-width">
-            <label for="datedebut">Date début</label>
+        <div class="input-groupe">
+            <label for="vyg">Dates voyage</label>
+            
             <input 
                 type="date" 
-                id="datedebut" 
-                name="datedebut" 
+                id="vyg"
+                data-picker-dual="true"
+                data-target-start="datedebut" 
+                data-target-end="datefin"
             />
-        </div>
 
-        <div class="full-width">
-            <label for="datefin">Date fin</label>
-            <input 
-                type="date" 
-                id="datefin" 
-                name="datefin" 
-            />
+            <input type="hidden" name="datedebut" id="datedebut">
+            <input type="hidden" name="datefin" id="datefin">
         </div>
-
+        
         <div class="full-width">
             <input type="submit" class="submit-btn" value="Rechercher" />
         </div>

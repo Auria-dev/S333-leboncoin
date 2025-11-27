@@ -7,97 +7,56 @@
 
     <title>@yield('title', 'Lumina')</title>
     
+    <!-- link icon (favicon.ico) -->
+    <link rel="icon" href="{{ asset('assets/favicon.ico') }}" type="image/x-icon">
+
     <link href="https://cdnjs.cloudflare.com/ajax/libs/inter-ui/3.19.3/inter.css" rel="stylesheet">
-    
+
     <link rel="preload" href="{{ asset('css/app.css') }}" as="style">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+
+    <script src="{{ asset('js/calendrier.js') }}" defer></script>
+
+    @livewireStyles
 </head>
 
 <body class="container">
+    <nav>
+        @section('nav')
+            <div>
+                <a href="{{ url('/') }}" class="logo" wire:navigate>
+                    <img src="{{ asset('assets/logo.svg') }}" alt="Leboncoin Logo" height="40">
+                </a>
+            </div>
+
+            <ul>
+                <li><a href="{{ url('/') }}" class="{{ Request::is('/') ? 'active' : '' }}" wire:navigate>Accueil</a></li>
+                <li><a href="{{ url('/recherche') }}" class="{{ Request::is('recherche') ? 'active' : '' }}" wire:navigate>Rechercher</a></li>
+            </ul>
+            <div>
+                @auth
+                    <a href="{{ url('/dashboard') }}" class="button" wire:navigate>Dashboard</a>
+                @else
+                    <a href="{{ url('/login') }}" class="button" wire:navigate>Se connecter</a>
+                @endauth
+            </div>
+        @show
+    </nav>
+
     <header>
         <h1>@yield('title', 'Leboncoin')</h1>
     </header>
-
-    <nav>
-        @section('nav')
-            <ul>
-                <li><a href="{{ url('/') }}" class="{{ Request::is('/') ? 'active' : '' }}">Accueil</a></li>
-                <li><a href="{{ url('/recherche') }}" class="{{ Request::is('recherche') ? 'active' : '' }}">Rechercher</a></li>
-            </ul>
-        @show
-    </nav>
 
     <main>
         @yield('content')
     </main>
     
     <footer>
-        &copy; {{ date('Y') }} Lumina Inc.
+        &copy; {{ date('Y') }} Leboncoin (ScoobyFoo)
     </footer>
 
 
     @stack('scripts')
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    
-    if (typeof flatpickr === 'undefined') {
-        console.error("Erreur : Flatpickr n'est pas chargé.");
-        return;
-    }
-
-    const FrenchLocale = {
-        weekdays: {
-            shorthand: ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"],
-            longhand: [
-                "Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudigit a", "Vendredi", "Samedi",
-            ],
-        },
-        months: {
-            shorthand: [
-                "Janv", "Févr", "Mars", "Avr", "Mai", "Juin", "Juil", "Août", "Sept", "Oct", "Nov", "Déc",
-            ],
-            longhand: [
-                "Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre",
-            ],
-        },
-        firstDayOfWeek: 1,
-        ordinal: (nth) => {
-            if (nth > 1) return "";
-            return "er";
-        },
-        rangeSeparator: " au ",
-        weekAbbreviation: "Sem",
-        scrollTitle: "Défiler pour changer",
-        toggleTitle: "Cliquer pour ouvrir",
-    };
-
-    const commonConfig = {
-        locale: FrenchLocale,
-        dateFormat: "Y-m-d",
-        altInput: true,
-        altFormat: "j F Y",
-        allowInput: true,
-        monthSelectorType: 'dropdown',
-    };
-
-    const startDateInput = flatpickr("#datedebut", {
-        ...commonConfig,
-        minDate: "today",
-        onChange: function(selectedDates, dateStr, instance) {
-            endDateInput.set('minDate', dateStr);
-            
-            if (endDateInput.selectedDates[0] < selectedDates[0]) {
-               endDateInput.open();
-            }
-        }
-    });
-
-    const endDateInput = flatpickr("#datefin", {
-        ...commonConfig,
-        minDate: "today" 
-    });
-});
-</script>
+    @livewireScripts
 </body>
 </html>
