@@ -35,7 +35,10 @@
             </ul>
             <div>
                 @auth
-                    <a href="{{ url('/dashboard') }}" class="button" wire:navigate>Dashboard</a>
+                    <form method="POST" action="{{ url('logout') }}">
+                        @csrf
+                        <button type="submit">Se déconnecter</button>
+                    </form>
                 @else
                     <a href="{{ url('/login') }}" class="button" wire:navigate>Se connecter</a>
                 @endauth
