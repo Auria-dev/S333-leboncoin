@@ -32,4 +32,8 @@ class Annonce extends Model
     public function utilisateur() {
         return $this->belongsTo(Utilisateur::class, "idutilisateur");
     }
+
+    public function proprietaire() {
+        return $this->belongsTo(Proprietaire::class, "idproprietaire");
+    }
 }
