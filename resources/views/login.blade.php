@@ -3,18 +3,15 @@
 @section('title', 'Connexion')
 
 @section('content')
-    {{-- MODIFICATION ICI : action pointe vers la route de login --}}
     <form method="post" action="{{ url('login') }}" style="width: 100%; max-width: 400px; margin: 0 auto;">
         @csrf
 
-        {{-- Affichage des erreurs de connexion s'il y en a --}}
         @error('email')
             <div style="color: red; margin-bottom: 10px;">{{ $message }}</div>
         @enderror
 
         <div class="full-width">
             <label for="email">Adresse e-mail</label>
-            {{-- Garde 'value' pour ne pas que l'user retape tout en cas d'erreur --}}
             <input 
                 type="email" 
                 id="email" 
@@ -40,5 +37,8 @@
             <input type="submit" class="submit-btn" value="Se connecter" />
         </div>
         
-        </form>
+        <div>
+            <p>Pas encore de compte ? <a href="{{ url('register') }}" class="hyperlink" wire:navigate>Créez-en un ici</a>.</p>
+        </div>
+    </form>
 @endsection

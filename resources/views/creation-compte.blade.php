@@ -16,5 +16,8 @@
         <input placeholder="Password" type="password" id="password" name="password" value="{{ old('password') }}" required>
         <input placeholder="Confirm password" type="password" id="password_confirmation" name="password_confirmation" value="{{ old('password_confirmation') }}" required>
         <input type=submit value="Register">
+        <div>
+            <p>Déjà un compte ? <a href="{{ url('login') }}" class="hyperlink" wire:navigate>Connectez-vous ici</a>.</p>
+        </div>
     </form>
 @endsection

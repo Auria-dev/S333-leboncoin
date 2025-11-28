@@ -291,7 +291,6 @@ input[type="submit"]:hover {
 }
 
 .photo-list {
-    margin-left: 15px;
     margin-right: 15px;
     margin-top: 10px;
     display: grid;
@@ -303,7 +302,7 @@ input[type="submit"]:hover {
     overflow: hidden;
     border-radius: var(--radius-sm);
     cursor: pointer;
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 4 / 3;
     object-fit: cover;
 }
 
@@ -316,7 +315,6 @@ input[type="submit"]:hover {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    border: 2px dashed rgba(255, 139, 102, 0.3);
     border-radius: var(--radius-card);
     font-weight: 600;
     color: var(--primary);
