@@ -16,8 +16,6 @@
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 
     <script src="{{ asset('js/calendrier.js') }}" defer></script>
-
-    @livewireStyles
 </head>
 
 <body class="container">
@@ -60,6 +58,5 @@
 
 
     @stack('scripts')
-    @livewireScripts
 </body>
 </html>

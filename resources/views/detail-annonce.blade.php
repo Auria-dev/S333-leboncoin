@@ -27,6 +27,13 @@
             <p style="margin-top: 0.5rem; color: var(--text-muted); font-size: 0.9rem;">
                 {{ $annonce->adresse_annonce }}
             </p>
+            
+            <p style="margin-top: 0.5rem;">
+                Annonce posté par 
+                <a class="hyperlink" href="{{ url('/proprio/' . $annonce->idproprietaire ) }}" >
+                    {{ $annonce->proprietaire->nom_utilisateur . " " . $annonce->proprietaire->prenom_utilisateur }}
+                </a>
+            </p>
         </header>
         
         <div class="prix-block">
@@ -63,6 +70,7 @@
                 {{ $annonce->description_annonce }}
             </div>
         </div>
+
         
         <div style="margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--border-default);">
             <small style="color: var(--text-muted);">
