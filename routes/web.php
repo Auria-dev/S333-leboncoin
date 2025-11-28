@@ -26,4 +26,9 @@ Route::post('/resultats', [RechercheController::class, 'results']);
 Route::get('/annonce/{id}', [AnnonceController::class, 'view']);
 
 Route::get('/login', [CompteController::class, 'login']);
-Route::get('/creation-compte', [CompteController::class, 'create']);
+Route::post('/login', [CompteController::class, 'authenticate']);
+
+Route::get('/register', [CompteController::class, 'create']);
+Route::post('/register', [CompteController::class, 'store']);
+
+Route::post('/logout', [CompteController::class, 'destroy']);
