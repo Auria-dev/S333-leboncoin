@@ -15,4 +15,8 @@ class Proprietaire extends Model
     public function ville() {
         return $this->belongsTo(Ville::class, "idville");
     }
+
+    public function annonce() {
+        return $this->hasMany(Annonce::class, "idproprietaire");
+    }
 }

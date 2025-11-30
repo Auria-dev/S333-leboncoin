@@ -876,3 +876,24 @@ input.date-custom-input {
 .cal-btn-valider:active {
     transform: translateY(1px);
 }
+
+#img-proprio {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+}
+
+#info-proprio {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--text-main);
+    border-radius: 10px;
+    padding: 2rem;
+    margin-bottom: 3rem;
+}
+
+#info-proprio p {
+    margin-left: 1rem;
+    color: var(--text-main);
+    line-height: 1.5;
+}
