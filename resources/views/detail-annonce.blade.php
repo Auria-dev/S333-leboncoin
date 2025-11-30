@@ -25,13 +25,13 @@
         <header style="border:none; padding:0; text-align:left; margin:0;">
             <h1 class="titre-annonce">{{ $annonce->titre_annonce }}</h1>
             <p style="margin-top: 0.5rem; color: var(--text-muted); font-size: 0.9rem;">
-                {{ $annonce->adresse_annonce }}
+                {{ $annonce->adresse_annonce . ', ' . $annonce->ville->nomville . ' ' . $annonce->ville->code_postal }}
             </p>
             
             <p style="margin-top: 0.5rem;">
                 Annonce posté par 
                 <a class="hyperlink" href="{{ url('/proprio/' . $annonce->idproprietaire ) }}" >
-                    {{ $annonce->proprietaire->nom_utilisateur . " " . $annonce->proprietaire->prenom_utilisateur }}
+                    <span style="text-transform: uppercase;">{{ $annonce->proprietaire->nom_utilisateur }} </span> {{ $annonce->proprietaire->prenom_utilisateur }}
                 </a>
             </p>
         </header>
