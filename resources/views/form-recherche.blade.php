@@ -7,12 +7,12 @@
         @csrf
 
         <div class="full-width">
-            <label for="search">Nom de ville</label>
+            <label for="search">Selectionner un lieu</label>
             <input 
                 type="text" 
                 id="search" 
                 name="search" 
-                placeholder="Ex: Paris, Lyon..." 
+                placeholder="Paris, Haute-Savoie, Nouvelle-Aquitaine..." 
                 required
             />
         </div>

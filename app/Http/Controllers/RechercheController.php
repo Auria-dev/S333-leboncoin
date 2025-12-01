@@ -20,10 +20,22 @@ class RechercheController extends Controller {
 		// Doc : Eloquent
 		$annonces = Annonce::with('ville')->get();
 		$filteredAnnonces = $annonces->filter(function(Annonce $a) use ($request) {
-			return levenshtein(
+			$ville = levenshtein(
 				strtolower($a->ville->nomville),
 				strtolower($request->get("search"))
 			) < 3;
+
+			$dep = levenshtein(
+				strtolower($a->ville->departement->nom_departement),
+				strtolower($request->get("search"))
+			) < 3;
+
+			$region = levenshtein(
+				strtolower($a->ville->departement->region->nom_region),
+				strtolower($request->get("search"))
+			) < 3;
+
+			return $ville || $dep || $region;
 		});
 
 		$search = $request->get("search");
