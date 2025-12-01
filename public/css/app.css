@@ -151,6 +151,7 @@ label {
     color: var(--text-main);
     margin-bottom: 0.6rem;
     margin-left: 0.25rem;
+    width: fit-content;
 }
 
 input[type="text"],
@@ -239,6 +240,11 @@ input[type="submit"]:hover {
 .side-by-side {
     display: flex;
     gap: 1rem;
+}
+
+.center {
+    justify-content: center;
+    align-items: center;
 }
 
 .annonce-grid {
@@ -896,4 +902,12 @@ input.date-custom-input {
     margin-left: 1rem;
     color: var(--text-main);
     line-height: 1.5;
+}
+
+.nopad {
+    padding: 0;
+}
+
+.nomarg {
+    margin: 0;
 }

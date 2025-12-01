@@ -13,4 +13,7 @@ class Ville extends Model
     protected $primaryKey = "idville";
     public $timestamps = false;
 
+    public function departement() {
+        return $this->belongsTo(Departement::class, "iddepartement");
+    }
 }
