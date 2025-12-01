@@ -27,4 +27,13 @@ class Utilisateur extends Authenticatable {
     public function getAuthPassword() {
         return $this->mdp;
     }
+
+    
+    public function ville() {
+        return $this->belongsTo(Ville::class, "idville");
+    }
+
+    public function annonce() {
+        return $this->hasMany(Annonce::class, "idproprietaire");
+    }
 }

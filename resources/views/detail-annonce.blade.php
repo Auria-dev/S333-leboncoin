@@ -31,7 +31,7 @@
             <p style="margin-top: 0.5rem;">
                 Annonce posté par 
                 <a class="hyperlink" href="{{ url('/proprio/' . $annonce->idproprietaire ) }}" >
-                    <span style="text-transform: uppercase;">{{ $annonce->proprietaire->nom_utilisateur }} </span> {{ $annonce->proprietaire->prenom_utilisateur }}
+                    <span style="text-transform: uppercase;">{{ $annonce->utilisateur->nom_utilisateur }} </span> {{ $annonce->utilisateur->prenom_utilisateur }}
                 </a>
             </p>
         </header>
