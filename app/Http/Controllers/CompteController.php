@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Foundation\Auth\User;
 use App\Models\Utilisateur;
+use App\Models\SecteurActivite;
 
 // TODO (auria): Voir comment login avec Google 
 // https://kinsta.com/blog/laravel-authentication/#laravel-socialite
@@ -37,7 +38,8 @@ class CompteController extends Controller {
     }
 
     function create() {
-        return view("creation-compte");
+        $secteurs = SecteurActivite::All();
+        return view("creation-compte", ['secteurs' => $secteurs]);
     }
 
     function store(Request $req) {

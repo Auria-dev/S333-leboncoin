@@ -117,11 +117,6 @@ nav a {
     transition: all 0.2s ease;
 }
 
-nav a:hover:not(.logo) {
-    color: var(--primary);
-    background-color: var(--bg-subtle);
-}
-
 nav a.active {
     color: white;
     background-color: var(--primary);
@@ -910,4 +905,64 @@ input.date-custom-input {
 
 .nomarg {
     margin: 0;
+}
+
+.radio-group-container {
+    background-color: var(--bg-subtle);
+    padding: 0.5rem;
+    border-radius: var(--radius-input);
+    display: flex;
+    gap: 0.5rem;
+    border: 1px solid transparent;
+}
+
+.radio-option {
+    flex: 1;
+    position: relative;
+}
+
+.radio-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.radio-option label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 0.75rem;
+    margin: 0;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--text-muted);
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+.radio-option label:hover {
+    color: var(--primary);
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.radio-option input[type="radio"]:checked + label {
+    background-color: var(--primary);
+    color: var(--bg-body);
+    box-shadow: var(--shadow-sm);
+    border-color: var(--border-default);
+}
+
+#entrepriseFields {
+    transition: all 0.3s ease-in-out;
+    opacity: 0;
+    transform: translateY(-10px);
+}
+
+#entrepriseFields.visible {
+    opacity: 1;
+    transform: translateY(0);
 }

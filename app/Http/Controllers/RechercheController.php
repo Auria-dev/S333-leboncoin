@@ -21,7 +21,7 @@ class RechercheController extends Controller {
 		$annonces = Annonce::with('ville')->get();
 		$filteredAnnonces = $annonces->filter(function(Annonce $a) use ($request) {
 			$ville = levenshtein(
-				strtolower($a->ville->nomville),
+				strtolower($a->ville->nom_ville),
 				strtolower($request->get("search"))
 			) < 3;
 
