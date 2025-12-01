@@ -30,10 +30,10 @@ class Annonce extends Model
     }
 
     public function utilisateur() {
-        return $this->belongsTo(Utilisateur::class, "idutilisateur");
+        return $this->belongsTo(Utilisateur::class, "idproprietaire");
     }
 
-    public function proprietaire() {
-        return $this->belongsTo(Proprietaire::class, "idproprietaire");
+    public function reservation() {
+        return $this->hasMany(Reservation::class, "idannonce");
     }
 }

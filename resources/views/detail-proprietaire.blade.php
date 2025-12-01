@@ -9,7 +9,7 @@
         <div>
             <p><strong>
                 <span style="text-transform: uppercase;"> {{ $proprietaire->nom_utilisateur }} </span> 
-                    {{ $proprietaire->prenom_utilisateur }} 
+                    {{ $proprietaire->prenom_utilisateur }}
             </strong></p>
             <p> {{ $proprietaire->adresse_utilisateur . ', ' . $proprietaire->ville->nomville . ' ' . $proprietaire->ville->code_postal}} </p>
             <p> {{ $proprietaire->annonce->count() }} annonces publiées</p>
