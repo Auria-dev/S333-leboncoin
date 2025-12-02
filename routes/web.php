@@ -6,6 +6,7 @@ use App\Http\Controllers\AnnonceController;
 use App\Http\Controllers\ProprietaireController;
 use App\Http\Controllers\CompteController;
 use App\Http\Controllers\LocationController;
+use App\Http\Controllers\DashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,7 +30,7 @@ Route::get('/annonce/{id}', [AnnonceController::class, 'view']);
 
 Route::get('/proprio/{id}', [ProprietaireController::class, 'view']);
 
-Route::get('/login', [CompteController::class, 'login']);
+Route::get('/login', [CompteController::class, 'login'])->name('login');
 Route::post('/login', [CompteController::class, 'authenticate']);
 
 Route::get('/register', [CompteController::class, 'create']);
@@ -38,3 +39,5 @@ Route::post('/register', [CompteController::class, 'store']);
 Route::post('/logout', [CompteController::class, 'destroy']);
 
 Route::get('/locations/search', [LocationController::class, 'search'])->name('locations.search');
+
+Route::get('/profile', [DashboardController::class, 'view'])->middleware('auth');

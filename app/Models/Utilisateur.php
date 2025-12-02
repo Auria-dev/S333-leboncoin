@@ -26,7 +26,7 @@ class Utilisateur extends Authenticatable {
     ];
 
     public function getAuthPassword() {
-        return $this->mdp;
+        return $this->mot_de_passe;
     }
 
     
@@ -36,5 +36,50 @@ class Utilisateur extends Authenticatable {
 
     public function annonce() {
         return $this->hasMany(Annonce::class, "idproprietaire");
+    }
+
+    public function particulier() {
+        return $this->hasOne(Particulier::class, 'idparticulier', 'idutilisateur');
+    }
+
+    public function entreprise() {
+        return $this->hasOne(Entreprise::class, 'identreprise', 'idutilisateur');
+    }
+
+    public function getTypeCompte() {
+        if ($this->particulier) {
+            return 'particulier';
+        }
+        
+        if ($this->entreprise) {
+            return 'entreprise';
+        }
+
+        return null;
+    }
+
+    public function getTypeParticulier() {
+        if ($this->entreprise) {
+            return 'Entreprise';
+        }
+
+        if ($this->particulier) {
+            switch ($this->particulier->code_particulier) {
+                case 0: return 'Locataire';
+                case 1: return 'Propriétaire';
+                case 2: return 'Locataire & Propriétaire';
+                default: return 'Particulier';
+            }
+        }
+
+        return 'Utilisateur standard';
+    }
+
+    public function isEntreprise() {
+        return $this->getTypeCompte() === 'entreprise';
+    }
+
+    public function isParticulier() {
+        return $this->getTypeCompte() === 'particulier';
     }
 }

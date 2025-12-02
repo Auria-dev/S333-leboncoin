@@ -118,11 +118,10 @@
         </form>
         
         <p style="margin-top: 1rem; color: var(--text-muted); font-size: 0.9rem;">
-            <!-- {{ isset($annonces) ? count($annonces) : 0 }} -->
             @if (isset($annonces) && count($annonces) > 0)
-            {{ count($annonces) }} résultats trouvés
+                {{ count($annonces) }} résultats trouvés
             @else
-            Aucun résultat
+                Aucun résultat
             @endif
         </p>
     </div>
