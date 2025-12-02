@@ -36,4 +36,25 @@ class Annonce extends Model
     public function reservation() {
         return $this->hasMany(Reservation::class, "idannonce");
     }
+
+    public function moyenneAvisParAnnonce() {
+        $reservations = $this->reservation;
+        if($reservations->isEmpty()) {
+            return ['moyenne'=>0, 'nbAvis'=>0];
+        }
+        $sommeNotes = 0;
+        $nbAvis = 0;
+        $moyenne = 0;
+        foreach($reservations as $resa) {
+            if($resa->avis && isset($resa->avis->note)) {
+                $sommeNotes += $resa->avis->note;
+                $nbAvis++;
+            }
+        }
+        if($nbAvis > 0) {
+            $moyenne = $sommeNotes / $nbAvis;
+        }
+        
+        return ['moyenne'=>$moyenne, 'nbAvis'=>$nbAvis, 'sommeNotes'=>$sommeNotes];
+    }
 }
