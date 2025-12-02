@@ -179,6 +179,9 @@ class GestionnaireDate {
         
         const annee = dateRef.getFullYear();
         const mois = dateRef.getMonth();
+        
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
 
         const header = document.createElement('div');
         header.className = 'cal-header';
@@ -235,24 +238,28 @@ class GestionnaireDate {
             jourBtn.innerText = i;
             
             const dateCourante = new Date(annee, mois, i);
-
-            if (this.estMemeJour(dateCourante, this.selectionDebut)) {
-                jourBtn.classList.add('selectionne');
-                if (this.isDual && this.selectionFin) jourBtn.classList.add('debut-plage');
-            }
             
-            if (this.isDual && this.estMemeJour(dateCourante, this.selectionFin)) {
-                jourBtn.classList.add('selectionne', 'fin-plage');
-            }
+            if (dateCourante < today) {
+                jourBtn.classList.add('disabled');
+            } else {
+                if (this.estMemeJour(dateCourante, this.selectionDebut)) {
+                    jourBtn.classList.add('selectionne');
+                    if (this.isDual && this.selectionFin) jourBtn.classList.add('debut-plage');
+                }
+                
+                if (this.isDual && this.estMemeJour(dateCourante, this.selectionFin)) {
+                    jourBtn.classList.add('selectionne', 'fin-plage');
+                }
 
-            if (this.estDansPlage(dateCourante)) {
-                jourBtn.classList.add('dans-plage');
-            }
+                if (this.estDansPlage(dateCourante)) {
+                    jourBtn.classList.add('dans-plage');
+                }
 
-            jourBtn.onclick = (e) => {
-                e.stopPropagation();
-                this.gererClickDate(annee, mois, i);
-            };
+                jourBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    this.gererClickDate(annee, mois, i);
+                };
+            }
 
             grille.appendChild(jourBtn);
         }
@@ -261,6 +268,20 @@ class GestionnaireDate {
 
         const footer = document.createElement('div');
         footer.className = 'cal-footer';
+
+        const btnEffacer = document.createElement('button');
+        btnEffacer.type = 'button';
+        btnEffacer.className = 'cal-btn-effacer';
+        btnEffacer.innerText = 'Effacer';
+        
+        btnEffacer.onclick = (e) => {
+            e.stopPropagation();
+            this.selectionDebut = null;
+            this.selectionFin = null;
+            
+            this.majInput();
+            this.renderCalendrier(this.dateActuelle);
+        };
         
         const btnValider = document.createElement('button');
         btnValider.type = 'button';
@@ -272,7 +293,7 @@ class GestionnaireDate {
             this.fermerCalendrier();
         };
 
-        footer.appendChild(btnValider);
+        footer.append(btnEffacer, btnValider);
         this.wrapper.appendChild(footer);
     }
 }
