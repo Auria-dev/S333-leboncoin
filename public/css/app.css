@@ -894,11 +894,11 @@ input.date-custom-input {
     justify-content: flex-end;
 }
 
-.cal-btn-valider, .cal-btn-effacer {
+.cal-btn {
     background-color: var(--primary);
     color: white;
     border: none;
-    padding: 0.75rem 1.5rem;
+    padding: 0.75rem 1.1rem;
     border-radius: var(--radius-sm);
     font-weight: 600;
     cursor: pointer;
@@ -906,11 +906,11 @@ input.date-custom-input {
     transition: background-color 0.2s;
 }
 
-.cal-btn-valider:hover, .cal-btn-effacer:hover {
+.cal-btn:hover {
     background-color: var(--primary-hover);
 }
 
-.cal-btn-valider:active {
+.cal-btn:active {
     transform: translateY(1px);
 }
 
