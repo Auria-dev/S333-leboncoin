@@ -9,21 +9,17 @@ class LocationController extends Controller {
     public function search(Request $request) {
         $query = $request->get('query');
 
-        if (strlen($query) < 1) {
-            return response()->json([]);
-        }
-
         $cities = DB::table('ville')
             ->select('nom_ville as name', DB::raw("'Ville' as type"))
-            ->where('nom_ville', 'LIKE', "{$query}%");
+            ->where('nom_ville', 'ILIKE', "{$query}%");
 
         $departments = DB::table('departement')
             ->select('nom_departement as name', DB::raw("'Département' as type"))
-            ->where('nom_departement', 'LIKE', "{$query}%");
+            ->where('nom_departement', 'ILIKE', "{$query}%");
 
         $regions = DB::table('region')
             ->select('nom_region as name', DB::raw("'Région' as type"))
-            ->where('nom_region', 'LIKE', "{$query}%");
+            ->where('nom_region', 'ILIKE', "{$query}%");
 
         $results = $regions
             ->union($departments)

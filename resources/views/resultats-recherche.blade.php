@@ -12,31 +12,23 @@
             <div class="filter-row">
                 <div class="full-width search-container" 
                     x-data="{
-                        query: '',
+                        query: '{{ old('search', request('search')) }}',
                         results: [],
                         showResults: false,
                         
-                        // When user clicks a list item
                         selectLocation(name) {
                             this.query = name;
                             this.showResults = false;
                         },
                         
-                        // The search logic
                         async search() {
-                            if (this.query.length < 2) {
-                                this.results = [];
-                                this.showResults = false;
-                                return;
-                            }
                             try {
-                                // Using Blade route helper is safer
                                 let response = await fetch(`{{ route('locations.search') }}?query=${this.query}`);
                                 
                                 if (!response.ok) throw new Error('Network response was not ok');
                                 
                                 this.results = await response.json();
-                                this.showResults = true; // Show dropdown even if empty (to show 'no results')
+                                this.showResults = true;
                             } catch (e) {
                                 console.error(e);
                             }
@@ -52,6 +44,7 @@
                             id="search" 
                             name="search" 
                             x-model="query"
+                            value="{{ old('search', request('search')) }}"
                             @input.debounce.300ms="search()"
                             placeholder="Paris, Haute-Savoie, Rhône-Alpes..." 
                             required
@@ -62,7 +55,7 @@
                         </div>
                     </div>
 
-                    <ul x-show="showResults && query.length >= 2" 
+                    <ul x-show="showResults && query.length >= 1" 
                         style="display: none;" 
                         class="autocomplete-dropdown">
                         
@@ -78,7 +71,7 @@
                         </li>
                     </ul>
                 </div>
-                
+
                 <div>
                     <label for="filtreTypeHebergement">Filtrer par type</label>
                     <select name="filtreTypeHebergement" id="filtreTypeHebergement">
