@@ -53,6 +53,9 @@ class CompteController extends Controller {
             'password' => 'required|string|min:8|confirmed',
         ]);
     
+        // we don't have all the cities yet so just store things here:
+        $nomVille = '';
+        
         $user = Utilisateur::create([
             'idville' => 1, // TODO (auria): this! (use API to find real locations n stuff ykyk, yurr durr)
             'nom_utilisateur' => $req->nom,
@@ -65,7 +68,7 @@ class CompteController extends Controller {
         ]);
 
         Auth::login($user);
-                
+
         $user = auth()->user();
         
         if ($req->typeCompte == 'particulier') {

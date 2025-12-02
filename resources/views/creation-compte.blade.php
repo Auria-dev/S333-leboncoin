@@ -76,23 +76,97 @@
                 @enderror
             </div>
 
+            <!-- TODO (auria): auto add spaces (visually only) -->
             <div class="input-groupe">
                 <label for="telephone">Téléphone</label>
                 <input type="tel" id="telephone" name="telephone" value="{{ old('telephone') }}" placeholder="06 12 34 56 78" required
-                       class="@error('telephone') is-invalid @enderror">
+                        class="@error('telephone') is-invalid @enderror">
                 @error('telephone')
                     <div class="text-danger">{{ $message }}</div>
                 @enderror
             </div>
 
-            <!-- TODO (auria): trouver les vrais adresses avec une API (pour automatiquement trouver la ville, département et région) -->
-            <div class="input-groupe">
+            <div class="input-groupe" 
+                x-data="{
+                    query: '{{ old('adresse') }}',
+                    city: '{{ old('ville') }}',
+                    zip: '{{ old('code_postal') }}',
+                    results: [],
+                    showResults: false,
+
+                    selectAddress(feature) {
+                        this.query = feature.properties.label;
+                        
+                        this.city = feature.properties.city;
+                        this.zip = feature.properties.postcode;
+                        
+                        this.showResults = false;
+                    },
+
+                    async search() {
+                        if (this.query.length < 3) {
+                            this.results = [];
+                            return; 
+                        }
+
+                        try {
+                            let response = await fetch(`https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(this.query)}&limit=5&autocomplete=1`);
+                            
+                            if (!response.ok) throw new Error('Network error');
+                            
+                            let data = await response.json();
+                            
+                            this.results = data.features; 
+                            this.showResults = true;
+
+                        } catch (e) {
+                            console.error(e);
+                        }
+                    }
+                }"
+                @click.outside="showResults = false"
+                style="position: relative;">
+
                 <label for="adresse">Adresse</label>
-                <input type="text" id="adresse" name="adresse" value="{{ old('adresse') }}" placeholder="Votre adresse complète" required
-                       class="@error('adresse') is-invalid @enderror">
+
+                <input 
+                    type="text" 
+                    id="adresse" 
+                    name="adresse" 
+                    x-model="query"
+                    @input.debounce.300ms="search()"
+                    placeholder="9 Rue de l'Arc en Ciel, 74940 Annecy" 
+                    required
+                    autocomplete="off"
+                    class="@error('adresse') is-invalid @enderror"
+                >
+
+                <input type="hidden" name="ville" x-model="city">
+                <input type="hidden" name="code_postal" x-model="zip">
+
                 @error('adresse')
                     <div class="text-danger">{{ $message }}</div>
                 @enderror
+
+                <ul x-show="showResults && results.length > 0" 
+                    class="autocomplete-dropdown"
+                    x-transition>
+                    
+                    <template x-for="feature in results" :key="feature.properties.id">
+                        <li @click="selectAddress(feature)" 
+                            style="padding: 8px; cursor: pointer"
+                            @mouseenter="$el.style.backgroundColor = '#f8f9fa'"
+                            @mouseleave="$el.style.backgroundColor = 'white'">
+                            
+                            <span x-text="feature.properties.label" style="font-weight: bold; display: block;"></span>
+                            
+                            <span style="font-size: 0.85em; color: #666;">
+                                <span x-text="feature.properties.postcode"></span> 
+                                <span x-text="feature.properties.city"></span>
+                            </span>
+                        </li>
+                    </template>
+                </ul>
             </div>
 
             <div id="entrepriseFields" style="display: none; flex-direction: column; gap: 1.25rem;">
