@@ -279,6 +279,24 @@ input[type="submit"]:hover {
     max-height: 720px;
 }
 
+#croix {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    padding: 0.4rem;
+    cursor: pointer;
+    z-index: 10;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.4rem;
+    transition: background-color 0.3s;
+    scale: 1.4;
+
+}
+
 .modal-content img {
     width: 100%;
     height: auto;
