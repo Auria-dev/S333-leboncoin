@@ -44,16 +44,23 @@ class CompteController extends Controller {
 
     function store(Request $req) {
         $req->validate([
-            'name' => 'required',
-            'email' => 'required|email|unique:utilisateur,mail',
+            'nom' => 'required',
+            'prenom' => 'required',
             'password' => 'required|confirmed|min:8',
+            'telephone' => 'required|unique:utilisateur,telephone',
+            'email' => 'required|email|unique:utilisateur,mail',
+            'adresse' => 'required',
         ]);
 
         $user = Utilisateur::create([
-            'nom_utilisateur' => $req->name,
+            'idville' => 1, // TODO: find out the city 
+            'nom_utilisateur' => $req->nom,
+            'prenom_utilisateur' => $req->prenom,
+            'mot_de_passe' => Hash::make($req->password),
+            'telephone' => $req->telephone,
             'mail' => $req->email,
-            'idville' => 1,
-            'mdp' => Hash::make($req->password),
+            'adresse_utilisateur' => $req->adresse,
+            'date_creation' => date('Y-m-d H:i:s')
         ]);
 
         Auth::login($user);
