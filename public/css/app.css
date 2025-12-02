@@ -866,6 +866,18 @@ input.date-custom-input {
     color: white;
 }
 
+.cal-cellule.disabled {
+    color: #ccc; 
+    background-color: #f9f9f9;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.cal-cellule.disabled:hover {
+    background-color: #f9f9f9;
+    color: #ccc;
+}
+
 .input-groupe {
     position: relative;
     /* margin-bottom: var(--spacing); */
@@ -882,7 +894,7 @@ input.date-custom-input {
     justify-content: flex-end;
 }
 
-.cal-btn-valider {
+.cal-btn-valider, .cal-btn-effacer {
     background-color: var(--primary);
     color: white;
     border: none;
@@ -894,12 +906,41 @@ input.date-custom-input {
     transition: background-color 0.2s;
 }
 
-.cal-btn-valider:hover {
+.cal-btn-valider:hover, .cal-btn-effacer:hover {
     background-color: var(--primary-hover);
 }
 
 .cal-btn-valider:active {
     transform: translateY(1px);
+}
+
+.cal-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-top: 1px solid #eee;
+    gap: 10px;
+}
+
+.cal-btn-effacer {
+    background: transparent;
+    border: 1px solid #ddd;
+    color: #666;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.cal-btn-effacer:hover {
+    background: #f5f5f5;
+    color: #333;
+    border-color: #ccc;
+}
+
+.cal-btn-valider {
+    cursor: pointer;
+    color: white;
+    border: none;
 }
 
 .search-container {
