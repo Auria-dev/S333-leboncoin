@@ -11,7 +11,8 @@
     <link rel="icon" href="{{ asset('assets/favicon.ico') }}" type="image/x-icon">
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/inter-ui/3.19.3/inter.css" rel="stylesheet">
-
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
     <link rel="preload" href="{{ asset('css/app.css') }}" as="style">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 

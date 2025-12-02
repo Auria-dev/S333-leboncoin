@@ -10,16 +10,75 @@
             @csrf
 
             <div class="filter-row">
-                <div>
-                    <label for="filtreVille">Filtrer par ville</label>
-                    <input 
-                        value="{{ request('search') }}"
-                        type="text" 
-                        id="search" 
-                        name="search"
-                    />
-                </div>
+                <div class="full-width search-container" 
+                    x-data="{
+                        query: '',
+                        results: [],
+                        showResults: false,
+                        
+                        // When user clicks a list item
+                        selectLocation(name) {
+                            this.query = name;
+                            this.showResults = false;
+                        },
+                        
+                        // The search logic
+                        async search() {
+                            if (this.query.length < 2) {
+                                this.results = [];
+                                this.showResults = false;
+                                return;
+                            }
+                            try {
+                                // Using Blade route helper is safer
+                                let response = await fetch(`{{ route('locations.search') }}?query=${this.query}`);
+                                
+                                if (!response.ok) throw new Error('Network response was not ok');
+                                
+                                this.results = await response.json();
+                                this.showResults = true; // Show dropdown even if empty (to show 'no results')
+                            } catch (e) {
+                                console.error(e);
+                            }
+                        }
+                    }"
+                    @click.outside="showResults = false">
 
+                    <label for="search">Selectionner un lieu</label>
+                    
+                    <div class="input-groupe">
+                        <input 
+                            type="text" 
+                            id="search" 
+                            name="search" 
+                            x-model="query"
+                            @input.debounce.300ms="search()"
+                            placeholder="Paris, Haute-Savoie, Rhône-Alpes..." 
+                            required
+                            autocomplete="off"
+                        />
+                        <div class="input-icon input-icon-search">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search-icon lucide-search"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+                        </div>
+                    </div>
+
+                    <ul x-show="showResults && query.length >= 2" 
+                        style="display: none;" 
+                        class="autocomplete-dropdown">
+                        
+                        <template x-for="result in results" :key="result.name + result.type">
+                            <li @click="selectLocation(result.name)" class="suggestion-item">
+                                <span x-text="result.name" class="suggestion-name"></span>
+                                <span x-text="result.type" class="suggestion-badge"></span>
+                            </li>
+                        </template>
+                        
+                        <li x-show="results.length === 0" class="suggestion-empty">
+                            Aucun lieu trouvé pour "<span x-text="query"></span>"
+                        </li>
+                    </ul>
+                </div>
+                
                 <div>
                     <label for="filtreTypeHebergement">Filtrer par type</label>
                     <select name="filtreTypeHebergement" id="filtreTypeHebergement">
@@ -35,20 +94,6 @@
                             @endforeach
                         @endif
                     </select>
-                </div>
-
-                <div>
-                    <label for="filtrePrixMax">Prix max par nuit (€)</label>
-                    <input 
-                        type="number" 
-                        id="filtrePrixMax" 
-                        name="filtrePrixMax" 
-                        {{-- 3. Prix Input --}}
-                        value="{{ request('filtrePrixMax') }}"
-                        min="0" 
-                        step="1" 
-                        placeholder="Ex: 100"
-                    />
                 </div>
         
                 <div class="input-groupe">
@@ -117,7 +162,7 @@
                                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                                 <circle cx="12" cy="10" r="3"></circle>
                             </svg>
-                            {{ $annonce->adresse_annonce }} &bull; {{ $annonce->ville->nomville ?? 'Ville' }}
+                            {{ $annonce->adresse_annonce }} &bull; {{ $annonce->ville->nom_ville ?? 'Ville' }}
                         </span>
                         
                         <span class="date-badge">

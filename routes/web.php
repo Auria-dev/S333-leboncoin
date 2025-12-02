@@ -5,6 +5,7 @@ use App\Http\Controllers\RechercheController;
 use App\Http\Controllers\AnnonceController;
 use App\Http\Controllers\ProprietaireController;
 use App\Http\Controllers\CompteController;
+use App\Http\Controllers\LocationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,3 +36,5 @@ Route::get('/register', [CompteController::class, 'create']);
 Route::post('/register', [CompteController::class, 'store']);
 
 Route::post('/logout', [CompteController::class, 'destroy']);
+
+Route::get('/locations/search', [LocationController::class, 'search'])->name('locations.search');
