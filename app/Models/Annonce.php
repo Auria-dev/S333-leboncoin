@@ -37,6 +37,20 @@ class Annonce extends Model
         return $this->hasMany(Reservation::class, "idannonce");
     }
 
+    public function equipement() {
+        return $this->belongsToMany(Equipement::class, 
+        "equipe", 
+        "idannonce", 
+        "idequipement")->using(Equipe::class);
+    }
+
+    public function service() {
+        return $this->belongsToMany(Service::class, 
+        "propose", 
+        "idannonce", 
+        "idservice")->using(Propose::class);
+    }
+
     public function moyenneAvisParAnnonce() {
         $reservations = $this->reservation;
         if($reservations->isEmpty()) {
