@@ -60,8 +60,8 @@
             </div>
 
             <div class="input-groupe">
-                <label for="address">Adresse</label>
-                <input type="text" id="address" name="address" value="{{ old('address') }}" placeholder="Votre adresse complète" required>
+                <label for="adresse">Adresse</label>
+                <input type="text" id="adresse" name="adresse" value="{{ old('adresse') }}" placeholder="Votre adresse complète" required>
             </div>
 
             <div id="entrepriseFields" style="display: none; flex-direction: column; gap: 1.25rem;">

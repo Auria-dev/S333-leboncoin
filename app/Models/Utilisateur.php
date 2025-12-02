@@ -15,13 +15,14 @@ class Utilisateur extends Authenticatable {
     public $timestamps = false; 
 
     protected $fillable = [
+        'idville',
         'nom_utilisateur',
         'prenom_utilisateur',
-        'mail',
-        'mdp',
-        'idville',
+        'mot_de_passe',
         'telephone',
-        'adresse_utilisateur'
+        'mail',
+        'adresse_utilisateur',
+        'date_creation'
     ];
 
     public function getAuthPassword() {
