@@ -26,6 +26,8 @@
 
     text-rendering: optimizeLegibility;
     user-select: none;
+
+    --star-size: 20px;
 }
 
 * {
@@ -965,4 +967,27 @@ input.date-custom-input {
 #entrepriseFields.visible {
     opacity: 1;
     transform: translateY(0);
+}
+
+
+.stars {
+  --percent: calc(var(--rating) / 5 * 100%);
+  
+  display: inline-block;
+  font-size: var(--star-size);
+  font-family: Times; 
+  line-height: 1;
+  
+  &::before {
+    content: '★★★★★';
+    letter-spacing: 3px;
+    background: linear-gradient(90deg, var(--primary-hover) var(--percent), #ffc7b7 var(--percent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+.notation span {
+    margin-right: 5px;
 }
