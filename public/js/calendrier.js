@@ -6,6 +6,10 @@ class GestionnaireDate {
         this.dateActuelle = new Date();
         this.selectionDebut = null;
         this.selectionFin = null;
+
+        
+        this.maxDate = new Date();
+        this.maxDate.setFullYear(this.maxDate.getFullYear() + 2);
         
         this.mois = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
         this.jours = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
@@ -40,6 +44,7 @@ class GestionnaireDate {
         this.input.type = 'text';
         this.input.setAttribute('readonly', true);
         this.input.classList.add('date-custom-input');
+        this.input.placeholder = 'Cliquer pour choisir une date...'
 
         const iconContainer = document.createElement('div');
         iconContainer.className = 'input-icon';
@@ -69,10 +74,29 @@ class GestionnaireDate {
             if (el !== this.wrapper) el.classList.remove('actif');
         });
         this.wrapper.classList.toggle('actif');
+        
+        this.cacherErreur();
     }
 
     fermerCalendrier() {
         this.wrapper.classList.remove('actif');
+        this.cacherErreur();
+    }
+
+    
+    afficherErreur(message) {
+        const errorDiv = this.wrapper.querySelector('.cal-error-msg');
+        if (errorDiv) {
+            errorDiv.innerText = message;
+            errorDiv.style.display = 'block';
+        }
+    }
+
+    cacherErreur() {
+        const errorDiv = this.wrapper.querySelector('.cal-error-msg');
+        if (errorDiv) {
+            errorDiv.style.display = 'none';
+        }
     }
 
     formatDate(date) {
@@ -127,6 +151,7 @@ class GestionnaireDate {
 
     gererClickDate(annee, mois, jour) {
         const dateCliquee = new Date(annee, mois, jour);
+        this.cacherErreur(); 
 
         if (this.isDual) {
             if (this.selectionDebut && this.selectionFin) {
@@ -189,8 +214,19 @@ class GestionnaireDate {
         const btnPrev = document.createElement('button');
         btnPrev.className = 'cal-btn-nav';
         btnPrev.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-left-icon lucide-chevron-left"><path d="m15 18-6-6 6-6"/></svg>';
+        
+        
+        
+        const prevMonthEnd = new Date(annee, mois, 0);
+        if (prevMonthEnd < today) {
+             btnPrev.disabled = true;
+             btnPrev.style.opacity = '0.3';
+             btnPrev.style.cursor = 'not-allowed';
+        }
+
         btnPrev.onclick = (e) => {
             e.stopPropagation();
+            if (btnPrev.disabled) return;
             this.dateActuelle.setMonth(mois - 1);
             this.renderCalendrier(this.dateActuelle);
         };
@@ -202,8 +238,18 @@ class GestionnaireDate {
         const btnNext = document.createElement('button');
         btnNext.className = 'cal-btn-nav';
         btnNext.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right-icon lucide-chevron-right"><path d="m9 18 6-6-6-6"/></svg>';
+        
+        
+        const firstDayNextMonth = new Date(annee, mois + 1, 1);
+        if (firstDayNextMonth > this.maxDate) {
+            btnNext.disabled = true;
+            btnNext.style.opacity = '0.3';
+            btnNext.style.cursor = 'not-allowed';
+        }
+
         btnNext.onclick = (e) => {
             e.stopPropagation();
+            if (btnNext.disabled) return;
             this.dateActuelle.setMonth(mois + 1);
             this.renderCalendrier(this.dateActuelle);
         };
@@ -239,7 +285,8 @@ class GestionnaireDate {
             
             const dateCourante = new Date(annee, mois, i);
             
-            if (dateCourante < today) {
+            
+            if (dateCourante < today || dateCourante > this.maxDate) {
                 jourBtn.classList.add('disabled');
             } else {
                 if (this.estMemeJour(dateCourante, this.selectionDebut)) {
@@ -266,34 +313,83 @@ class GestionnaireDate {
 
         this.wrapper.appendChild(grille);
 
+        
+        const errorMsg = document.createElement('div');
+        errorMsg.className = 'cal-error-msg';
+        errorMsg.style.color = '#e74c3c';
+        errorMsg.style.fontSize = '0.85em';
+        errorMsg.style.textAlign = 'center';
+        errorMsg.style.padding = '5px';
+        errorMsg.style.display = 'none'; 
+        this.wrapper.appendChild(errorMsg);
+
         const footer = document.createElement('div');
         footer.className = 'cal-footer';
+        
+        footer.style.display = 'flex';
+        footer.style.justifyContent = 'space-between';
+        footer.style.gap = '5px';
+
+        
+        const btnAujourdhui = document.createElement('button');
+        btnAujourdhui.type = 'button';
+        btnAujourdhui.className = 'cal-btn';
+        btnAujourdhui.innerText = "Auj.";
+        btnAujourdhui.style.flex = '0 0 auto'; 
+        
+        btnAujourdhui.onclick = (e) => {
+            e.stopPropagation();
+            const now = new Date();
+            this.dateActuelle = now;
+            
+            
+            this.selectionDebut = now;
+            this.selectionFin = null;
+            
+            this.cacherErreur();
+            this.majInput();
+            this.renderCalendrier(this.dateActuelle);
+        };
 
         const btnEffacer = document.createElement('button');
         btnEffacer.type = 'button';
-        btnEffacer.className = 'cal-btn-effacer';
+        btnEffacer.className = 'cal-btn cal-btn-effacer';
         btnEffacer.innerText = 'Effacer';
         
         btnEffacer.onclick = (e) => {
             e.stopPropagation();
             this.selectionDebut = null;
             this.selectionFin = null;
-            
+            this.cacherErreur();
             this.majInput();
             this.renderCalendrier(this.dateActuelle);
         };
         
         const btnValider = document.createElement('button');
         btnValider.type = 'button';
-        btnValider.className = 'cal-btn-valider';
+        btnValider.className = 'cal-btn cal-btn-valider';
         btnValider.innerText = 'Valider';
         
         btnValider.onclick = (e) => {
             e.stopPropagation();
+            
+            
+            if (this.isDual) {
+                if (!this.selectionDebut || !this.selectionFin) {
+                    this.afficherErreur('Veuillez sélectionner 2 dates.');
+                    return; 
+                }
+            } else {
+                if (!this.selectionDebut) {
+                    this.afficherErreur('Veuillez choisir une date.');
+                    return;
+                }
+            }
+
             this.fermerCalendrier();
         };
 
-        footer.append(btnEffacer, btnValider);
+        footer.append(btnAujourdhui, btnEffacer, btnValider);
         this.wrapper.appendChild(footer);
     }
 }
@@ -302,38 +398,3 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputs = document.querySelectorAll('input[type="date"][data-picker-dual]');
     inputs.forEach(input => new GestionnaireDate(input));
 });
-
-
-
-
-/*
-<div class="input-groupe">
-    <label for="birth">Date de naissance</label>
-    <input 
-        type="date" 
-        id="birth"
-        data-picker-dual="false"
-        data-target-start="birth_date_sql"
-    />
-    <input type="hidden" name="birth_date" id="birth_date_sql">
-</div>
-*/
-
-//  Ou si on veut une plage de dates
-
-/*
-<div class="input-groupe">
-    <label for="vyg">Dates voyage</label>
-    
-    <input 
-        type="date" 
-        id="vyg"
-        data-picker-dual="true"
-        data-target-start="datedebut" 
-        data-target-end="datefin"
-    />
-
-    <input type="hidden" name="datedebut" id="datedebut">
-    <input type="hidden" name="datefin" id="datefin">
-</div>
-*/

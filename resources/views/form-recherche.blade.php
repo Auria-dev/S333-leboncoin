@@ -67,7 +67,7 @@
         </div>
 
         <div class="full-width input-groupe">
-            <label for="vyg">Dates voyage</label>
+            <label for="vyg">Dates du séjour</label>
             
             <input 
                 type="date" 
