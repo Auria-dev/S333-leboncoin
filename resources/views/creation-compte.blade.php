@@ -134,7 +134,7 @@
                     id="adresse" 
                     name="adresse" 
                     x-model="query"
-                    @input.debounce.300ms="search()"
+                    @input.debounce.100ms="search()"
                     placeholder="9 Rue de l'Arc en Ciel, 74940 Annecy" 
                     required
                     autocomplete="off"
@@ -255,8 +255,6 @@
     document.addEventListener("DOMContentLoaded", function() {
         const enterpriseRadio = document.getElementById('compteEntreprise');
         
-        // Cette partie gère la réouverture automatique du volet "Entreprise"
-        // si une erreur de validation survient après avoir soumis le formulaire
         if(enterpriseRadio.checked) {
             const container = document.getElementById('entrepriseFields');
             const siretInput = document.getElementById('siret');
