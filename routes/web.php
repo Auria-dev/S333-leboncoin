@@ -41,3 +41,4 @@ Route::post('/logout', [CompteController::class, 'destroy']);
 Route::get('/locations/search', [LocationController::class, 'search'])->name('locations.search');
 
 Route::get('/profile', [DashboardController::class, 'view'])->middleware('auth');
+Route::get('/ajouter_fav/{id}', [AnnonceController::class, 'addFav'])->middleware('auth');

@@ -479,7 +479,18 @@ input[type="submit"]:hover {
     align-items: baseline;
     gap: 0.5rem;
     color: var(--primary);
+    justify-content: space-between;
 }
+
+
+#favoris:hover {
+    cursor: pointer;
+}
+
+.liked {
+    fill: #F27A55;
+}
+
 
 .prix-unit {
     font-size: 1rem;
@@ -1152,4 +1163,35 @@ input.date-custom-input {
 
 .notation span {
     margin-right: 5px;
+}
+
+
+#maCarte {
+    position: fixed;
+    right: 0px;
+    bottom: 0px;
+    height: 300px; 
+    width: 500px;
+    border: #F27A55 2px solid;
+    border-radius: 12px;
+    transition: ease 0.5s;
+}
+
+.agrandi {
+    width: 700px !important;
+    height: 500px !important;
+    transition: ease 0.5s;
+}
+
+
+
+#btnAgrandir {
+    position: absolute;
+    z-index: 1000;
+    top: 5px;
+    left: 5px;
+    scale: 1.2;
+    color: black;
+    cursor: pointer;
+    rotate: 90deg;
 }
