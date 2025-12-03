@@ -11,7 +11,7 @@
                 <span style="text-transform: uppercase;"> {{ $proprietaire->nom_utilisateur }} </span> 
                     {{ $proprietaire->prenom_utilisateur }} 
             </strong></p>
-             <div class="notation">
+            <div class="notation">
                 <p> <span class="stars" style="--rating: {{ $moyenneAvis }};"></span> {{ $moyenneAvis . ' (' . $nbAvis . ' avis) '}} </p>
             </div>
             <p> {{ $proprietaire->ville->departement->nom_departement }} </p>
@@ -26,7 +26,7 @@
         </div>
     </div>
 
-    <div style="margin-bottom: 1rem; margin-left: 1rem; color: #4A3B32;"><strong>Autre(s) publication</strong></div>
+    <div style="margin-bottom: 1rem; margin-left: 1rem; color: #4A3B32;"><strong>Annonce(s) publiées par {{$proprietaire->nom_utilisateur . ' ' . $proprietaire->prenom_utilisateur}}</strong></div>
 
     <div class="scroll">
         @foreach($proprietaire->annonce as $annonce)

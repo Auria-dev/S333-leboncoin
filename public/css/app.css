@@ -1052,10 +1052,10 @@ input.date-custom-input {
     display: flex;
     align-items: center;
     /* border: 1px solid var(--text-main); */
-    border-radius: 10px;
+    border-radius: var(--radius-card);
     padding: 2rem;
     margin-bottom: 3rem;
-    background-color: #fdf3ef;
+    background-color: #fff3ee;
 }
 
 #info-proprio p {
@@ -1154,3 +1154,4 @@ input.date-custom-input {
 .notation span {
     margin-right: 5px;
 }
+
