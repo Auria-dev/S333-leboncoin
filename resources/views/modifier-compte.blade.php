@@ -11,16 +11,36 @@
         .is-invalid { border-color: #dc3545 !important; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* --- 1. Base Input Styles --- */
         input[readonly], select:disabled {
             color: var(--text-muted);
             background-color: var(--bg-subtle);
             border: 1px solid var(--border-default);
             border-radius: var(--radius-input);
             cursor: default;
+            transition: all 0.2s ease;
         }
 
         input:not([readonly]), select:not([disabled]) {
             border-color: var(--primary);
+            outline: none;
+            box-shadow: var(--focus-ring);
+        }
+
+        .has-changed {
+            border-color: var(--primary) !important;
+            background-color: var(--bg-card) !important;
+            color: var(--text-main) !important;
+        }
+
+        input[type="submit"]:disabled {
+            background-color: var(--bg-subtle);
+            color: var(--text-muted);
+            border: 1px solid var(--border-default);
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+            opacity: 0.8;
         }
 
         .input-wrapper {
@@ -41,6 +61,7 @@
             color: var(--text-muted);
             transition: color 0.2s;
             padding: 5px;
+            z-index: 10;
         }
 
         .edit-icon:hover {
@@ -48,11 +69,13 @@
         }
     </style>
 
-    <form action="{{ url('compte/update') }}" method="POST" 
+    <form action="{{ url('modifier_compte/update') }}" method="POST" 
           style="display: flex; flex-direction: column; gap: 1.25rem;"
           x-data="{
               isDirty: false,
               initialState: '',
+              p1: '', 
+              p2: '',
               
               init() {
                   this.$nextTick(() => {
@@ -84,15 +107,18 @@
             @endif
 
             <div class="side-by-side">
-                <div class="input-groupe" style="flex: 1;" x-data="{ locked: true }">
+                <div class="input-groupe" style="flex: 1;" x-data="{ locked: true, dirty: false }">
                     <label for="prenom">Prénom</label>
                     <div class="input-wrapper">
                         <input type="text" id="prenom" name="prenom" 
                                value="{{ old('prenom', $user->prenom_utilisateur) }}" 
                                required 
                                :readonly="locked"
+                               @blur="locked = true"
+                               @input="dirty = ($el.value !== $el.defaultValue)"
                                x-ref="field"
-                               class="@error('prenom') is-invalid @enderror">
+                               class="@error('prenom') is-invalid @enderror"
+                               :class="{ 'has-changed': dirty }">
                         
                         <div class="edit-icon" @click="locked = false; $nextTick(() => $refs.field.focus())" title="Modifier">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
@@ -101,15 +127,18 @@
                     @error('prenom') <div class="text-danger">{{ $message }}</div> @enderror
                 </div>
 
-                <div class="input-groupe" style="flex: 1;" x-data="{ locked: true }">
+                <div class="input-groupe" style="flex: 1;" x-data="{ locked: true, dirty: false }">
                     <label for="nom">Nom</label>
                     <div class="input-wrapper">
                         <input type="text" id="nom" name="nom" 
                                value="{{ old('nom', $user->nom_utilisateur) }}" 
                                required 
                                :readonly="locked"
+                               @blur="locked = true"
+                               @input="dirty = ($el.value !== $el.defaultValue)"
                                x-ref="field"
-                               class="@error('nom') is-invalid @enderror">
+                               class="@error('nom') is-invalid @enderror"
+                               :class="{ 'has-changed': dirty }">
                         
                         <div class="edit-icon" @click="locked = false; $nextTick(() => $refs.field.focus())" title="Modifier">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
@@ -119,15 +148,18 @@
                 </div>
             </div>
 
-            <div class="input-groupe" x-data="{ locked: true }">
+            <div class="input-groupe" x-data="{ locked: true, dirty: false }">
                 <label for="email">Email</label>
                 <div class="input-wrapper">
                     <input type="email" id="email" name="email" 
                            value="{{ old('email', $user->mail) }}" 
                            required 
                            :readonly="locked"
+                           @blur="locked = true"
+                           @input="dirty = ($el.value !== $el.defaultValue)"
                            x-ref="field"
-                           class="@error('email') is-invalid @enderror">
+                           class="@error('email') is-invalid @enderror"
+                           :class="{ 'has-changed': dirty }">
                     
                     <div class="edit-icon" @click="locked = false; $nextTick(() => $refs.field.focus())" title="Modifier">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
@@ -136,15 +168,18 @@
                 @error('email') <div class="text-danger">{{ $message }}</div> @enderror
             </div>
 
-            <div class="input-groupe" x-data="{ locked: true }">
+            <div class="input-groupe" x-data="{ locked: true, dirty: false }">
                 <label for="telephone">Téléphone</label>
                 <div class="input-wrapper">
                     <input type="tel" id="telephone" name="telephone" 
                            value="{{ old('telephone', $user->telephone) }}" 
                            required 
                            :readonly="locked"
+                           @blur="locked = true"
+                           @input="dirty = ($el.value !== $el.defaultValue)"
                            x-ref="field"
-                           class="@error('telephone') is-invalid @enderror">
+                           class="@error('telephone') is-invalid @enderror"
+                           :class="{ 'has-changed': dirty }">
                     
                     <div class="edit-icon" @click="locked = false; $nextTick(() => $refs.field.focus())" title="Modifier">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
@@ -156,6 +191,7 @@
             <div class="input-groupe" 
                 x-data="{
                     locked: true,
+                    dirty: false,
                     query: '{{ old('adresse', $user->adresse_utilisateur) }}',
                     city: '{{ old('ville', $ville->nom_ville ?? '') }}',
                     zip: '{{ old('code_postal', $ville->code_postal ?? '') }}',
@@ -167,7 +203,11 @@
                         this.city = feature.properties.city;
                         this.zip = feature.properties.postcode;
                         this.showResults = false;
-                        $dispatch('input'); // Force checkChanges global
+                        this.locked = true;
+                        this.$nextTick(() => {
+                             this.dirty = (this.query !== this.$refs.field.defaultValue);
+                             $dispatch('input'); 
+                        });
                     },
 
                     async search() {
@@ -181,7 +221,7 @@
                         } catch (e) { console.error(e); }
                     }
                 }"
-                @click.outside="showResults = false"
+                @click.outside="showResults = false; locked = true"
                 style="position: relative;">
 
                 <label for="adresse">Adresse</label>
@@ -191,9 +231,11 @@
                         x-model="query"
                         :readonly="locked"
                         x-ref="field"
-                        @input.debounce.100ms="search()"
+                        @input.debounce.100ms="search(); dirty = ($el.value !== $el.defaultValue)"
+                        @blur="setTimeout(() => locked = true, 200)"
                         placeholder="Rechercher une adresse..." required autocomplete="off"
-                        class="@error('adresse') is-invalid @enderror">
+                        class="@error('adresse') is-invalid @enderror"
+                        :class="{ 'has-changed': dirty }">
                     
                     <input type="hidden" name="ville" x-model="city">
                     <input type="hidden" name="code_postal" x-model="zip">
@@ -223,15 +265,18 @@
                 <div id="entrepriseFields" style="display: flex; flex-direction: column; gap: 1.25rem;">
                     <div style="width: 100%; height: 1px; background: var(--border-default); margin: 0.5rem 0;"></div>
                     
-                    <div class="input-groupe" x-data="{ locked: true }">
+                    <div class="input-groupe" x-data="{ locked: true, dirty: false }">
                         <label for="siret">Numéro SIRET</label>
                         <div class="input-wrapper">
                             <input type="text" id="siret" name="siret" 
                                    value="{{ old('siret', $entreprise->numsiret ?? '') }}" 
                                    required 
                                    :readonly="locked"
+                                   @blur="locked = true"
+                                   @input="dirty = ($el.value !== $el.defaultValue)"
                                    x-ref="field"
-                                   class="@error('siret') is-invalid @enderror">
+                                   class="@error('siret') is-invalid @enderror"
+                                   :class="{ 'has-changed': dirty }">
                             
                             <div class="edit-icon" @click="locked = false; $nextTick(() => $refs.field.focus())" title="Modifier">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
@@ -240,13 +285,16 @@
                         @error('siret') <div class="text-danger">{{ $message }}</div> @enderror
                     </div>
                     
-                    <div class="input-groupe" x-data="{ locked: true }">
+                    <div class="input-groupe" x-data="{ locked: true, dirty: false, initial: '' }" x-init="initial = $refs.field.value">
                         <label for="secteur">Secteur d'activité</label>
                         <div class="input-wrapper">
                             <select name="secteur" id="secteur" 
                                     class="@error('secteur') is-invalid @enderror" 
+                                    :class="{ 'has-changed': dirty }"
                                     required 
                                     :disabled="locked"
+                                    @blur="locked = true"
+                                    @change="dirty = ($el.value !== initial)"
                                     x-ref="field">
                                 <option value="" disabled>Choisir un secteur</option>
                                 @foreach($secteurs as $s)
@@ -269,41 +317,55 @@
             @endif
 
             <div class="side-by-side">
-                <div class="input-groupe" style="flex: 1;" x-data="{ locked: true }">
+                <div class="input-groupe" style="flex: 1;" x-data="{ locked: true, dirty: false }">
                     <label for="password">Nouveau mot de passe</label>
                     <div class="input-wrapper">
                         <input type="password" id="password" name="password" 
+                               x-model="p1"
                                placeholder="********" 
                                :readonly="locked"
+                               @blur="locked = true"
+                               @input="dirty = ($el.value.length > 0)"
                                x-ref="field"
-                               class="@error('password') is-invalid @enderror">
+                               class="@error('password') is-invalid @enderror"
+                               :class="{ 'has-changed': dirty }">
                         
                         <div class="edit-icon" @click="locked = false; $nextTick(() => $refs.field.focus())" title="Modifier">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                         </div>
                     </div>
                     @error('password') <div class="text-danger">{{ $message }}</div> @enderror
+                    <template x-if="p1.length > 0 && p1.length < 8">
+                        <div class="text-danger">Minimum 8 caractères requis.</div>
+                    </template>
                 </div>
                 
-                <div class="input-groupe" style="flex: 1;" x-data="{ locked: true }">
+                <div class="input-groupe" style="flex: 1;" x-data="{ locked: true, dirty: false }">
                     <label for="password_confirmation">Confirmation</label>
                     <div class="input-wrapper">
                         <input type="password" id="password_confirmation" name="password_confirmation" 
+                               x-model="p2"
                                placeholder="********" 
                                :readonly="locked"
+                               @blur="locked = true"
+                               @input="dirty = ($el.value.length > 0)"
                                x-ref="field"
-                               class="@error('password_confirmation') is-invalid @enderror">
+                               class="@error('password_confirmation') is-invalid @enderror"
+                               :class="{ 'has-changed': dirty }">
                         
                         <div class="edit-icon" @click="locked = false; $nextTick(() => $refs.field.focus())" title="Modifier">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                         </div>
                     </div>
+                    <template x-if="p1 !== p2 && p2.length > 0">
+                        <div class="text-danger">Les mots de passe ne correspondent pas.</div>
+                    </template>
                 </div>
             </div>
 
             <div class="side-by-side between">
                 <a href="{{ url('/') }}" class="other-btn" style="width:fit-content;" >Annuler</a>
-                <input type="submit" value="Enregistrer" class="submit-btn" style="width:fit-content;" disabled>
+                <input type="submit" value="Enregistrer" class="submit-btn" style="width:fit-content;" :disabled="!isDirty || (p1.length > 0 && (p1.length < 8 || p1 !== p2))">
             </div>
         </form>
 @endsection

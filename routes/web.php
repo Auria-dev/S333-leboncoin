@@ -42,3 +42,4 @@ Route::get('/locations/search', [LocationController::class, 'search'])->name('lo
 
 Route::get('/profile', [DashboardController::class, 'view'])->middleware('auth');
 Route::get('/modifier_compte', [CompteController::class, 'view_modifier'])->middleware('auth');
+Route::put('/modifier_compte/update', [CompteController::class, 'modifier'])->middleware('auth');

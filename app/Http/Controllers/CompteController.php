@@ -122,6 +122,61 @@ class CompteController extends Controller {
     }
 
     function modifier(Request $req) {
+        $user = Auth::user();
+        $id = $user->idutilisateur;
 
+        $rules = [
+            'nom' => 'required|string|max:50',
+            'prenom' => 'required|string|max:50',
+            'email' => "required|email|unique:utilisateur,mail,$id,idutilisateur", 
+            'telephone' => "required|digits:10|unique:utilisateur,telephone,$id,idutilisateur",
+            'adresse' => 'required|string',
+            'password' => 'nullable|string|min:8|confirmed', 
+            'ville' => 'required|string',
+            'code_postal' => 'required|string',
+        ];
+
+        $isEntreprise = DB::table('entreprise')->where('identreprise', $id)->exists();
+        if ($isEntreprise) {
+            $rules['siret'] = 'required|string|max:14';
+            $rules['secteur'] = 'required|string';
+        }
+
+        $req->validate($rules);
+
+        $ville = Ville::firstOrCreate([
+                'nom_ville' => $req->ville, 
+                'code_postal' => $req->code_postal
+            ]);
+
+        $userData = [
+            'nom_utilisateur' => $req->nom,
+            'prenom_utilisateur' => $req->prenom,
+            'mail' => $req->email,
+            'telephone' => $req->telephone,
+            'adresse_utilisateur' => $req->adresse,
+            'idville' => $ville->idville,
+        ];
+
+        if ($req->filled('password')) $userData['mot_de_passe'] = Hash::make($req->password);
+
+        DB::table('utilisateur')
+            ->where('idutilisateur', $id)
+            ->update($userData);
+
+        if ($isEntreprise) {
+            $secteurObj = SecteurActivite::where('nom_secteur', $req->secteur)->first();
+            
+            if ($secteurObj) {
+                DB::table('entreprise')
+                    ->where('identreprise', $id)
+                    ->update([
+                        'numsiret' => $req->siret,
+                        'idsecteur' => $secteurObj->idsecteur
+                    ]);
+            }
+        }
+
+        return back()->with('success', 'Compte mis à jour avec succès.');
     }
 }
