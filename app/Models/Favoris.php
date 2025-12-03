@@ -10,6 +10,9 @@ class Favoris extends Model
     use HasFactory;
 
     protected $table = "favoris";
-    protected $primaryKey = "ide";
+    protected $primaryKey = "idutilisateur"; // super legit way of not making laravel kill itself when inserting values. may this NOT come back to bite me later on.
     public $timestamps = false;
+
+    protected $fillable = ['idutilisateur', 'idannonce'];
+
 }
