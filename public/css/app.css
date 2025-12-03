@@ -1193,8 +1193,6 @@ input.date-custom-input {
     margin-right: 5px;
 }
 
-<<<<<<< HEAD
-=======
 .search-results-container {
     display: flex;
     width: 100%;
@@ -1244,7 +1242,6 @@ input.date-custom-input {
     rotate: 90deg;
 }
 
->>>>>>> b14cffb167a61e3299c3aec412f1c35430b43cd6
 .res-section {
     margin-bottom: var(--spacing);
 }
@@ -1399,7 +1396,6 @@ input.date-custom-input {
     border-radius: var(--radius-card);
 }
 
-<<<<<<< HEAD
 .similaire-image {
     width: 100%;
     height: 100%;
@@ -1452,5 +1448,3 @@ input.date-custom-input {
     color: var(--text-muted);
     font-weight: 400;
 }
-=======
->>>>>>> b14cffb167a61e3299c3aec412f1c35430b43cd6
