@@ -171,6 +171,80 @@
         @endforeach
     @endif
     </div>
+    <div id="maCarte">
+        <svg id="btnAgrandir" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-maximize2-icon lucide-maximize-2"><path d="M15 3h6v6"/><path d="m21 3-7 7"/><path d="m3 21 7-7"/><path d="M9 21H3v-6"/></svg>       
+    </div>
 </div>
 
 @endsection
+
+@push('scripts')
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+        <script>
+            var map = L.map('maCarte', {
+                zoomControl: false
+            }).setView([48.8566, 2.3522], 10);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
+
+            L.control.zoom({
+                position: 'topright'
+            }).addTo(map);
+
+
+
+            const annonces = @json($annonces);
+            const annoncesListe = Object.values(annonces);
+            console.log(annonces);
+
+            var markersGroup = new L.featureGroup();
+            
+            annoncesListe.forEach(annonce => {
+                if (annonce.latitude && annonce.longitude) {
+                    console.log('Ajout du marqueur pour l\'annonce ID:', annonce.idannonce);
+                    const marker = L.marker([annonce.latitude, annonce.longitude]).addTo(map);
+                    const popupContent = `
+                        <strong>${annonce.titre_annonce}</strong><br>
+                        Prix: ${annonce.prix_nuit}€ / nuit<br>
+                        <a href="/annonce/${annonce.idannonce}">Voir l'annonce</a>
+                    `;
+                    marker.bindPopup(popupContent);
+                    marker.addTo(markersGroup);
+                }
+            });
+
+            if (annoncesListe.length > 0 && markersGroup.getLayers().length > 0) {
+            map.fitBounds(markersGroup.getBounds(), { padding: [50, 50] });
+
+            const btnAgrandir = document.getElementById('btnAgrandir');
+            const maCarte = document.getElementById('maCarte');
+
+            btnAgrandir.addEventListener('click', () => {
+                if (maCarte.classList.contains('agrandi')) {
+                    maCarte.classList.remove('agrandi');
+                    btnAgrandir.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-maximize2-icon lucide-maximize-2"><path d="M15 3h6v6"/><path d="m21 3-7 7"/><path d="m3 21 7-7"/><path d="M9 21H3v-6"/></svg>
+                    `;
+                } else {
+                    maCarte.classList.add('agrandi');
+                    btnAgrandir.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-minimize2-icon lucide-minimize-2"><path d="m14 10 7-7"/><path d="M20 10h-6V4"/><path d="m3 21 7-7"/><path d="M4 14h6v6"/></svg>
+                    `;
+                }
+
+                setTimeout(() => {
+                    map.invalidateSize();
+                }, 500);
+                map.fitBounds(markersGroup.getBounds(), { padding: [50, 50] });
+            });
+
+            
+        }
+
+                
+        </script>
+
+@endpush
