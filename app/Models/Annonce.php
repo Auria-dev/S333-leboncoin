@@ -47,10 +47,10 @@ class Annonce extends Model
 
     public function getSimilairesAttribute()
     {
-    $similairesA = $this->similaires_id_annonce;
-    $similairesS = $this->similaires_id_similaire;
-    
-    return $similairesA->merge($similairesS);
+        $similairesA = $this->similaires_id_annonce;
+        $similairesS = $this->similaires_id_similaire;
+        
+        return $similairesA->merge($similairesS);
     }
 
     public function equipement() {

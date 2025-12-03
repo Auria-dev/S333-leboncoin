@@ -1182,8 +1182,6 @@ input.date-custom-input {
     margin-right: 5px;
 }
 
-<<<<<<< HEAD
-=======
 .res-section {
     margin-bottom: var(--spacing);
 }
@@ -1337,4 +1335,56 @@ input.date-custom-input {
     background: var(--bg-subtle);
     border-radius: var(--radius-card);
 }
->>>>>>> a8e3193bd6c9be99760475a58b25820d4be12cb8
+
+.similaire-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.similaire-card {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-card);
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    text-decoration: none !important;
+    min-width: 300px;
+}
+
+.similaire-card-img {
+    height: 200px;
+    overflow: hidden;
+}
+
+.similaire-card-title {
+    font-size: 1.2rem;
+    font-weight: 400;
+    color: var(--text-main);
+    margin: 0;
+    margin-bottom: 2px;
+}
+
+.similaire-info {
+    padding: 1rem;
+}
+
+.similaire-card-price {
+    font-weight: 500;
+    color: var(--primary);
+    white-space: nowrap;
+    background: var(--primary-light);
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    width: fit-content;
+}
+
+.similaire-card-meta {
+    margin-top: 0.75rem;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    font-weight: 400;
+}
