@@ -44,6 +44,8 @@
             </a>
         </div>
 
+
+
         <ul class="details-list">
             <li class="detail-item">
                 <span class="detail-label">Voyageurs</span>
