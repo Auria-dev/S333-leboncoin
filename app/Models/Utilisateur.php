@@ -38,6 +38,10 @@ class Utilisateur extends Authenticatable {
         return $this->hasMany(Annonce::class, "idproprietaire");
     }
 
+    public function reservation() {
+        return $this->hasMany(Reservation::class, "idlocataire");
+    }
+
     public function particulier() {
         return $this->hasOne(Particulier::class, 'idparticulier', 'idutilisateur');
     }

@@ -5,7 +5,6 @@
 @section('content')
 
 <div class="annonce-grid">
-
     <div class="photo-column">
         <div class="carousel-placeholder">
             <img src="{{ $annonce->photo[0]->nomphoto }}" alt="" style="width:100%; height:auto;">
@@ -19,13 +18,12 @@
             @endforEach
         </div>       
     </div>
-
     <div class="info-column">
         
         <header style="border:none; padding:0; text-align:left; margin:0;">
             <h1 class="titre-annonce">{{ $annonce->titre_annonce }}</h1>
             <p style="margin-top: 0.5rem; color: var(--text-muted); font-size: 0.9rem;">
-                {{ $annonce->adresse_annonce . ', ' . $annonce->ville->nomville . ' ' . $annonce->ville->code_postal }} &bull; <span class="stars" style="--rating: {{ $annonce->moyenneAvisParAnnonce()['moyenne'] }};"></span> {{$annonce->moyenneAvisParAnnonce()['moyenne'] . ' (' . $annonce->moyenneAvisParAnnonce()['nbAvis'] . ' avis) '}}
+                {{ $annonce->adresse_annonce . ', ' . $annonce->ville->nomville . ' ' . $annonce->ville->code_postal }} &bull; <span class="stars" style="--rating: {{ $annonce->moyenneAvisParAnnonce()['moyenne'] }}; margin-right: 5px;"></span> {{$annonce->moyenneAvisParAnnonce()['moyenne'] . ' (' . $annonce->moyenneAvisParAnnonce()['nbAvis'] . ' avis) '}}
             </p>
             
             <p style="margin-top: 0.5rem;">
@@ -127,6 +125,27 @@
 
     </div>
 
+</div>
+
+<div>
+@foreach($annonce->similaires as $annonce)
+            <a class="card" href="{{ url('annonce/'.strval($annonce->idannonce)) }}">
+                <div class="card-image-container">
+                    @if(isset($annonce->photo) && count($annonce->photo) > 0)
+                        <img class="card-image" loading="lazy" src="{{ $annonce->photo[0]->nomphoto }}" alt="Photo annonce"/>
+                    @else
+                        <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color: var(--text-muted);">
+                            Sans photo
+                        </div>
+                    @endif
+                </div>
+        
+                <div class="card-content">
+                    <h2 class="card-title">Titre de la Carte</h2>
+                    <p class="card-other-info">Autres informations que j'ajouterais moi-même, par exemple un court résumé ou une date.</p>
+                </div>
+            </a>
+@endforeach
 </div>
 
 @endsection
