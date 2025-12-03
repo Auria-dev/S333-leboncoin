@@ -222,6 +222,27 @@ input[type="submit"] {
     letter-spacing: 0.02em;
 }
 
+.other-btn {
+    width: fit-content;
+    background-color: white;
+    color: var(--text-main);
+    padding: 0.85rem 1.5rem;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-input);
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+    text-align: center;
+    letter-spacing: 0.02em;
+}
+
+.other-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(116, 61, 43, 0.25);
+}
+
 .submit-btn:hover,
 input[type="submit"]:hover {
     background-color: var(--primary-hover);
@@ -237,6 +258,12 @@ input[type="submit"]:hover {
 .side-by-side {
     display: flex;
     gap: 1rem;
+}
+
+.between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .center {

@@ -6,14 +6,12 @@
     
     <h1>Hello {{ $utilisateur->prenom_utilisateur . ' ' . $utilisateur->nom_utilisateur }} </h1>
 
-    <p>ID du compte: {{ $utilisateur->idutilisateur }}</p>
-
     <p>Type de compte: {{ $utilisateur->getTypeCompte() }}</p>
 
-    <!-- TODO (auria): Modifier mon compte -->
+    <a href="{{ url('/modifier_compte') }}" class="other-btn"  style='margin-top: 1rem;' wire:navigate>Modifier mon compte</a>
 
-    <form method="POST" action="{{ url('logout') }}">
+    <form method="POST" action="{{ url('logout') }}" style='margin-top: 1rem;'>
         @csrf
-        <button type="submit">Se déconnecter</button>
+        <button type="submit" class="other-btn">Se déconnecter</button>
     </form>
 @endsection
