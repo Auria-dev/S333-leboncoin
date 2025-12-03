@@ -84,5 +84,7 @@
         <div class="full-width">
             <input type="submit" class="submit-btn" value="Rechercher" />
         </div>
+
     </form>
 @endsection
+

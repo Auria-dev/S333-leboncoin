@@ -53,17 +53,12 @@ html {
 
 body.container {
     font-family: 'Outfit', system-ui, -apple-system, sans-serif;
-    background-color: var(--bg-card);
     color: var(--text-main);
-    max-width: 900px;
-    min-height: calc(100vh - 4rem);
+    height: calc(100vh - 4rem);
     margin: 0 auto;
-    border-radius: var(--radius-card);
-    box-shadow: var(--shadow-card);
     display: flex;
     flex-direction: column;
     padding: var(--spacing);
-    border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
 a {
@@ -76,7 +71,6 @@ a {
 header {
     text-align: center;
     margin: 0 0 2rem 0;
-    border-top: 1px solid var(--border-default);
     padding-top: 2rem;
 }
 
@@ -93,6 +87,13 @@ header h1 {
 }
 
 nav {
+    z-index: 100;
+    position: fixed;
+    width: 100vw;
+    left: 0;
+    top: 0;
+    padding: 0.3rem 0;
+    background-color: var(--bg-subtle);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -506,7 +507,18 @@ input[type="submit"]:hover {
     align-items: baseline;
     gap: 0.5rem;
     color: var(--primary);
+    justify-content: space-between;
 }
+
+
+#favoris:hover {
+    cursor: pointer;
+}
+
+.liked {
+    fill: #F27A55;
+}
+
 
 .prix-unit {
     font-size: 1rem;
@@ -563,7 +575,7 @@ input[type="submit"]:hover {
     background-color: var(--primary-light);
     padding: 1rem;
     border-radius: var(--radius-card);
-    margin-bottom: 2.5rem;
+    margin-bottom: 1rem;
     border: 1px solid rgba(255, 139, 102, 0.1);
 }
 
@@ -585,10 +597,9 @@ input[type="submit"]:hover {
     height: fit-content;
 }
 
-
 .scroll {
+    width: 100%;
     display: flex;
-    flex-direction: column;
     gap: 1.5rem;
 }
 
@@ -1182,6 +1193,58 @@ input.date-custom-input {
     margin-right: 5px;
 }
 
+<<<<<<< HEAD
+=======
+.search-results-container {
+    display: flex;
+    width: 100%;
+    position: relative;
+    align-items: flex-start;
+}
+.listings-pane {
+    width: 55%;
+    padding: 1rem 1.5rem 2rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+.map-pane {
+    width: 45%;
+    height: calc(100vh - 20px);
+    position: sticky;
+    top: 20px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    margin-top: 1rem;
+}
+
+#maCarte {
+    right: 0px;
+    bottom: 0px;
+    width: 100%;
+    height: 100%;
+    transition: ease 0.5s;
+}
+
+.agrandi {
+    width: 700px !important;
+    height: 500px !important;
+    transition: ease 0.5s;
+}
+
+#btnAgrandir {
+    position: absolute;
+    z-index: 1000;
+    top: 5px;
+    left: 5px;
+    scale: 1.2;
+    color: black;
+    cursor: pointer;
+    rotate: 90deg;
+}
+
+>>>>>>> b14cffb167a61e3299c3aec412f1c35430b43cd6
 .res-section {
     margin-bottom: var(--spacing);
 }
@@ -1336,6 +1399,7 @@ input.date-custom-input {
     border-radius: var(--radius-card);
 }
 
+<<<<<<< HEAD
 .similaire-image {
     width: 100%;
     height: 100%;
@@ -1388,3 +1452,5 @@ input.date-custom-input {
     color: var(--text-muted);
     font-weight: 400;
 }
+=======
+>>>>>>> b14cffb167a61e3299c3aec412f1c35430b43cd6
