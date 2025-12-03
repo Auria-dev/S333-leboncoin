@@ -59,5 +59,6 @@
 
 
     @stack('scripts')
+    @include('cookie-banniere')
 </body>
 </html>

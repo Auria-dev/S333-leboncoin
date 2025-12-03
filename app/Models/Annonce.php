@@ -37,6 +37,22 @@ class Annonce extends Model
         return $this->hasMany(Reservation::class, "idannonce");
     }
 
+    public function similaires_id_annonce() {
+        return $this->belongsToMany(Annonce::class, "annonce_similaire", "idannonce", "idsimilaire");
+    }
+
+    public function similaires_id_similaire() {
+        return $this->belongsToMany(Annonce::class, "annonce_similaire", "idsimilaire", "idannonce");
+    }
+
+    public function getSimilairesAttribute()
+    {
+    $similairesA = $this->similaires_id_annonce;
+    $similairesS = $this->similaires_id_similaire;
+    
+    return $similairesA->merge($similairesS);
+    }
+
     public function equipement() {
         return $this->belongsToMany(Equipement::class, 
         "equipe", 
