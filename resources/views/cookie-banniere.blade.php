@@ -1,11 +1,4 @@
-<!-- resources/views/cookie-banner.blade.php -->
-<!-- 
-    Ce fichier gère le consentement des cookies conformément au RGPD.
-    Il doit être inclus dans le layout principal (layout.blade.php).
--->
-
 <style>
-    /* --- STYLE CSS DU BANDEAU ET DE LA MODALE --- */
     :root {
         --primary-color: #ff6e14; /* Orange Leboncoin */
         --text-color: #1a1a1a;
@@ -13,7 +6,6 @@
         --border-radius: 8px;
     }
 
-    /* 1. BANDEAU (En bas de page) */
     #cookie-banner {
         display: none; /* Masqué par défaut, géré par JS */
         position: fixed;
@@ -57,7 +49,6 @@
         gap: 10px;
     }
 
-    /* Styles des boutons */
     .btn-cookie {
         padding: 10px 20px;
         border-radius: var(--border-radius);
@@ -228,9 +219,6 @@
 </div>
 
 <script>
-    /* * GESTIONNAIRE DE CONSENTEMENT (Simule une CMP comme Tarteaucitron)
-     * Stocke les choix dans le LocalStorage du navigateur.
-     */
     const CookieManager = {
         // État par défaut : tout est refusé sauf le nécessaire
         consent: {

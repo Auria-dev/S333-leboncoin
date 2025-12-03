@@ -16,6 +16,9 @@
     <link rel="preload" href="{{ asset('css/app.css') }}" as="style">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 
+    <!--map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
     <script src="{{ asset('js/calendrier.js') }}" defer></script>
 </head>
 
