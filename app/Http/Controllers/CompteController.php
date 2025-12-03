@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Foundation\Auth\User;
 use App\Models\Utilisateur;
+use App\Models\Ville;
 use App\Models\SecteurActivite;
 
 // TODO (auria): Voir comment login avec Google 
@@ -52,12 +53,11 @@ class CompteController extends Controller {
             'adresse' => 'required|string',
             'password' => 'required|string|min:8|confirmed',
         ]);
-    
-        // we don't have all the cities yet so just store things here:
-        $nomVille = '';
+
+        $codeville = Ville::where('nom_ville', $req->ville)->first();
         
         $user = Utilisateur::create([
-            'idville' => 1, // TODO (auria): this! (use API to find real locations n stuff ykyk, yurr durr)
+            'idville' => $codeville->idville,
             'nom_utilisateur' => $req->nom,
             'prenom_utilisateur' => $req->prenom,
             'mot_de_passe' => Hash::make($req->password),
@@ -79,11 +79,13 @@ class CompteController extends Controller {
                 )
             );
         } else {
+            $secteur = SecteurActivite::where('nom_secteur', $req->secteur)->first();
+
             DB::table('entreprise')->insert(
                 array(
                     'identreprise' => $user->idutilisateur, 
                     'numsiret'     => $req->siret,
-                    'idsecteur'    => 1 // TODO (auria): this!
+                    'idsecteur'    => $secteur->idsecteur
                 )
             );
         }
@@ -98,5 +100,83 @@ class CompteController extends Controller {
         $request->session()->regenerateToken();
  
         return redirect('/');
+    }
+
+    function view_modifier() {
+        $user = Auth::user();
+        
+        $ville = Ville::find($user->idville); 
+        
+        $entreprise = DB::table('entreprise')->where('identreprise', $user->idutilisateur)->first();
+        $isEntreprise = $entreprise !== null;
+        
+        $secteurs = SecteurActivite::all();
+
+        return view("modifier-compte", [
+            'user' => $user,
+            'ville' => $ville,
+            'entreprise' => $entreprise,
+            'isEntreprise' => $isEntreprise,
+            'secteurs' => $secteurs
+        ]);   
+    }
+
+    function modifier(Request $req) {
+        $user = Auth::user();
+        $id = $user->idutilisateur;
+
+        $rules = [
+            'nom' => 'required|string|max:50',
+            'prenom' => 'required|string|max:50',
+            'email' => "required|email|unique:utilisateur,mail,$id,idutilisateur", 
+            'telephone' => "required|digits:10|unique:utilisateur,telephone,$id,idutilisateur",
+            'adresse' => 'required|string',
+            'password' => 'nullable|string|min:8|confirmed', 
+            'ville' => 'required|string',
+            'code_postal' => 'required|string',
+        ];
+
+        $isEntreprise = DB::table('entreprise')->where('identreprise', $id)->exists();
+        if ($isEntreprise) {
+            $rules['siret'] = 'required|string|max:14';
+            $rules['secteur'] = 'required|string';
+        }
+
+        $req->validate($rules);
+
+        $ville = Ville::firstOrCreate([
+                'nom_ville' => $req->ville, 
+                'code_postal' => $req->code_postal
+            ]);
+
+        $userData = [
+            'nom_utilisateur' => $req->nom,
+            'prenom_utilisateur' => $req->prenom,
+            'mail' => $req->email,
+            'telephone' => $req->telephone,
+            'adresse_utilisateur' => $req->adresse,
+            'idville' => $ville->idville,
+        ];
+
+        if ($req->filled('password')) $userData['mot_de_passe'] = Hash::make($req->password);
+
+        DB::table('utilisateur')
+            ->where('idutilisateur', $id)
+            ->update($userData);
+
+        if ($isEntreprise) {
+            $secteurObj = SecteurActivite::where('nom_secteur', $req->secteur)->first();
+            
+            if ($secteurObj) {
+                DB::table('entreprise')
+                    ->where('identreprise', $id)
+                    ->update([
+                        'numsiret' => $req->siret,
+                        'idsecteur' => $secteurObj->idsecteur
+                    ]);
+            }
+        }
+
+        return back()->with('success', 'Compte mis à jour avec succès.');
     }
 }

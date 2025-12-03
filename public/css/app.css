@@ -222,6 +222,27 @@ input[type="submit"] {
     letter-spacing: 0.02em;
 }
 
+.other-btn {
+    width: fit-content;
+    background-color: white;
+    color: var(--text-main);
+    padding: 0.85rem 1.5rem;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-input);
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+    text-align: center;
+    letter-spacing: 0.02em;
+}
+
+.other-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(116, 61, 43, 0.25);
+}
+
 .submit-btn:hover,
 input[type="submit"]:hover {
     background-color: var(--primary-hover);
@@ -237,6 +258,12 @@ input[type="submit"]:hover {
 .side-by-side {
     display: flex;
     gap: 1rem;
+}
+
+.between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .center {
@@ -1155,3 +1182,159 @@ input.date-custom-input {
     margin-right: 5px;
 }
 
+<<<<<<< HEAD
+=======
+.res-section {
+    margin-bottom: var(--spacing);
+}
+
+.res-title {
+    color: var(--text-main);
+    font-weight: bold;
+    font-size: 1.5rem;
+    margin-bottom: var(--spacing);
+}
+
+.res-scroller {
+    display: flex;
+    gap: 24px;
+    overflow-x: auto;
+    padding-bottom: 20px;
+    padding-right: 10px;
+    scroll-behavior: smooth;
+}
+
+.res-scroller::-webkit-scrollbar {
+    height: 8px;
+}
+.res-scroller::-webkit-scrollbar-track {
+    background: var(--bg-subtle);
+    border-radius: 4px;
+}
+.res-scroller::-webkit-scrollbar-thumb {
+    background: var(--border-default);
+    border-radius: 4px;
+}
+.res-scroller::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+}
+
+.res-card {
+    flex: 0 0 340px; 
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-card);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+}
+
+.res-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.res-id {
+    margin: 0;
+    color: var(--text-main);
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.res-dates {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-top: 4px;
+    display: block;
+}
+
+.res-badge {
+    background-color: var(--primary-light);
+    color: var(--primary-hover);
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.res-divider {
+    border: 0;
+    border-top: 1px solid var(--border-default);
+    margin: 0 0 16px 0;
+}
+
+.res-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+    flex-grow: 1;
+}
+
+.res-label {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+.res-info-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    color: var(--text-main);
+    margin-bottom: 4px;
+}
+
+.res-icon {
+    width: 16px;
+    height: 16px;
+    stroke: var(--primary);
+    stroke-width: 2;
+}
+
+.res-price-box {
+    background-color: var(--bg-subtle);
+    border-radius: var(--radius-input);
+    padding: 16px;
+    margin-top: auto;
+}
+
+.res-price-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    margin-bottom: 8px;
+    color: var(--text-muted);
+}
+
+.res-price-divider {
+    border-top: 1px dashed var(--border-default);
+    margin: 10px 0;
+}
+
+.res-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+    color: var(--primary);
+    font-size: 1.1rem;
+}
+
+.res-empty {
+    width: 100%;
+    text-align: center;
+    padding: 40px;
+    color: var(--text-muted);
+    background: var(--bg-subtle);
+    border-radius: var(--radius-card);
+}
+>>>>>>> a8e3193bd6c9be99760475a58b25820d4be12cb8
