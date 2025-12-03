@@ -3,369 +3,409 @@
 @section('title', 'Modifier mon compte')
 
 @section('content')
+    {{-- Dependencies --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
     <style>
-        .text-danger { color: #dc3545; font-size: 0.875rem; margin-top: 0.25rem; animation: fadeIn 0.3s ease-in; }
-        .is-invalid { border-color: #dc3545 !important; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        :root {
+            --input-bg-disabled: #f9fafb;
+            --input-border-disabled: transparent;
+            --input-text-disabled: #4b5563;
+        }
 
-        /* --- 1. Base Input Styles --- */
-        input[readonly], select:disabled {
-            color: var(--text-muted);
-            background-color: var(--bg-subtle);
-            border: 1px solid var(--border-default);
-            border-radius: var(--radius-input);
+        .form-container { display: flex; flex-direction: column; gap: 1.5rem; max-width: 800px; margin: 0 auto; }
+        .row-group { display: flex; gap: 1.5rem; }
+        .row-group > * { flex: 1; }
+        .separator { height: 1px; background-color: #e5e7eb; margin: 0.5rem 0; }
+
+        .field-group { position: relative; display: flex; flex-direction: column; gap: 0.35rem; }
+        
+        .input-wrapper { position: relative; display: flex; align-items: center; }
+
+        .input-wrapper input:disabled, 
+        .input-wrapper select:disabled {
+            background-color: var(--input-bg-disabled);
+            border: 1px solid var(--input-border-disabled);
+            color: var(--input-text-disabled);
             cursor: default;
-            transition: all 0.2s ease;
-        }
-
-        input:not([readonly]), select:not([disabled]) {
-            border-color: var(--primary);
-            outline: none;
-            box-shadow: var(--focus-ring);
-        }
-
-        .has-changed {
-            border-color: var(--primary) !important;
-            background-color: var(--bg-card) !important;
-            color: var(--text-main) !important;
-        }
-
-        input[type="submit"]:disabled {
-            background-color: var(--bg-subtle);
-            color: var(--text-muted);
-            border: 1px solid var(--border-default);
-            cursor: not-allowed;
+            font-weight: 500;
             box-shadow: none;
-            transform: none;
-            opacity: 0.8;
         }
 
-        .input-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
+        .input-wrapper input:not(:disabled), 
+        .input-wrapper select:not(:disabled) {
+            background-color: #fff;
+            border: 1px solid var(--primary);
+            box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+            color: #000;
+            cursor: text;
         }
 
         .input-wrapper input, .input-wrapper select {
             width: 100%;
-            padding-right: 40px;
+            padding: 0.625rem 2.5rem 0.625rem 0.75rem;
+            border-radius: 0.375rem;
+            transition: all 0.2s ease-in-out;
         }
 
-        .edit-icon {
-            position: absolute;
-            right: 10px;
-            cursor: pointer;
-            color: var(--text-muted);
-            transition: color 0.2s;
-            padding: 5px;
-            z-index: 10;
+        .action-btn {
+            position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+            padding: 4px; border-radius: 4px; cursor: pointer; color: #9ca3af;
+            transition: color 0.2s, background 0.2s;
+            background: none; border: none; z-index: 10;
         }
+        
+        .action-btn:hover { color: var(--primary); background: #f3f4f6; }
+        
+        input:not(:disabled) ~ .action-btn.edit-trigger { display: none; }
 
-        .edit-icon:hover {
-            color: var(--primary-hover);
+        .text-error { color: #dc2626; font-size: 0.85rem; margin-top: 2px; }
+        .is-invalid { border-color: #dc2626 !important; }
+
+        .dropdown-results {
+            position: absolute; top: 100%; left: 0; right: 0; z-index: 50;
+            background: white; border: 1px solid #e5e7eb; border-radius: 6px;
+            margin-top: 4px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            max-height: 250px; overflow-y: auto;
         }
+        .dropdown-item { padding: 0.75rem; cursor: pointer; border-bottom: 1px solid #f3f4f6; }
+        .dropdown-item:hover { background-color: #f9fafb; }
+        
+        .password-section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+        .password-section-title { font-weight: bold; font-size: 1.1em; }
+        .password-edit-btn { 
+            color: var(--primary); font-size: 0.9em; cursor: pointer; text-decoration: underline; background: none; border: none; 
+        }
+        .password-edit-btn:hover { color: var(--primary-hover); }
+        .password-container {
+            padding: 1rem; border: 1px solid var(--border-default); border-radius: 6px;
+            background-color: #fafafa; transition: background-color 0.3s;
+        }
+        .password-container.is-editing { background-color: #fff; border-color: var(--primary); }
     </style>
 
-    <form action="{{ url('modifier_compte/update') }}" method="POST" 
-          style="display: flex; flex-direction: column; gap: 1.25rem;"
-          x-data="{
-              isDirty: false,
-              initialState: '',
-              p1: '', 
-              p2: '',
-              
-              init() {
-                  this.$nextTick(() => {
-                      this.initialState = JSON.stringify(Object.fromEntries(new FormData($el).entries()));
-                  });
-              },
+    <form action="{{ url('modifier_compte/update') }}" method="POST" class="form-container"
+          x-data="formManager()"
+          @submit.prevent="submitForm">
+        
+        @csrf
+        @method('PUT')
 
-              checkChanges() {
-                  const currentState = JSON.stringify(Object.fromEntries(new FormData($el).entries()));
-                  this.isDirty = (this.initialState !== currentState);
-              }
-          }"
-          @input="checkChanges()" 
-          @change="checkChanges()">
-            
-            @csrf
-            @method('PUT')
-            
-            @if ($errors->any())
-                <div style="background-color: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px;">
-                    <strong>Oups !</strong> Vérifiez votre saisie.
+        @if ($errors->any())
+            <div style="background:#fee2e2; color:#991b1b; padding:1rem; border-radius:6px;">
+                Veuillez corriger les erreurs ci-dessous.
+            </div>
+        @endif
+        @if(session('success'))
+            <div style="background:#d1fae5; color:#065f46; padding:1rem; border-radius:6px;">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        <div class="row-group">
+            <div class="field-group" x-data="inputField()">
+                <label class="font-bold">Prénom</label>
+                <div class="input-wrapper">
+                    <input type="text" name="prenom" value="{{ old('prenom', $user->prenom_utilisateur) }}"
+                           :disabled="!editing" x-ref="input" @input="touch()">
+                    <button type="button" class="action-btn edit-trigger" @click="enable()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    </button>
                 </div>
-            @endif
+                @error('prenom') <div class="text-error">{{ $message }}</div> @enderror
+            </div>
 
-            @if(session('success'))
-                <div style="background-color: #d4edda; color: #155724; padding: 10px; border-radius: 5px;">
-                    {{ session('success') }}
+            <div class="field-group" x-data="inputField()">
+                <label class="font-bold">Nom</label>
+                <div class="input-wrapper">
+                    <input type="text" name="nom" value="{{ old('nom', $user->nom_utilisateur) }}"
+                           :disabled="!editing" x-ref="input" @input="touch()">
+                    <button type="button" class="action-btn edit-trigger" @click="enable()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    </button>
                 </div>
-            @endif
+                @error('nom') <div class="text-error">{{ $message }}</div> @enderror
+            </div>
+        </div>
 
-            <div class="side-by-side">
-                <div class="input-groupe" style="flex: 1;" x-data="{ locked: true, dirty: false }">
-                    <label for="prenom">Prénom</label>
-                    <div class="input-wrapper">
-                        <input type="text" id="prenom" name="prenom" 
-                               value="{{ old('prenom', $user->prenom_utilisateur) }}" 
-                               required 
-                               :readonly="locked"
-                               @blur="locked = true"
-                               @input="dirty = ($el.value !== $el.defaultValue)"
-                               x-ref="field"
-                               class="@error('prenom') is-invalid @enderror"
-                               :class="{ 'has-changed': dirty }">
-                        
-                        <div class="edit-icon" @click="locked = false; $nextTick(() => $refs.field.focus())" title="Modifier">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+        <div class="field-group" x-data="inputField()">
+            <label class="font-bold">Email</label>
+            <div class="input-wrapper">
+                <input type="email" name="email" value="{{ old('email', $user->mail) }}"
+                       :disabled="!editing" x-ref="input" 
+                       @input="touch(); validateEmail($el.value)"
+                       :class="{ 'is-invalid': error }">
+                <button type="button" class="action-btn edit-trigger" @click="enable()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                </button>
+            </div>
+            <div class="text-error" x-show="error" x-text="error"></div>
+            @error('email') <div class="text-error">{{ $message }}</div> @enderror
+        </div>
+
+        <div class="field-group" x-data="inputField()">
+            <label class="font-bold">Téléphone</label>
+            <div class="input-wrapper">
+                <input type="tel" name="telephone" value="{{ old('telephone', $user->telephone) }}"
+                       :disabled="!editing" x-ref="input" maxlength="10"
+                       @input="touch(); validatePhone($el.value)"
+                       :class="{ 'is-invalid': error }">
+                <button type="button" class="action-btn edit-trigger" @click="enable()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                </button>
+            </div>
+            <div class="text-error" x-show="error" x-text="error"></div>
+            @error('telephone') <div class="text-error">{{ $message }}</div> @enderror
+        </div>
+
+        <div class="field-group" 
+             x-data="addressField('{{ old('adresse', $user->adresse_utilisateur) }}', '{{ old('ville', $ville->nom_ville ?? '') }}', '{{ old('code_postal', $ville->code_postal ?? '') }}')"
+             @click.outside="closeDropdown()">
+            
+            <label class="font-bold">Adresse</label>
+            <div class="input-wrapper">
+                <input type="text" name="adresse" x-model="display"
+                       placeholder="Rechercher..." autocomplete="off"
+                       :disabled="!editing" x-ref="input"
+                       @input="touch(); search()"
+                       :class="{ 'is-invalid': error }">
+                
+                <input type="hidden" name="ville" x-model="city">
+                <input type="hidden" name="code_postal" x-model="zip">
+
+                <button type="button" class="action-btn edit-trigger" @click="enable()" style="display:block;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                </button>
+            </div>
+
+            <div class="dropdown-results" x-show="results.length > 0">
+                <template x-for="item in results" :key="item.properties.id">
+                    <div class="dropdown-item" @mousedown.prevent="" @click="select(item)">
+                        <div class="font-bold" x-text="item.properties.label"></div>
+                        <div class="text-sm text-gray-500">
+                            <span x-text="item.properties.postcode"></span> 
+                            <span x-text="item.properties.city"></span>
                         </div>
                     </div>
-                    @error('prenom') <div class="text-danger">{{ $message }}</div> @enderror
-                </div>
+                </template>
+            </div>
+            @error('adresse') <div class="text-error">{{ $message }}</div> @enderror
+        </div>
 
-                <div class="input-groupe" style="flex: 1;" x-data="{ locked: true, dirty: false }">
-                    <label for="nom">Nom</label>
-                    <div class="input-wrapper">
-                        <input type="text" id="nom" name="nom" 
-                               value="{{ old('nom', $user->nom_utilisateur) }}" 
-                               required 
-                               :readonly="locked"
-                               @blur="locked = true"
-                               @input="dirty = ($el.value !== $el.defaultValue)"
-                               x-ref="field"
-                               class="@error('nom') is-invalid @enderror"
-                               :class="{ 'has-changed': dirty }">
-                        
-                        <div class="edit-icon" @click="locked = false; $nextTick(() => $refs.field.focus())" title="Modifier">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+        @if($isEntreprise)
+            <div class="separator"></div>
+            <div class="field-group" x-data="inputField()">
+                <label class="font-bold">Numéro SIRET</label>
+                <div class="input-wrapper">
+                    <input type="text" name="siret" value="{{ old('siret', $entreprise->numsiret ?? '') }}"
+                           :disabled="!editing" x-ref="input" @input="touch()">
+                    <button type="button" class="action-btn edit-trigger" @click="enable()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    </button>
+                </div>
+                @error('siret') <div class="text-error">{{ $message }}</div> @enderror
+            </div>
+
+            <div class="field-group" x-data="inputField()">
+                <label class="font-bold">Secteur</label>
+                <div class="input-wrapper">
+                    <select name="secteur" :disabled="!editing" x-ref="input" @change="touch()">
+                        @foreach($secteurs as $s)
+                            <option value="{{ $s->nom_secteur }}" {{ ($entreprise->idsecteur ?? '') == $s->idsecteur ? 'selected' : '' }}>
+                                {{ $s->nom_secteur }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <button type="button" class="action-btn edit-trigger" @click="enable()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    </button>
+                </div>
+            </div>
+            <div class="separator"></div>
+        @endif
+
+        <div x-data="passwordManager()" class="field-group">
+            <div class="password-section-header">
+                <span class="password-section-title">Sécurité</span>
+                <button type="button" class="password-edit-btn" 
+                        x-show="!editing" 
+                        @click="enable()">
+                    Modifier le mot de passe
+                </button>
+            </div>
+            
+            <div class="password-container" :class="{ 'is-editing': editing }">
+                <div class="row-group">
+                    <div class="field-group">
+                        <label class="font-bold">Nouveau mot de passe</label>
+                        <div class="input-wrapper">
+                            <input type="password" name="password" x-model="p1" placeholder="********"
+                                   :disabled="!editing" x-ref="p1input" 
+                                   @input="check();"
+                                   :class="{ 'is-invalid': errorType === 'length' }">
                         </div>
                     </div>
-                    @error('nom') <div class="text-danger">{{ $message }}</div> @enderror
-                </div>
-            </div>
 
-            <div class="input-groupe" x-data="{ locked: true, dirty: false }">
-                <label for="email">Email</label>
-                <div class="input-wrapper">
-                    <input type="email" id="email" name="email" 
-                           value="{{ old('email', $user->mail) }}" 
-                           required 
-                           :readonly="locked"
-                           @blur="locked = true"
-                           @input="dirty = ($el.value !== $el.defaultValue)"
-                           x-ref="field"
-                           class="@error('email') is-invalid @enderror"
-                           :class="{ 'has-changed': dirty }">
-                    
-                    <div class="edit-icon" @click="locked = false; $nextTick(() => $refs.field.focus())" title="Modifier">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    <div class="field-group">
+                        <label class="font-bold">Confirmation</label>
+                        <div class="input-wrapper">
+                            <input type="password" name="password_confirmation" x-model="p2" placeholder="********"
+                                   :disabled="!editing"
+                                   @input="check();"
+                                   :class="{ 'is-invalid': errorType === 'match' }">
+                        </div>
                     </div>
                 </div>
-                @error('email') <div class="text-danger">{{ $message }}</div> @enderror
-            </div>
 
-            <div class="input-groupe" x-data="{ locked: true, dirty: false }">
-                <label for="telephone">Téléphone</label>
-                <div class="input-wrapper">
-                    <input type="tel" id="telephone" name="telephone" 
-                           value="{{ old('telephone', $user->telephone) }}" 
-                           required 
-                           :readonly="locked"
-                           @blur="locked = true"
-                           @input="dirty = ($el.value !== $el.defaultValue)"
-                           x-ref="field"
-                           class="@error('telephone') is-invalid @enderror"
-                           :class="{ 'has-changed': dirty }">
-                    
-                    <div class="edit-icon" @click="locked = false; $nextTick(() => $refs.field.focus())" title="Modifier">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                    </div>
+                <div class="text-error" x-show="errorType === 'length'" style="margin-top: 10px;">
+                    Le mot de passe doit contenir au moins 8 caractères.
                 </div>
-                @error('telephone') <div class="text-danger">{{ $message }}</div> @enderror
+                <div class="text-error" x-show="errorType === 'match'" style="margin-top: 10px;">
+                    Les mots de passe ne correspondent pas.
+                </div>
             </div>
+        </div>
 
-            <div class="input-groupe" 
-                x-data="{
-                    locked: true,
-                    dirty: false,
-                    query: '{{ old('adresse', $user->adresse_utilisateur) }}',
-                    city: '{{ old('ville', $ville->nom_ville ?? '') }}',
-                    zip: '{{ old('code_postal', $ville->code_postal ?? '') }}',
-                    results: [],
-                    showResults: false,
+        <div class="row-group" style="justify-content: space-between; align-items: center; margin-top: 1rem;">
+            <a href="{{ url('/') }}" class="text-gray-500 hover:text-gray-800">Annuler</a>
+            
+            <button type="submit" class="submit-btn" 
+                    :disabled="!isGlobalDirty || globalErrors"
+                    style="padding: 10px 20px; background: var(--primary); color: white; border-radius: 6px; opacity: 0.5;"
+                    :style="(!isGlobalDirty || globalErrors) ? 'opacity: 0.5; cursor: not-allowed' : 'opacity: 1; cursor: pointer'">
+                Enregistrer les modifications
+            </button>
+        </div>
 
-                    selectAddress(feature) {
-                        this.query = feature.properties.label;
-                        this.city = feature.properties.city;
-                        this.zip = feature.properties.postcode;
-                        this.showResults = false;
-                        this.locked = true;
-                        this.$nextTick(() => {
-                             this.dirty = (this.query !== this.$refs.field.defaultValue);
-                             $dispatch('input'); 
-                        });
-                    },
+    </form>
 
-                    async search() {
-                        if (this.query.length < 3) { this.results = []; return; }
-                        try {
-                            let response = await fetch(`https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(this.query)}&limit=5&autocomplete=1`);
-                            if (!response.ok) throw new Error('Network error');
-                            let data = await response.json();
-                            this.results = data.features; 
-                            this.showResults = true;
-                        } catch (e) { console.error(e); }
+    <script type="text/html" id="icon-pencil">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+    </script>
+
+    <script>
+        document.addEventListener('alpine:init', () => {
+            
+            Alpine.data('formManager', () => ({
+                isGlobalDirty: false,
+                globalErrors: false,
+
+                init() {
+                    this.$el.addEventListener('field-touched', () => { this.isGlobalDirty = true; });
+                    this.$el.addEventListener('field-error', (e) => { this.globalErrors = e.detail; });
+                },
+
+                submitForm() {
+                    if(this.globalErrors) return;
+
+                    this.$el.querySelectorAll(':disabled').forEach(el => {
+                        el.disabled = false;
+                    });
+
+                    this.$el.submit();
+                }
+            }));
+
+            Alpine.data('inputField', () => ({
+                editing: false,
+                error: null,
+
+                enable() {
+                    this.editing = true;
+                    this.$nextTick(() => this.$refs.input.focus());
+                },
+
+                touch() { this.$dispatch('field-touched'); },
+
+                validateEmail(val) {
+                    const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+                    this.error = valid ? null : 'Email invalide';
+                    this.$dispatch('field-error', !valid);
+                },
+
+                validatePhone(val) {
+                    const valid = /^0[0-9]{9}$/.test(val);
+                    this.error = valid ? null : 'Doit comporter 10 caractères et commencer par un 0';
+                    this.$dispatch('field-error', !valid);
+                }
+            }));
+
+            Alpine.data('addressField', (initAddr, initCity, initZip) => ({
+                editing: false,
+                display: initAddr,
+                city: initCity,
+                zip: initZip,
+                results: [],
+                error: null,
+
+                enable() {
+                    this.editing = true;
+                    this.$nextTick(() => {
+                        this.$refs.input.focus();
+                        this.$refs.input.select();
+                    });
+                },
+
+                touch() { this.$dispatch('field-touched'); },
+
+                async search() {
+                    if (this.display.length < 3) { this.results = []; return; }
+                    try {
+                        let res = await fetch(`https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(this.display)}&limit=5&autocomplete=1`);
+                        let data = await res.json();
+                        this.results = data.features;
+                    } catch (e) { console.error(e); }
+                },
+
+                select(item) {
+                    this.display = item.properties.label;
+                    this.city = item.properties.city;
+                    this.zip = item.properties.postcode;
+                    this.results = [];
+                    this.touch();
+                },
+
+                closeDropdown() {
+                    this.results = [];
+                }
+            }));
+
+            Alpine.data('passwordManager', () => ({
+                editing: false,
+                p1: '',
+                p2: '',
+                errorType: null,
+
+                enable() {
+                    this.editing = true;
+                    this.$nextTick(() => this.$refs.p1input.focus());
+                },
+
+                check() {
+                    this.$dispatch('field-touched');
+                    
+                    if (this.p1.length > 0) {
+                        if (this.p1.length < 8) {
+                            this.errorType = 'length';
+                            this.$dispatch('field-error', true);
+                            return;
+                        }
+
+                        if (this.p1 !== this.p2) {
+                            this.errorType = 'match';
+                            this.$dispatch('field-error', true);
+                            return;
+                        }
+
+                        this.errorType = null;
+                        this.$dispatch('field-error', false);
+                    } else {
+                        this.errorType = null;
+                        this.$dispatch('field-error', false);
                     }
-                }"
-                @click.outside="showResults = false; locked = true"
-                style="position: relative;">
-
-                <label for="adresse">Adresse</label>
-                
-                <div class="input-wrapper">
-                    <input type="text" id="adresse" name="adresse" 
-                        x-model="query"
-                        :readonly="locked"
-                        x-ref="field"
-                        @input.debounce.100ms="search(); dirty = ($el.value !== $el.defaultValue)"
-                        @blur="setTimeout(() => locked = true, 200)"
-                        placeholder="Rechercher une adresse..." required autocomplete="off"
-                        class="@error('adresse') is-invalid @enderror"
-                        :class="{ 'has-changed': dirty }">
-                    
-                    <input type="hidden" name="ville" x-model="city">
-                    <input type="hidden" name="code_postal" x-model="zip">
-
-                    <div class="edit-icon" @click="locked = false; $nextTick(() => $refs.field.focus())" title="Modifier">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                    </div>
-                </div>
-
-                @error('adresse') <div class="text-danger">{{ $message }}</div> @enderror
-
-                <ul x-show="showResults && results.length > 0" class="autocomplete-dropdown" x-transition>
-                    <template x-for="feature in results" :key="feature.properties.id">
-                        <li @click="selectAddress(feature)" style="padding: 8px; cursor: pointer"
-                            @mouseenter="$el.style.backgroundColor = '#f8f9fa'"
-                            @mouseleave="$el.style.backgroundColor = 'white'">
-                            <span x-text="feature.properties.label" style="font-weight: bold; display: block;"></span>
-                            <span style="font-size: 0.85em; color: #666;">
-                                <span x-text="feature.properties.postcode"></span> <span x-text="feature.properties.city"></span>
-                            </span>
-                        </li>
-                    </template>
-                </ul>
-            </div>
-
-            @if($isEntreprise)
-                <div id="entrepriseFields" style="display: flex; flex-direction: column; gap: 1.25rem;">
-                    <div style="width: 100%; height: 1px; background: var(--border-default); margin: 0.5rem 0;"></div>
-                    
-                    <div class="input-groupe" x-data="{ locked: true, dirty: false }">
-                        <label for="siret">Numéro SIRET</label>
-                        <div class="input-wrapper">
-                            <input type="text" id="siret" name="siret" 
-                                   value="{{ old('siret', $entreprise->numsiret ?? '') }}" 
-                                   required 
-                                   :readonly="locked"
-                                   @blur="locked = true"
-                                   @input="dirty = ($el.value !== $el.defaultValue)"
-                                   x-ref="field"
-                                   class="@error('siret') is-invalid @enderror"
-                                   :class="{ 'has-changed': dirty }">
-                            
-                            <div class="edit-icon" @click="locked = false; $nextTick(() => $refs.field.focus())" title="Modifier">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                            </div>
-                        </div>
-                        @error('siret') <div class="text-danger">{{ $message }}</div> @enderror
-                    </div>
-                    
-                    <div class="input-groupe" x-data="{ locked: true, dirty: false, initial: '' }" x-init="initial = $refs.field.value">
-                        <label for="secteur">Secteur d'activité</label>
-                        <div class="input-wrapper">
-                            <select name="secteur" id="secteur" 
-                                    class="@error('secteur') is-invalid @enderror" 
-                                    :class="{ 'has-changed': dirty }"
-                                    required 
-                                    :disabled="locked"
-                                    @blur="locked = true"
-                                    @change="dirty = ($el.value !== initial)"
-                                    x-ref="field">
-                                <option value="" disabled>Choisir un secteur</option>
-                                @foreach($secteurs as $s)
-                                    <option value="{{ $s->nom_secteur }}" 
-                                        {{ old('secteur', ($entreprise->idsecteur == $s->idsecteur ? $s->nom_secteur : '')) == $s->nom_secteur ? 'selected' : '' }}>
-                                        {{ $s->nom_secteur }}
-                                    </option>
-                                @endforeach
-                            </select>
-
-                            <div class="edit-icon" @click="locked = false; $nextTick(() => $refs.field.focus())" title="Modifier">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                            </div>
-                        </div>
-                        @error('secteur') <div class="text-danger">{{ $message }}</div> @enderror
-                    </div>
-                    
-                    <div style="width: 100%; height: 1px; background: var(--border-default); margin: 0.5rem 0;"></div>
-                </div>
-            @endif
-
-            <div class="side-by-side">
-                <div class="input-groupe" style="flex: 1;" x-data="{ locked: true, dirty: false }">
-                    <label for="password">Nouveau mot de passe</label>
-                    <div class="input-wrapper">
-                        <input type="password" id="password" name="password" 
-                               x-model="p1"
-                               placeholder="********" 
-                               :readonly="locked"
-                               @blur="locked = true"
-                               @input="dirty = ($el.value.length > 0)"
-                               x-ref="field"
-                               class="@error('password') is-invalid @enderror"
-                               :class="{ 'has-changed': dirty }">
-                        
-                        <div class="edit-icon" @click="locked = false; $nextTick(() => $refs.field.focus())" title="Modifier">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                        </div>
-                    </div>
-                    @error('password') <div class="text-danger">{{ $message }}</div> @enderror
-                    <template x-if="p1.length > 0 && p1.length < 8">
-                        <div class="text-danger">Minimum 8 caractères requis.</div>
-                    </template>
-                </div>
-                
-                <div class="input-groupe" style="flex: 1;" x-data="{ locked: true, dirty: false }">
-                    <label for="password_confirmation">Confirmation</label>
-                    <div class="input-wrapper">
-                        <input type="password" id="password_confirmation" name="password_confirmation" 
-                               x-model="p2"
-                               placeholder="********" 
-                               :readonly="locked"
-                               @blur="locked = true"
-                               @input="dirty = ($el.value.length > 0)"
-                               x-ref="field"
-                               class="@error('password_confirmation') is-invalid @enderror"
-                               :class="{ 'has-changed': dirty }">
-                        
-                        <div class="edit-icon" @click="locked = false; $nextTick(() => $refs.field.focus())" title="Modifier">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                        </div>
-                    </div>
-                    <template x-if="p1 !== p2 && p2.length > 0">
-                        <div class="text-danger">Les mots de passe ne correspondent pas.</div>
-                    </template>
-                </div>
-            </div>
-
-            <div class="side-by-side between">
-                <a href="{{ url('/') }}" class="other-btn" style="width:fit-content;" >Annuler</a>
-                <input type="submit" value="Enregistrer" class="submit-btn" style="width:fit-content;" :disabled="!isDirty || (p1.length > 0 && (p1.length < 8 || p1 !== p2))">
-            </div>
-        </form>
+                }
+            }));
+        });
+    </script>
 @endsection
