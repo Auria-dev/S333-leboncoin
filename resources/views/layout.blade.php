@@ -34,10 +34,7 @@
             </ul>
             <div>
                 @auth
-                    <form method="POST" action="{{ url('logout') }}">
-                        @csrf
-                        <button type="submit">Se déconnecter</button>
-                    </form>
+                    <a href="{{ url('/profile') }}" class="button" wire:navigate>Mon compte</a>
                 @else
                     <a href="{{ url('/login') }}" class="button" wire:navigate>Se connecter</a>
                 @endauth
