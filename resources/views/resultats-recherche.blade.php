@@ -90,7 +90,7 @@
                 </div>
         
                 <div class="input-groupe">
-                    <label for="filtreDates">Date du séjour</label>
+                    <label for="filtreDates">Dates du séjour</label>
                     <input 
                         type="date" 
                         id="filtreDates"
@@ -118,7 +118,11 @@
         </form>
         
         <p style="margin-top: 1rem; color: var(--text-muted); font-size: 0.9rem;">
-            {{ isset($annonces) ? count($annonces) : 0 }} résultats trouvés
+            @if (isset($annonces) && count($annonces) > 0)
+                {{ count($annonces) }} résultats trouvés
+            @else
+                Aucun résultat
+            @endif
         </p>
     </div>
 

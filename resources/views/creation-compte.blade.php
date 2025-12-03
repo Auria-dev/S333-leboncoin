@@ -5,25 +5,35 @@
 @section('content')
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<!--     
-    idutilisateur
-    idville => ville
-    tel
-    mail
-    addr
-    date creation
-    date latest login
 
-    particulier:
-    - code particulier
-
-    entreprise:
-    - num siret
-    - id secteur  => secteur -->
+    {{-- Style pour les erreurs de validation --}}
+    <style>
+        .text-danger {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+        .is-invalid {
+            border-color: #dc3545 !important;
+        }
+        .text-danger {
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 
     <form action="{{ url('register') }}" method="POST" style="display: flex; flex-direction: column; gap: 1.25rem;">
             @csrf
             
+            @if ($errors->any())
+                <div style="background-color: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; border: 1px solid #f5c6cb;">
+                    <strong>Oups !</strong> Il y a des problèmes avec votre saisie.
+                </div>
+            @endif
+
             <div class="input-groupe">
                 <label>Type de compte</label>
                 <div class="radio-group-container">
@@ -40,28 +50,123 @@
 
             <div class="side-by-side">
                 <div class="input-groupe" style="flex: 1;">
-                    <label for="nom">Nom</label>
-                    <input type="text" id="nom" name="nom" value="{{ old('nom') }}" placeholder="Votre nom" autofocus required>
+                    <label for="prenom">Prénom</label>
+                    <input type="text" id="prenom" name="prenom" value="{{ old('prenom') }}" placeholder="Votre prénom" required autofocus
+                           class="@error('prenom') is-invalid @enderror">
+                    @error('prenom')
+                        <div class="text-danger">{{ $message }}</div>
+                    @enderror
                 </div>
                 <div class="input-groupe" style="flex: 1;">
-                    <label for="prenom">Prénom</label>
-                    <input type="text" id="prenom" name="prenom" value="{{ old('prenom') }}" placeholder="Votre prénom" required>
+                    <label for="nom">Nom</label>
+                    <input type="text" id="nom" name="nom" value="{{ old('nom') }}" placeholder="Votre nom" required
+                           class="@error('nom') is-invalid @enderror">
+                    @error('nom')
+                        <div class="text-danger">{{ $message }}</div>
+                    @enderror
                 </div>
             </div>
 
             <div class="input-groupe">
                 <label for="email">Email</label>
-                <input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="exemple@email.com" required>
+                <input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="exemple@email.com" required
+                       class="@error('email') is-invalid @enderror">
+                @error('email')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
             </div>
 
+            <!-- TODO (auria): auto add spaces (visually only) -->
             <div class="input-groupe">
                 <label for="telephone">Téléphone</label>
-                <input type="tel" id="telephone" name="telephone" value="{{ old('telephone') }}" placeholder="06 12 34 56 78" required>
+                <input type="tel" id="telephone" name="telephone" value="{{ old('telephone') }}" placeholder="06 12 34 56 78" required
+                        class="@error('telephone') is-invalid @enderror">
+                @error('telephone')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
             </div>
 
-            <div class="input-groupe">
+            <div class="input-groupe" 
+                x-data="{
+                    query: '{{ old('adresse') }}',
+                    city: '{{ old('ville') }}',
+                    zip: '{{ old('code_postal') }}',
+                    results: [],
+                    showResults: false,
+
+                    selectAddress(feature) {
+                        this.query = feature.properties.label;
+                        
+                        this.city = feature.properties.city;
+                        this.zip = feature.properties.postcode;
+                        
+                        this.showResults = false;
+                    },
+
+                    async search() {
+                        if (this.query.length < 3) {
+                            this.results = [];
+                            return; 
+                        }
+
+                        try {
+                            let response = await fetch(`https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(this.query)}&limit=5&autocomplete=1`);
+                            
+                            if (!response.ok) throw new Error('Network error');
+                            
+                            let data = await response.json();
+                            
+                            this.results = data.features; 
+                            this.showResults = true;
+
+                        } catch (e) {
+                            console.error(e);
+                        }
+                    }
+                }"
+                @click.outside="showResults = false"
+                style="position: relative;">
+
                 <label for="adresse">Adresse</label>
-                <input type="text" id="adresse" name="adresse" value="{{ old('adresse') }}" placeholder="Votre adresse complète" required>
+
+                <input 
+                    type="text" 
+                    id="adresse" 
+                    name="adresse" 
+                    x-model="query"
+                    @input.debounce.300ms="search()"
+                    placeholder="9 Rue de l'Arc en Ciel, 74940 Annecy" 
+                    required
+                    autocomplete="off"
+                    class="@error('adresse') is-invalid @enderror"
+                >
+
+                <input type="hidden" name="ville" x-model="city">
+                <input type="hidden" name="code_postal" x-model="zip">
+
+                @error('adresse')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
+
+                <ul x-show="showResults && results.length > 0" 
+                    class="autocomplete-dropdown"
+                    x-transition>
+                    
+                    <template x-for="feature in results" :key="feature.properties.id">
+                        <li @click="selectAddress(feature)" 
+                            style="padding: 8px; cursor: pointer"
+                            @mouseenter="$el.style.backgroundColor = '#f8f9fa'"
+                            @mouseleave="$el.style.backgroundColor = 'white'">
+                            
+                            <span x-text="feature.properties.label" style="font-weight: bold; display: block;"></span>
+                            
+                            <span style="font-size: 0.85em; color: #666;">
+                                <span x-text="feature.properties.postcode"></span> 
+                                <span x-text="feature.properties.city"></span>
+                            </span>
+                        </li>
+                    </template>
+                </ul>
             </div>
 
             <div id="entrepriseFields" style="display: none; flex-direction: column; gap: 1.25rem;">
@@ -69,22 +174,28 @@
                 
                 <div class="input-groupe">
                     <label for="siret">Numéro SIRET</label>
-                    <input type="text" id="siret" name="siret" value="{{ old('siret') }}" placeholder="14 chiffres">
+                    <input type="text" id="siret" name="siret" value="{{ old('siret') }}" placeholder="14 chiffres"
+                           class="@error('siret') is-invalid @enderror">
+                    @error('siret')
+                        <div class="text-danger">{{ $message }}</div>
+                    @enderror
                 </div>
                 
                 <div class="input-groupe">
                     <label for="secteur">Secteur d'activité</label>
-                    <select name="secteur" id="secteur">
+                    <select name="secteur" id="secteur" class="@error('secteur') is-invalid @enderror">
                         <option value="" disabled selected>Choisir un secteur</option>
                         @if(isset($secteurs))
                             @foreach($secteurs as $s)
-                                <option value="{{ $s->nom_secteur }}">
+                                <option value="{{ $s->nom_secteur }}" {{ old('secteur') == $s->nom_secteur ? 'selected' : '' }}>
                                     {{ $s->nom_secteur }}
                                 </option>
                             @endforeach
                         @endif
-
                     </select>
+                    @error('secteur')
+                        <div class="text-danger">{{ $message }}</div>
+                    @enderror
                 </div>
                 
                 <div style="width: 100%; height: 1px; background: var(--border-default); margin: 0.5rem 0;"></div>
@@ -92,11 +203,16 @@
 
             <div class="input-groupe" style="flex: 1;">
                 <label for="password">Mot de passe</label>
-                <input type="password" id="password" name="password" placeholder="Votre mot de passe" required>
+                <input type="password" id="password" name="password" placeholder="Votre mot de passe" required
+                       class="@error('password') is-invalid @enderror">
+                @error('password')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
             </div>
             <div class="input-groupe" style="flex: 1;">
                 <label for="password_confirmation">Confirmation</label>
-                <input type="password" id="password_confirmation" name="password_confirmation" placeholder="Votre mot de passe" required>
+                <input type="password" id="password_confirmation" name="password_confirmation" placeholder="Votre mot de passe" required
+                       class="@error('password_confirmation') is-invalid @enderror">
             </div>
 
             <div style="margin-top: 1rem;">
@@ -139,6 +255,8 @@
     document.addEventListener("DOMContentLoaded", function() {
         const enterpriseRadio = document.getElementById('compteEntreprise');
         
+        // Cette partie gère la réouverture automatique du volet "Entreprise"
+        // si une erreur de validation survient après avoir soumis le formulaire
         if(enterpriseRadio.checked) {
             const container = document.getElementById('entrepriseFields');
             const siretInput = document.getElementById('siret');

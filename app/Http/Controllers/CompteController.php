@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Providers\RouteServiceProvider;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -44,27 +45,49 @@ class CompteController extends Controller {
 
     function store(Request $req) {
         $req->validate([
-            'nom' => 'required',
-            'prenom' => 'required',
-            'password' => 'required|confirmed|min:8',
-            'telephone' => 'required|unique:utilisateur,telephone',
+            'nom' => 'required|string|max:50',
+            'prenom' => 'required|string|max:50',
             'email' => 'required|email|unique:utilisateur,mail',
-            'adresse' => 'required',
+            'telephone' => 'required|digits:10|unique:utilisateur,telephone', // TODO (auria): better phone number handling (remove spaces before checking, so on)
+            'adresse' => 'required|string',
+            'password' => 'required|string|min:8|confirmed',
         ]);
-
+    
+        // we don't have all the cities yet so just store things here:
+        $nomVille = '';
+        
         $user = Utilisateur::create([
-            'idville' => 1, // TODO: find out the city 
+            'idville' => 1, // TODO (auria): this! (use API to find real locations n stuff ykyk, yurr durr)
             'nom_utilisateur' => $req->nom,
             'prenom_utilisateur' => $req->prenom,
             'mot_de_passe' => Hash::make($req->password),
             'telephone' => $req->telephone,
             'mail' => $req->email,
             'adresse_utilisateur' => $req->adresse,
-            'date_creation' => date('Y-m-d H:i:s')
+            'date_creation' => now()
         ]);
 
         Auth::login($user);
+
+        $user = auth()->user();
         
+        if ($req->typeCompte == 'particulier') {
+            DB::table('particulier')->insert(
+                array(
+                    'idparticulier'    => $user->idutilisateur, 
+                    'code_particulier' => 0 // 0 by default, user is a locataire until they upload something      
+                )
+            );
+        } else {
+            DB::table('entreprise')->insert(
+                array(
+                    'identreprise' => $user->idutilisateur, 
+                    'numsiret'     => $req->siret,
+                    'idsecteur'    => 1 // TODO (auria): this!
+                )
+            );
+        }
+
         return redirect(RouteServiceProvider::HOME);
     }
 

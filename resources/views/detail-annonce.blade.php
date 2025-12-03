@@ -59,11 +59,11 @@
             </li>
             <li class="detail-item">
                 <span class="detail-label">Heure arrivée</span>
-                {{ $annonce->heure_arrivee}}
+                {{ \Carbon\Carbon::parse($annonce->heure_arrivee)->format('H:i') }}
             </li>
             <li class="detail-item">
                 <span class="detail-label">Heure départ</span>
-                {{ $annonce->heure_depart }}
+                {{ \Carbon\Carbon::parse($annonce->heure_depart)->format('H:i') }}
             </li>
             <li class="detail-item" style="grid-column: span 2;">
                 <span class="detail-label">Nombre de chambres</span>
