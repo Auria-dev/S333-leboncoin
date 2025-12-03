@@ -131,8 +131,7 @@
         <p class="section-title">Annonce(s)</p>
 
         <div class="res-scroller">
-
-@foreach($annonce->similaires as $similaire)
+        @foreach($annonce->similaires as $similaire)
         <a class="similaire-card" href="{{ url('annonce/'.strval($similaire->idannonce)) }}">
             <div class="similaire-card-img">
                 @if(isset($similaire->photo) && count($similaire->photo) > 0)
@@ -164,7 +163,7 @@
                     </div>
             </div>
         </a>
-    @endforeach
+        @endforeach
     </div>
 </div>
 
