@@ -11,11 +11,18 @@
                 <span style="text-transform: uppercase;"> {{ $proprietaire->nom_utilisateur }} </span> 
                     {{ $proprietaire->prenom_utilisateur }} 
             </strong></p>
-            <p> {{ $proprietaire->adresse_utilisateur . ', ' . $proprietaire->ville->nomville . ' ' . $proprietaire->ville->code_postal}} </p>
-            <p> {{ $proprietaire->annonce->count() }} annonces publiées</p>
-            <div class="notation">
+             <div class="notation">
                 <p> <span class="stars" style="--rating: {{ $moyenneAvis }};"></span> {{ $moyenneAvis . ' (' . $nbAvis . ' avis) '}} </p>
             </div>
+            <p> {{ $proprietaire->ville->departement->nom_departement }} </p>
+            <p> Membre depuis {{ strtolower(\Carbon\Carbon::parse($proprietaire->date_creation)->translatedFormat('F Y')) }} </p>
+            <p> 
+                @if(isset($proprietaire->annonce) && count($proprietaire->annonce) > 1)
+                    {{ $proprietaire->annonce->count() }} annonces 
+                @else 
+                    {{ $proprietaire->annonce->count() }} annonce
+                @endif
+            </p>           
         </div>
     </div>
 

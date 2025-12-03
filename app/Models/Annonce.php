@@ -37,6 +37,10 @@ class Annonce extends Model
         return $this->hasMany(Reservation::class, "idannonce");
     }
 
+    // public function similaire() {
+    //     return $this->hasMany(AnnonceSimilaire::class, "idannonce");
+    // }
+
     public function equipement() {
         return $this->belongsToMany(Equipement::class, 
         "equipe", 
