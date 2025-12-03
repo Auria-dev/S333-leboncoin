@@ -19,7 +19,7 @@ class AnnonceController extends Controller
 
     return view ("detail-annonce", [
       'annonce'=>Annonce::findOrFail($id), 
-      'isFav' => $exists 
+      'isFav' => $exists // TODO : faire un attribut dans annonce à la place
     ]);
   }
 
@@ -41,9 +41,7 @@ class AnnonceController extends Controller
             ->where('idannonce', '=', $idannonce)
             ->delete();
     }
-    return view ("detail-annonce", [
-      'annonce'=>Annonce::findOrFail($idannonce), 
-      'isFav' => $exists 
-    ]);
+    
+    return redirect()->route('annonce', ['id' => $idannonce]);
   }
 }
