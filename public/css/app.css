@@ -166,7 +166,7 @@ textarea {
     font-family: inherit;
     font-size: 1rem;
     color: var(--text-main);
-    background-color: var(--bg-subtle);
+    background-color: white;
     border: 1px solid transparent;
     border-radius: var(--radius-input);
     transition: all 0.2s;
@@ -925,7 +925,7 @@ input.date-custom-input {
 }
 
 .cal-footer {
-    margin-top: 1rem;
+    /* margin-top: 1rem; */
     padding-top: 1rem;
     border-top: 1px solid var(--border-default);
     display: flex;
