@@ -256,6 +256,7 @@
 
     @endif
 
+    <a href="{{ url('/creer_annonce') }}" class="other-btn"  style='margin-top: 1rem;' wire:navigate>Déposer une annonce</a>
     <a href="{{ url('/modifier_compte') }}" class="other-btn"  style='margin-top: 1rem;' wire:navigate>Modifier mon compte</a>
 
     <form method="POST" action="{{ url('logout') }}" style='margin-top: 1rem;'>
