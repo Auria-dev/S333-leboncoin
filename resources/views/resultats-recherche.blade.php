@@ -159,34 +159,34 @@
         <input type="hidden" name="datedebut" value="{{ $datedebut ?? '' }}">
         <input type="hidden" name="datefin" value="{{ $datefin ?? '' }}">
         <input type="hidden" name="filtreTypeHebergement" value="{{ $filtreTypeHebergement ?? '' }}">
-        dd()
 
         <div class="light-box-content">
             <h2 style="text-align: center;">Sauvegarder cette recherche</h2>
-            
             <div>
-                <h3>mot clé</h3>
+                <h3>Nom de la recherche</h3>
+                <input type="text" name="nom_sauvegarde" placeholder="'Vacances de noël'" autofocus required />
+            </div>
+            <div>
+                <h3>Lieu</h3>
                 <input type="text" value="{{$search ?? 'Aucun' }}" disabled/>
             </div>
             <div>
-                <h3>type d'hebergement</h3>
+                <h3>Type d'hebergement</h3>
                 <input type="text" value="{{$filtreTypeHebergement ?? 'Tous'}}" disabled/>
             </div>
             <div class="date-inputs">
                 <div>
-                    <h3>date de debut</h3>
+                    <h3>Date de debut</h3>
                     <input type="text" value="{{$datedebut ?? 'NULL' }}" class="date" disabled/>
                 </div>
                 <div>
-                    <h3>date de fin</h3>
+                    <h3>Date de fin</h3>
                     <input type="text" value="{{$datefin ?? 'NULL' }}" class="date" disabled/>
                 </div>
             </div>
-            <div>
-                <input type="text" name="nom_sauvegarde" placeholder="Nom de la recherche" required/>
-            </div>
+
             <div style="display: flex; text-align: center; margin-top: 1rem; gap: 10px;">
-                <button class="submit-btn btn-close-light-box">Annuler</button>
+                <button class="other-btn btn-close-light-box">Annuler</button>
                 <button class="submit-btn btn-confirm-save-search">Confirmer</button>
             </div>
         </div>
