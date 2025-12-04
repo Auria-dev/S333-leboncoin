@@ -572,6 +572,7 @@ input[type="submit"]:hover {
 
 
 .results-header-form {
+    position: relative;
     background-color: var(--primary-light);
     padding: 1rem;
     border-radius: var(--radius-card);
@@ -1474,3 +1475,198 @@ input.date-custom-input {
     padding: 10px;
     font-weight: bold;
 }
+
+
+#save-search-btn {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    width: auto;
+    margin: 10px;
+}
+
+
+.light-box-save-search {
+    z-index: 2000;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    backdrop-filter: blur(20px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.light-box-content {
+    display: grid;
+    width: 600px;
+    height: auto;
+    background-color: white;
+    gap: 20px;
+    border: #F27A55 2px solid;
+    border-radius: var(--radius-card);
+    overflow: hidden;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.light-box-content {
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+.date-inputs {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.light-box-content input:disabled {
+    background-color: #e9ecef;
+    color: #6c757d;
+    cursor: default;
+    border: 1px solid #ced4da;
+    opacity: 1;
+}
+
+.date-inputs div {
+    width: 100%;
+}
+
+.light-box-content h3 {
+    margin: 10px 0;
+}
+
+/* =========================================
+   STYLE POUR LES CARTES DE RECHERCHE
+   ========================================= */
+
+.search-card {
+    flex: 0 0 300px; /* Largeur fixe dans le scroller */
+    background-color: white;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-card);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+    min-height: 200px;
+    box-shadow: var(--shadow-sm);
+}
+
+.search-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-card);
+    border-color: rgba(255, 139, 102, 0.3);
+}
+
+/* Lien global qui couvre la carte (sauf le bouton supprimer) */
+.search-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: 1rem;
+}
+
+.search-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.search-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--text-main);
+    margin-bottom: 0.25rem;
+    line-height: 1.3;
+}
+
+/* Badge pour le type d'hébergement */
+.search-tag {
+    background-color: var(--primary-light);
+    color: var(--primary);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    width: fit-content;
+}
+
+.search-criteria {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-top: auto;
+}
+
+.criteria-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.criteria-icon {
+    width: 18px;
+    height: 18px;
+    stroke: var(--primary);
+    stroke-width: 2px;
+}
+
+/* Bouton supprimer positionné en absolu ou flex */
+.delete-search-form {
+    position: absolute;
+    top: 1.2rem;
+    right: 1.2rem;
+    z-index: 10;
+}
+
+.btn-delete-search {
+    background: white;
+    border: 1px solid var(--border-default);
+    color: #dc3545; /* Rouge erreur */
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-delete-search:hover {
+    background-color: #fff5f5;
+    border-color: #dc3545;
+    transform: scale(1.1);
+}
+
+.btn-delete-search svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* État vide */
+.search-empty {
+    width: 100%;
+    text-align: center;
+    padding: 40px;
+    color: var(--text-muted);
+    background: var(--bg-subtle);
+    border-radius: var(--radius-card);
+    font-style: italic;
+}
+
+
+
