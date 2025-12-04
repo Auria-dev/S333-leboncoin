@@ -708,7 +708,7 @@ input[type="submit"]:hover {
     display: flex;
     align-items: center;
     gap: 0.35rem;
-    font-weight: 600;
+    font-weight: 400;
 }
 
 .icon-pin {
@@ -1425,6 +1425,10 @@ input.date-custom-input {
     color: var(--text-main);
     margin: 0;
     margin-bottom: 2px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+
 }
 
 .similaire-info {
