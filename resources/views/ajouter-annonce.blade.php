@@ -6,7 +6,9 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
-    <form method="POST" action="{{ url('ajouter_annonce') }}">
+    <div style="width: 100%; display: flex; justify-content: center;">
+
+    <form method="POST" action="{{ url('ajouter_annonce') }}" style="display: flex; flex-direction: column; width: 700px; ">
         @csrf 
         <label>Titre</label>
         <input type="text" id="titre" name="titre" placeholder="Maison 3 chambres centre d'Annecy" required>
@@ -138,4 +140,6 @@
             <input type="submit" value="Déposer" class="submit-btn">
         </div>
     </form>
+
+    </div>
 @endsection
