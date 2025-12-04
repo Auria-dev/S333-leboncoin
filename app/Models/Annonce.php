@@ -13,6 +13,10 @@ class Annonce extends Model
     protected $primaryKey = "idannonce";
     public $timestamps = false;
 
+    protected $fillable = [
+        'idtypehebergement', 
+    ];
+
     public function ville() {
         return $this->belongsTo(Ville::class, "idville");
     }

@@ -9,6 +9,7 @@ use App\Models\Annonce;
 use App\Models\TypeHebergement;
 use App\Models\Favoris;
 use App\Models\Calendrier;
+use App\Models\Particulier;
 
 class AnnonceController extends Controller {
   public function view($id) {
@@ -73,19 +74,62 @@ class AnnonceController extends Controller {
     ]);
   }
 
-  function affichier_form() {
-    // retourner la view de creation d'annonce
+  function afficher_form() {
+    $types = TypeHebergement::all();
+    return view("ajouter-annonce",  ['types' => $types]);
   }
 
   function ajouter_annonce(Request $req) {
-    // si l'utilisateur n'est pas un compte de type 
-    $user = Auth::user();
-    $typeCompte = $user->getTypeParticulier(); // voir dans model Utilisateur
 
-    // si l'utilisateur n'est que de compte "Locataire", le passer en "Locataire & Proprietaire"
-    
+    if (Auth::check()) {
+      $user = auth()->user();
+      $iduser = auth()->user()->idutilisateur;
+    }
+    $typeCompte = $user->getTypeParticulier(); 
+    if($typeCompte == 'Locataire') {
+      Particulier::where('idparticulier', $iduser)->update(['code_particulier' => 2]);
+    }
     // OPTIONNEL, vérif que il n'a aucune réservation, et puis fait le juste passer en "Propietaire"
 
-    // créer une annonce a partir de la requete $req
-  }
+    dd($req);
+    $req->validate([
+            'titre' => 'required|string|max:128',
+            'depot_adresse' => 'required|string',   
+            'ville' => 'required|string',
+            'DepotTypeHebergement' => 'required',
+            'prix_nuit' => 'required|numeric|min:0.01',
+            'nb_nuits' => 'required|integer|min:1',
+            'nb_pers' => 'required|integer|min:1',
+            'nb_bebes' => 'nullable|integer|min:0', 
+            'nb_animaux' => 'nullable|integer|min:0',
+            'nb_chambres' => 'required|integer|min:1',
+            'heure_arr' => 'required|date_format:H:i',
+            'heure_dep' => 'required|date_format:H:i',
+            'desc' => 'required|string|max:2000',
+        ]);
+
+        $codeville = Ville::where('nom_ville', $req->ville)->first();
+        $type_heb = TypeHebergement::where('nom_type_hebergement', $req->DepotTypeHebergement)->first();
+
+        $annonce = Annonce::create([
+            'idtypehebergement' => $type_heb->idtypehebergement,
+            'idproprietaire' => $iduser,
+            'idville' => $codeville->idville,
+            'titre_annonce' => $req->titre,
+            'prix_nuit' => $req->prix_nuit,
+            'nb_nuit_min' => $req->nb_nuits,
+            'nb_bebe_max' => $req->nb_bebes,
+            'nb_personnes_max' => $req->nb_pers,
+            'nb_animaux_max' => $req->nb_animaux,
+            'adresse_annonce' => $req->depot_adresse,
+            'description_annonce' => $req->desc,
+            'date_publication' => now(),
+            'heure_arrivee' => $req->heure_arr,
+            'heure_depart' => $req->heure_dep,
+            'nombre_chambre' => $req->nb_chambres,
+            'longitude' => null,
+            'latitude' => null,
+        ]);
+        return redirect(RouteServiceProvider::HOME);
+    }
 }
