@@ -6,7 +6,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
-    {{-- Style pour les erreurs de validation --}}
     <style>
         .text-danger {
             color: #dc3545;
@@ -24,8 +23,9 @@
             to { opacity: 1; transform: translateY(0); }
         }
     </style>
+    <div style="width: 100%; display: flex; justify-content: center;">
 
-    <form action="{{ url('register') }}" method="POST" style="display: flex; flex-direction: column; gap: 1.25rem;">
+    <form action="{{ url('register') }}" method="POST" style="display: flex; flex-direction: column; gap: 1.25rem; width: 35vw;">
             @csrf
             
             @if ($errors->any())
@@ -224,6 +224,7 @@
             </div>
         </form>
 
+    </div>
 <script>
     function toggleEntreprise(isEntreprise) {
         const container = document.getElementById('entrepriseFields');

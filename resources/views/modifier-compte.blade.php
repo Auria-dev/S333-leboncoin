@@ -11,7 +11,7 @@
         :root {
             --input-bg-disabled: #f9fafb;
             --input-border-disabled: transparent;
-            --input-text-disabled: #4b5563;
+            --input-text-disabled: #a38c83ff;
         }
 
         .form-container { display: flex; flex-direction: column; gap: 1.5rem; max-width: 800px; margin: 0 auto; }
@@ -26,7 +26,6 @@
         .input-wrapper input:disabled, 
         .input-wrapper select:disabled {
             background-color: var(--input-bg-disabled);
-            border: 1px solid var(--input-border-disabled);
             color: var(--input-text-disabled);
             cursor: default;
             font-weight: 500;
@@ -35,7 +34,7 @@
 
         .input-wrapper input:not(:disabled), 
         .input-wrapper select:not(:disabled) {
-            background-color: #fff;
+            background-color: var(--input-focus);
             border: 1px solid var(--primary);
             box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
             color: #000;
@@ -91,7 +90,7 @@
         <button type="submit">Upload</button>  
     </form>
 
-    <img src="{{ $user->photo_profil }}"/>
+    <img src="{{ $user->photo_profil }}"/ style="width:150px; height:150px; object-fit:cover; border-radius:50%; margin-bottom:1rem;">
     
     <form action="{{ url('modifier_compte/update') }}" method="POST" class="form-container"
           x-data="formManager()"
