@@ -1,0 +1,43 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Providers\RouteServiceProvider;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Foundation\Auth\User;
+use App\Models\Utilisateur;
+use App\Models\Ville;
+use App\Models\SecteurActivite;
+use Illuminate\Support\Facades\Storage;
+
+class UploadImageController extends Controller
+{
+    public function upload(Request $request)  
+    {  
+        if($request->hasFile('file')) {  
+            $file = $request->file('file');  
+            $path = $file->store('images', ['disk' => 'public']);
+            dd(Storage::url($path)  );
+            $url = asset('images/'. $path);
+        } 
+        $user = Auth::user();
+        
+        $ville = Ville::find($user->idville); 
+        
+        $entreprise = DB::table('entreprise')->where('identreprise', $user->idutilisateur)->first();
+        $isEntreprise = $entreprise !== null;
+        
+        $secteurs = SecteurActivite::all();
+
+        return view("modifier-compte", [
+            'user' => $user,
+            'ville' => $ville,
+            'entreprise' => $entreprise,
+            'isEntreprise' => $isEntreprise,
+            'secteurs' => $secteurs
+        ]);
+    }
+}

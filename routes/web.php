@@ -7,6 +7,8 @@ use App\Http\Controllers\ProprietaireController;
 use App\Http\Controllers\CompteController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\UploadImageController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -46,3 +48,5 @@ Route::get('/ajouter_fav/{id}', [AnnonceController::class, 'addFav'])->middlewar
 
 Route::get('/modifier_compte', [CompteController::class, 'view_modifier'])->middleware('auth');
 Route::put('/modifier_compte/update', [CompteController::class, 'modifier'])->middleware('auth');
+
+Route::post('/upload', [CompteController::class, 'upload'])->middleware('auth');
