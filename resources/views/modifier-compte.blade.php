@@ -85,6 +85,14 @@
         .password-container.is-editing { background-color: #fff; border-color: var(--primary); }
     </style>
 
+    <form method="POST" action="{{ url('upload') }}" enctype="multipart/form-data">  
+        @csrf  
+        <input type="file" name="file">  
+        <button type="submit">Upload</button>  
+    </form>
+
+    <img src="{{ $user->photo_profil }}"/>
+    
     <form action="{{ url('modifier_compte/update') }}" method="POST" class="form-container"
           x-data="formManager()"
           @submit.prevent="submitForm">

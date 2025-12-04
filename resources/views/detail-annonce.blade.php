@@ -16,7 +16,269 @@
             @forEach($annonce->photo as $photo)
                 <img src="{{ $photo->nomphoto }}" alt="" style="width:100%; height:auto;" class="photo-item" data-index="{{ $loop->index }}">
             @endforEach
-        </div>       
+        </div>
+        <h3 style="margin-top: 3rem;">Disponibilité de cette annonce</h3>
+        <input type="hidden" id="booking_start_date" name="start_date">
+        <input type="hidden" id="booking_end_date" name="end_date">
+        <div id="booking-calendar-container" style="background-color: white; padding: 1rem 1rem; margin-top: 1rem; border-radius: 1rem;">
+            <div class="cal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <button id="btn-prev" class="cal-btn-nav" style="cursor: pointer; padding: 5px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>
+                </button>
+                <span id="cal-title" class="cal-titre" style="font-weight: bold; font-size: 1.1em;">Loading...</span>
+                <button id="btn-next" class="cal-btn-nav" style="cursor: pointer; padding: 5px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>
+                </button>
+            </div>
+
+            <div id="cal-grid" class="cal-grid">
+                <div class="cal-jour-semaine">Lun</div>
+                <div class="cal-jour-semaine">Mar</div>
+                <div class="cal-jour-semaine">Mer</div>
+                <div class="cal-jour-semaine">Jeu</div>
+                <div class="cal-jour-semaine">Ven</div>
+                <div class="cal-jour-semaine">Sam</div>
+                <div class="cal-jour-semaine">Dim</div>
+            </div>
+
+            <div id="cal-error" class="cal-error-msg" style="color: rgb(231, 76, 60); font-size: 0.85em; text-align: center; padding: 5px; display: none;"></div>
+
+            <div class="cal-footer" style="display: flex; justify-content: space-between; gap: 5px; margin-top: 15px;">
+                <h3>Prix du séjour: <span id="display-price">0</span> € <span style="font-size:0.6em; color:#666">({{ $annonce->prix_nuit }}€ / nuit)</span></h3>
+            </div>
+            <div class="cal-footer" style="display: flex; justify-content: space-between; gap: 5px;">
+                <button type="button" id="btn-today" class="cal-btn" style="flex: 0 0 auto;">Auj.</button>
+                <div>
+                    <button type="button" id="btn-clear" class="cal-btn cal-btn-effacer">Désélectionner</button>
+                    <button type="button" id="btn-validate" class="cal-btn cal-btn-valider">Réserver</button>
+                </div>
+            </div>
+        </div>
+
+        <style>
+            .cal-cellule.selected {
+                background-color: var(--primary);
+                color: white;
+            }
+            
+            .cal-cellule.in-range {
+                background-color: var(--primary);
+                background-color: color-mix(in srgb, var(--primary), white 80%);
+                color: black;
+                border-radius: 0;
+            }
+
+            .cal-cellule.selected:hover {
+                background-color: var(--primary-hover);
+                color: white;
+            }
+            
+
+            .cal-cellule.disabled {
+                opacity: 0.3;
+                pointer-events: none;
+                text-decoration: line-through;
+            }
+        </style>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const dispoData = JSON.parse({!! isset($dispoJson) ? json_encode($dispoJson) : '{}' !!});
+                const prixParNuit = parseFloat("{{ $annonce->prix_nuit }}");
+
+                const today = new Date();
+                today.setHours(0,0,0,0);
+                const maxDate = new Date(today);
+                maxDate.setFullYear(today.getFullYear() + 2);
+
+                let currentViewDate = new Date(today);
+                let startDate = null;
+                let endDate = null;
+
+                const gridEl = document.getElementById('cal-grid');
+                const titleEl = document.getElementById('cal-title');
+                const prevBtn = document.getElementById('btn-prev');
+                const nextBtn = document.getElementById('btn-next');
+                const todayBtn = document.getElementById('btn-today');
+                const clearBtn = document.getElementById('btn-clear');
+                
+                const startInput = document.getElementById('booking_start_date');
+                const endInput = document.getElementById('booking_end_date');
+
+                function formatDateKey(date) {
+                    const y = date.getFullYear();
+                    const m = String(date.getMonth() + 1).padStart(2, '0');
+                    const d = String(date.getDate()).padStart(2, '0');
+                    return `${y}-${m}-${d}`;
+                }
+
+                function updateHiddenInputs() {
+                    startInput.value = startDate ? formatDateKey(startDate) : '';
+                    endInput.value = endDate ? formatDateKey(endDate) : '';
+                }
+
+                function updateTotalPrice() {
+                    const priceEl = document.getElementById('display-price');
+
+                    if (startDate && endDate) {
+                        const diffTime = Math.abs(endDate - startDate);
+                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+                        const total = diffDays * prixParNuit;
+                        priceEl.textContent = total.toFixed(2);
+                    } else {
+                        priceEl.textContent = '0';
+                    }
+                }
+
+                function renderCalendar() {
+                    while (gridEl.children.length > 7) {
+                        gridEl.removeChild(gridEl.lastChild);
+                    }
+
+                    const year = currentViewDate.getFullYear();
+                    const month = currentViewDate.getMonth();
+
+                    const monthName = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' }).format(currentViewDate);
+                    titleEl.textContent = monthName.charAt(0).toUpperCase() + monthName.slice(1);
+
+                    const firstDayOfMonth = new Date(year, month, 1);
+                    let startDayIndex = firstDayOfMonth.getDay();
+                    startDayIndex = (startDayIndex === 0) ? 6 : startDayIndex - 1;
+
+                    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+                    for (let i = 0; i < startDayIndex; i++) {
+                        const emptyCell = document.createElement('div');
+                        emptyCell.className = 'cal-cellule';
+                        emptyCell.style.border = 'none';
+                        emptyCell.style.backgroundColor = 'transparent';
+                        gridEl.appendChild(emptyCell);
+                    }
+
+                    for (let d = 1; d <= daysInMonth; d++) {
+                        const dateObj = new Date(year, month, d);
+                        const dateString = formatDateKey(dateObj);
+                        
+                        const cell = document.createElement('div');
+                        cell.className = 'cal-cellule';
+                        cell.textContent = d;
+
+                        let isDisabled = false;
+                        if (dateObj < today) isDisabled = true;
+                        else if (dateObj > maxDate) isDisabled = true;
+                        else if (dispoData[dateString] && dispoData[dateString].dispo === false) isDisabled = true;
+
+                        if (isDisabled) {
+                            cell.classList.add('disabled');
+                        } else {
+                            cell.addEventListener('click', () => selectDate(dateObj));
+                            
+                            const dateTime = dateObj.getTime();
+                            const sTime = startDate ? startDate.getTime() : null;
+                            const eTime = endDate ? endDate.getTime() : null;
+
+                            if (sTime && dateTime === sTime) {
+                                cell.classList.add('selected', 'start-date');
+                            }
+                            else if (eTime && dateTime === eTime) {
+                                cell.classList.add('selected', 'end-date');
+                            }
+                            else if (sTime && eTime && dateTime > sTime && dateTime < eTime) {
+                                cell.classList.add('in-range');
+                            }
+                        }
+                        gridEl.appendChild(cell);
+                    }
+
+                    const prevMonthDate = new Date(year, month - 1);
+                    if (year < today.getFullYear() || (year === today.getFullYear() && month <= today.getMonth())) {
+                        prevBtn.disabled = true;
+                        prevBtn.style.opacity = "0.3";
+                        prevBtn.style.cursor = "not-allowed";
+                    } else {
+                        prevBtn.disabled = false;
+                        prevBtn.style.opacity = "1";
+                        prevBtn.style.cursor = "pointer";
+                    }
+
+                    const nextMonthDate = new Date(year,month+1);
+                    if (nextMonthDate > new Date(today.getFullYear()+2, today.getMonth()) ) {
+                        nextBtn.disabled = true;
+                        nextBtn.style.opacity = "0.3";
+                        nextBtn.style.cursor = "not-allowed";
+                    } else {
+                        nextBtn.disabled = false;
+                        nextBtn.style.opacity = "1";
+                        nextBtn.style.cursor = "pointer";
+                    }
+                }
+
+                function selectDate(date) {
+                    if (!startDate || (startDate && endDate)) {
+                        startDate = date;
+                        endDate = null;
+                    } 
+                    else if (startDate && !endDate) {
+                        if (date < startDate) {
+                            startDate = date;
+                        } else {
+                            let isValidRange = true;
+                            let checkDate = new Date(startDate);
+                            checkDate.setDate(checkDate.getDate() + 1);
+
+                            while (checkDate <= date) {
+                                const dateString = formatDateKey(checkDate);
+                                
+                                const isUnavailable = dispoData[dateString] && dispoData[dateString].dispo === false;
+                                
+                                if (isUnavailable) {
+                                    isValidRange = false;
+                                    break;
+                                }
+                                checkDate.setDate(checkDate.getDate() + 1);
+                            }
+
+                            if (isValidRange) {
+                                endDate = date;
+                            } else {
+                                startDate = date;
+                            }
+                        }
+                    }
+
+                    updateHiddenInputs();
+                    renderCalendar();
+                    updateTotalPrice();
+                }
+
+                prevBtn.addEventListener('click', () => {
+                    currentViewDate.setMonth(currentViewDate.getMonth() - 1);
+                    renderCalendar();
+                    updateTotalPrice();
+                });
+
+                nextBtn.addEventListener('click', () => {
+                    currentViewDate.setMonth(currentViewDate.getMonth() + 1);
+                    renderCalendar();
+                    updateTotalPrice();
+                });
+
+                todayBtn.addEventListener('click', () => {
+                    currentViewDate = new Date(today);
+                    renderCalendar();
+                    updateTotalPrice();
+                });
+
+                clearBtn.addEventListener('click', () => {
+                    startDate = null;
+                    endDate = null;
+                    updateHiddenInputs();
+                    renderCalendar();
+                    updateTotalPrice();
+                });
+
+                renderCalendar();
+            });
+        </script>
     </div>
     <div class="info-column">
         
@@ -88,13 +350,13 @@
             </div>
         </div>
         <div>
-        <h3>Equipements</h3>
+        <h3 style="margin-bottom: 1rem;">Equipements</h3>
             @foreach ($annonce->equipement as $eq)
                 {{ $eq->nom_equipement }}<br>
             @endforeach
         </div>
         <div>
-        <h3>Services</h3>
+        <h3 style="margin-bottom: 1rem;">Services</h3>
             @foreach ($annonce->service as $se)
                 {{ $se->nom_service }}<br>
             @endforeach
@@ -104,7 +366,6 @@
                 Publié le {{ \Carbon\Carbon::parse($annonce->date_publication)->format('d/m/Y') }}
             </small>
         </div>
-
     </div>
 </div>
 
@@ -157,7 +418,7 @@
                     </div>
 
                     <div class="card-footer">
-                        <span class="location-badge">
+                        <span class="similaire-location-badge">
                             <svg class="icon-pin" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
                                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                                 <circle cx="12" cy="10" r="3"></circle>
