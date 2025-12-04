@@ -4,7 +4,7 @@
 
 @section('content')
 
-    <form method="post" action="{{ url('resultats') }}" style="width: 100%; max-width: 400px; margin: 0 auto;">
+    <form method="get" action="{{ url('resultats') }}" style="width: 100%; max-width: 400px; margin: 0 auto;">
         @csrf
 
         <div class="full-width search-container" 

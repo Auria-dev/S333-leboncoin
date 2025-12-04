@@ -6,7 +6,7 @@
 
 <div class="page-wrapper">
     <div class="results-header-form">
-        <form method="POST" action="{{ url('resultats') }}">
+        <form method="get" action="{{ url('resultats') }}">
             @csrf
             <div class="filter-row">
                 <div class="full-width search-container" 
@@ -83,6 +83,8 @@
                 <input type="submit" class="submit-btn" value="Filtrer"/>
             </div>
         </form>
+        <div id="save-search-btn" class="submit-btn">Sauvegarder recherche</div>
+
         
         <p style="margin-top: 1rem; color: var(--text-muted); font-size: 0.9rem;">
             @if (isset($annonces) && count($annonces) > 0)
@@ -146,12 +148,79 @@
     </div>
 </div>
 
+<div class="light-box-save-search" style="display: none;">
+    <form action="{{ url('sauvegarder_recherche') }}" method="POST" style="display:inline;">
+        @csrf 
+        
+        <input type="hidden" name="search" value="{{ $search ?? '' }}">
+        <input type="hidden" name="nbVoyageurs" value="{{ $nbVoyageurs ?? '' }}">
+        <input type="hidden" name="prixMin" value="{{ $prixMin ?? '' }}">
+        <input type="hidden" name="prixMax" value="{{ $prixMax ?? '' }}">
+        <input type="hidden" name="datedebut" value="{{ $datedebut ?? '' }}">
+        <input type="hidden" name="datefin" value="{{ $datefin ?? '' }}">
+        <input type="hidden" name="filtreTypeHebergement" value="{{ $filtreTypeHebergement ?? '' }}">
+        dd()
+
+        <div class="light-box-content">
+            <h2 style="text-align: center;">Sauvegarder cette recherche</h2>
+            
+            <div>
+                <h3>mot clé</h3>
+                <input type="text" value="{{$search ?? 'Aucun' }}" disabled/>
+            </div>
+            <div>
+                <h3>type d'hebergement</h3>
+                <input type="text" value="{{$filtreTypeHebergement ?? 'Tous'}}" disabled/>
+            </div>
+            <div class="date-inputs">
+                <div>
+                    <h3>date de debut</h3>
+                    <input type="text" value="{{$datedebut ?? 'NULL' }}" class="date" disabled/>
+                </div>
+                <div>
+                    <h3>date de fin</h3>
+                    <input type="text" value="{{$datefin ?? 'NULL' }}" class="date" disabled/>
+                </div>
+            </div>
+            <div>
+                <input type="text" name="nom_sauvegarde" placeholder="Nom de la recherche" required/>
+            </div>
+            <div style="display: flex; text-align: center; margin-top: 1rem; gap: 10px;">
+                <button class="submit-btn btn-close-light-box">Annuler</button>
+                <button class="submit-btn btn-confirm-save-search">Confirmer</button>
+            </div>
+        </div>
+    </form>
+</div>
+
 @endsection
 
 @push('scripts')
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <script>
+        
+        const lightBox = document.querySelector('.light-box-save-search');
+        const btnSaveSearch = document.getElementById('save-search-btn');
+        const btnCloseLightBox = document.querySelector('.btn-close-light-box');
+        const btnConfirmSaveSearch = document.querySelector('.btn-confirm-save-search');
+
+
+        btnSaveSearch.addEventListener('click', () => {
+            console.log('Ouverture de la light box de sauvegarde de recherche');
+            lightBox.style.display = 'flex';
+        });
+
+        btnCloseLightBox.addEventListener('click', (e) => {
+            e.preventDefault();
+            lightBox.style.display = 'none';
+        });
+
+
+
+
+
+
         var map = L.map('maCarte', {
             zoomControl: false
         }).setView([48.8566, 2.3522], 10);
@@ -187,33 +256,10 @@
         });
 
         if (annoncesListe.length > 0 && markersGroup.getLayers().length > 0) {
-        map.fitBounds(markersGroup.getBounds(), { padding: [50, 50] });
-
-        const btnAgrandir = document.getElementById('btnAgrandir');
-        const maCarte = document.getElementById('maCarte');
-
-        btnAgrandir.addEventListener('click', () => {
-            if (maCarte.classList.contains('agrandi')) {
-                maCarte.classList.remove('agrandi');
-                btnAgrandir.innerHTML = `
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-maximize2-icon lucide-maximize-2"><path d="M15 3h6v6"/><path d="m21 3-7 7"/><path d="m3 21 7-7"/><path d="M9 21H3v-6"/></svg>
-                `;
-            } else {
-                maCarte.classList.add('agrandi');
-                btnAgrandir.innerHTML = `
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-minimize2-icon lucide-minimize-2"><path d="m14 10 7-7"/><path d="M20 10h-6V4"/><path d="m3 21 7-7"/><path d="M4 14h6v6"/></svg>
-                `;
-            }
-
-            setTimeout(() => {
-                map.invalidateSize();
-            }, 500);
-            map.fitBounds(markersGroup.getBounds(), { padding: [50, 50] });
+            map.fitBounds(markersGroup.getBounds(), { padding: [50, 50] 
         });
 
-        
     }
-
             
     </script>
 @endpush
