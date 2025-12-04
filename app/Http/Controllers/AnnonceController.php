@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Providers\RouteServiceProvider;
 use App\Models\Ville;
 use App\Models\Annonce;
 use App\Models\TypeHebergement;
@@ -91,7 +92,6 @@ class AnnonceController extends Controller {
     }
     // OPTIONNEL, vérif que il n'a aucune réservation, et puis fait le juste passer en "Propietaire"
 
-    dd($req);
     $req->validate([
             'titre' => 'required|string|max:128',
             'depot_adresse' => 'required|string',   
@@ -106,30 +106,32 @@ class AnnonceController extends Controller {
             'heure_arr' => 'required|date_format:H:i',
             'heure_dep' => 'required|date_format:H:i',
             'desc' => 'required|string|max:2000',
-        ]);
+    ]);
 
-        $codeville = Ville::where('nom_ville', $req->ville)->first();
-        $type_heb = TypeHebergement::where('nom_type_hebergement', $req->DepotTypeHebergement)->first();
+    $codeville = Ville::where('nom_ville', $req->ville)->first();
+    $type_heb = TypeHebergement::where('nom_type_hebergement', $req->DepotTypeHebergement)->first();
+  
+    // this says
+    $annonce = Annonce::create([
+        'idtypehebergement' => $type_heb->idtypehebergement,
+        'idproprietaire' => $iduser,
+        'idville' => $codeville->idville,
+        'titre_annonce' => $req->titre,
+        'prix_nuit' => $req->prix_nuit,
+        'nb_nuit_min' => $req->nb_nuits,
+        'nb_bebe_max' => $req->nb_bebes,
+        'nb_personnes_max' => $req->nb_pers,
+        'nb_animaux_max' => $req->nb_animaux,
+        'adresse_annonce' => $req->depot_adresse,
+        'description_annonce' => $req->desc,
+        'date_publication' => now(),
+        'heure_arrivee' => $req->heure_arr,
+        'heure_depart' => $req->heure_dep,
+        'nombre_chambre' => $req->nb_chambres,
+        'longitude' => null,
+        'latitude' => null,
+    ]);
 
-        $annonce = Annonce::create([
-            'idtypehebergement' => $type_heb->idtypehebergement,
-            'idproprietaire' => $iduser,
-            'idville' => $codeville->idville,
-            'titre_annonce' => $req->titre,
-            'prix_nuit' => $req->prix_nuit,
-            'nb_nuit_min' => $req->nb_nuits,
-            'nb_bebe_max' => $req->nb_bebes,
-            'nb_personnes_max' => $req->nb_pers,
-            'nb_animaux_max' => $req->nb_animaux,
-            'adresse_annonce' => $req->depot_adresse,
-            'description_annonce' => $req->desc,
-            'date_publication' => now(),
-            'heure_arrivee' => $req->heure_arr,
-            'heure_depart' => $req->heure_dep,
-            'nombre_chambre' => $req->nb_chambres,
-            'longitude' => null,
-            'latitude' => null,
-        ]);
-        return redirect(RouteServiceProvider::HOME);
-    }
+    return redirect(RouteServiceProvider::HOME);
+  }
 }

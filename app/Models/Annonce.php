@@ -14,7 +14,23 @@ class Annonce extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'idtypehebergement', 
+        'idtypehebergement',
+        'idproprietaire',
+        'idville',
+        'titre_annonce',
+        'prix_nuit',
+        'nb_nuit_min',
+        'nb_bebe_max',
+        'nb_personnes_max',
+        'nb_animaux_max',
+        'adresse_annonce',
+        'description_annonce',
+        'date_publication',
+        'heure_arrivee',
+        'heure_depart',
+        'nombre_chambre',
+        'longitude',
+        'latitude' 
     ];
 
     public function ville() {
