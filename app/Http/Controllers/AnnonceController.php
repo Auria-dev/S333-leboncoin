@@ -13,7 +13,7 @@ class AnnonceController extends Controller
 {
   public function view($id) {
     $iduser = -1;
-    
+
     if (Auth::check()) {
       $iduser = auth()->user()->idutilisateur;
     }
@@ -46,8 +46,9 @@ class AnnonceController extends Controller
             ->where('idannonce', '=', $idannonce)
             ->delete();
     }
-    return view ("detail-annonce", [
-      'annonce'=>Annonce::findOrFail($idannonce), 
+
+    return redirect()->route('annonce', [
+      'id'=>$idannonce, 
       'isFav' => $exists 
     ]);
   }
