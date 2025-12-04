@@ -42,6 +42,10 @@ class Utilisateur extends Authenticatable {
         return $this->hasMany(Reservation::class, "idlocataire");
     }
 
+    public function favoris() {
+        return $this->belongsToMany(Annonce::class, 'favoris', 'idutilisateur', 'idannonce');
+    }
+
     public function particulier() {
         return $this->hasOne(Particulier::class, 'idparticulier', 'idutilisateur');
     }
