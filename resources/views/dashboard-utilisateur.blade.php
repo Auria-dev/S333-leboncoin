@@ -9,13 +9,11 @@
     <p>Bienvenue dans le tableau de bord de votre compte {{ strtolower($utilisateur->getTypeParticulier()) }}.</p>
 
     @if ($utilisateur->getTypeParticulier() == 'Propriétaire' || $utilisateur->getTypeParticulier() == 'Locataire & Propriétaire')
-
-    
     <div class="res-section">
         <p class="section-title">Mes annonces</p>
     
         <div class="res-scroller">
-            @foreach($utilisateur->annonce as $similaire)
+            @forelse($utilisateur->annonce as $similaire)
             <a class="similaire-card" href="{{ url('annonce/'.strval($similaire->idannonce)) }}">
                 <div class="similaire-card-img">
                     @if(isset($similaire->photo) && count($similaire->photo) > 0)
@@ -47,10 +45,16 @@
                         </div>
                 </div>
             </a>
-            @endforeach
+            @empty
+                <div class="res-empty">
+                    <p>Aucune annonce postée.</p>
+                </div>
+            @endforelse
         </div>
     </div>
     @endif
+
+
     @if ($utilisateur->getTypeParticulier() == 'Locataire' || $utilisateur->getTypeParticulier() == 'Locataire & Propriétaire')
 
     <div class="res-section">

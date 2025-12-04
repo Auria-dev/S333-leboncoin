@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Ville;
 use App\Models\Annonce;
 use App\Models\TypeHebergement;
@@ -11,7 +12,11 @@ use App\Models\Favoris;
 class AnnonceController extends Controller
 {
   public function view($id) {
-    $iduser = auth()->user()->idutilisateur;
+    $iduser = -1;
+
+    if (Auth::check()) {
+      $iduser = auth()->user()->idutilisateur;
+    }
 
     $exists = Favoris::where('idutilisateur', '=', $iduser)
             ->where('idannonce', '=', $id)
@@ -42,6 +47,9 @@ class AnnonceController extends Controller
             ->delete();
     }
     
-    return redirect()->route('annonce', ['id' => $idannonce]);
+    return redirect()->route('annonce', [
+      'id'=>$idannonce, 
+      'isFav' => $exists 
+    ]);
   }
 }
