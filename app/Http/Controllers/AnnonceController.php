@@ -66,7 +66,7 @@ class AnnonceController extends Controller {
             ->where('idannonce', '=', $idannonce)
             ->delete();
     }
-
+    
     return redirect()->route('annonce', [
       'id'=>$idannonce, 
       'isFav' => $exists 

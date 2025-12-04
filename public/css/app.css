@@ -516,7 +516,7 @@ input[type="submit"]:hover {
 }
 
 .liked {
-    fill: #F27A55;
+    fill: currentColor;
 }
 
 
@@ -1451,4 +1451,26 @@ input.date-custom-input {
     font-size: 0.9rem;
     color: var(--text-muted);
     font-weight: 400;
+}
+
+.fav-card {
+    flex: 0 0 340px; 
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.fav-image {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+}
+
+.fav-title {
+    padding: 10px;
+    font-weight: bold;
 }
