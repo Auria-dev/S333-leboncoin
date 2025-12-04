@@ -1448,3 +1448,7 @@ input.date-custom-input {
     color: var(--text-muted);
     font-weight: 400;
 }
+
+.similaire-location-badge {
+    font-weight: 400;
+}

@@ -86,13 +86,13 @@
             </div>
         </div>
         <div>
-        <h3>Equipements</h3>
+        <h3 style="margin-bottom: 1rem;">Equipements</h3>
             @foreach ($annonce->equipement as $eq)
                 {{ $eq->nom_equipement }}<br>
             @endforeach
         </div>
         <div>
-        <h3>Services</h3>
+        <h3 style="margin-bottom: 1rem;">Services</h3>
             @foreach ($annonce->service as $se)
                 {{ $se->nom_service }}<br>
             @endforeach
@@ -155,7 +155,7 @@
                     </div>
 
                     <div class="card-footer">
-                        <span class="location-badge">
+                        <span class="similaire-location-badge">
                             <svg class="icon-pin" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
                                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                                 <circle cx="12" cy="10" r="3"></circle>
