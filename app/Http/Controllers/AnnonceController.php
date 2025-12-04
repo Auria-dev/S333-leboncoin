@@ -72,4 +72,20 @@ class AnnonceController extends Controller {
       'isFav' => $exists 
     ]);
   }
+
+  function affichier_form() {
+    // retourner la view de creation d'annonce
+  }
+
+  function ajouter_annonce(Request $req) {
+    // si l'utilisateur n'est pas un compte de type 
+    $user = Auth::user();
+    $typeCompte = $user->getTypeParticulier(); // voir dans model Utilisateur
+
+    // si l'utilisateur n'est que de compte "Locataire", le passer en "Locataire & Proprietaire"
+    
+    // OPTIONNEL, vérif que il n'a aucune réservation, et puis fait le juste passer en "Propietaire"
+
+    // créer une annonce a partir de la requete $req
+  }
 }
