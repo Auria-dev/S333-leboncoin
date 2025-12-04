@@ -27,7 +27,7 @@ Route::get('/', function () {
 
 Route::get('/recherche', [RechercheController::class, 'index']);
 
-Route::post('/resultats', [RechercheController::class, 'results']);
+Route::get('/resultats', [RechercheController::class, 'results'])->name('resultats');
 Route::get('/annonce/{id}', [AnnonceController::class, 'view'])->name('annonce');
 
 Route::get('/proprio/{id}', [ProprietaireController::class, 'view']);
@@ -45,6 +45,9 @@ Route::get('/locations/search', [LocationController::class, 'search'])->name('lo
 Route::get('/profile', [DashboardController::class, 'view'])->middleware('auth');
 
 Route::get('/ajouter_fav/{id}', [AnnonceController::class, 'addFav'])->middleware('auth');
+
+Route::post('/sauvegarder_recherche', [RechercheController::class, 'sauvegarderRecherche'])->middleware('auth');
+Route::delete('/recherche/{id}', [RechercheController::class, 'destroy'])->name('recherche.destroy')->middleware('auth');
 
 Route::get('/modifier_compte', [CompteController::class, 'view_modifier'])->middleware('auth');
 Route::put('/modifier_compte/update', [CompteController::class, 'modifier'])->middleware('auth');

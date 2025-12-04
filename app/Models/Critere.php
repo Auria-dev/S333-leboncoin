@@ -13,11 +13,14 @@ class Critere extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'idville',
-        'date_recherche',
-        'date_debut_recherche',
-        'date_fin_recherche',
-        'mot_clef'
+		'date_recherche',
+		'nb_voyageurs',
+		'prix_min',
+		'prix_max',
+		'mot_clef',
+		'date_debut_recherche',
+		'date_fin_recherche',
+    'type_hebergement'
     ];
 
     public function utilisateurs()
