@@ -86,11 +86,15 @@
 
     <form method="POST" action="{{ url('upload') }}" enctype="multipart/form-data">  
         @csrf  
-        <input type="file" name="file">  
-        <button type="submit">Upload</button>  
+        <input type="file" name="file" accept="image/png, image/jpeg, image/jpg">  
+        <button type="submit">Télécharger</button>  
     </form>
 
+    @if(isset($user->photo_profil) && $user->photo_profil == null)
+        <p> pas de photo </p>
+    @else
     <img src="{{ $user->photo_profil }}"/ style="width:150px; height:150px; object-fit:cover; border-radius:50%; margin-bottom:1rem;">
+    @endif
     
     <form action="{{ url('modifier_compte/update') }}" method="POST" class="form-container"
           x-data="formManager()"
