@@ -8,23 +8,43 @@ use App\Models\Ville;
 use App\Models\Annonce;
 use App\Models\TypeHebergement;
 use App\Models\Favoris;
+use App\Models\Calendrier;
 
-class AnnonceController extends Controller
-{
+class AnnonceController extends Controller {
   public function view($id) {
     $iduser = -1;
 
     if (Auth::check()) {
-      $iduser = auth()->user()->idutilisateur;
+        $iduser = auth()->user()->idutilisateur;
     }
 
     $exists = Favoris::where('idutilisateur', '=', $iduser)
             ->where('idannonce', '=', $id)
             ->exists();
 
+    $disponibilites = Calendrier::where('idannonce', $id)
+        ->whereHas('date', function($q) {
+            $q->where('date', '>=', now()->toDateString());
+        })
+        ->with('date')
+        ->get();
+
+    $dispoMap = [];
+    
+    foreach($disponibilites as $cal) {
+        if ($cal->date) {
+            $dateString = \Carbon\Carbon::parse($cal->date->date)->format('Y-m-d');
+            
+            $dispoMap[$dateString] = [
+                'dispo' => (bool)$cal->code_dispo, 
+            ];
+        }
+    }
+    
     return view ("detail-annonce", [
-      'annonce'=>Annonce::findOrFail($id), 
-      'isFav' => $exists // TODO : faire un attribut dans annonce à la place
+        'annonce'   => Annonce::findOrFail($id), 
+        'isFav'     => $exists,
+        'dispoJson' => json_encode($dispoMap) 
     ]);
   }
 
@@ -51,5 +71,21 @@ class AnnonceController extends Controller
       'id'=>$idannonce, 
       'isFav' => $exists 
     ]);
+  }
+
+  function affichier_form() {
+    // retourner la view de creation d'annonce
+  }
+
+  function ajouter_annonce(Request $req) {
+    // si l'utilisateur n'est pas un compte de type 
+    $user = Auth::user();
+    $typeCompte = $user->getTypeParticulier(); // voir dans model Utilisateur
+
+    // si l'utilisateur n'est que de compte "Locataire", le passer en "Locataire & Proprietaire"
+    
+    // OPTIONNEL, vérif que il n'a aucune réservation, et puis fait le juste passer en "Propietaire"
+
+    // créer une annonce a partir de la requete $req
   }
 }

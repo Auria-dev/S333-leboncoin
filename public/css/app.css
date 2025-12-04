@@ -166,7 +166,7 @@ textarea {
     font-family: inherit;
     font-size: 1rem;
     color: var(--text-main);
-    background-color: var(--bg-subtle);
+    background-color: white;
     border: 1px solid transparent;
     border-radius: var(--radius-input);
     transition: all 0.2s;
@@ -926,7 +926,7 @@ input.date-custom-input {
 }
 
 .cal-footer {
-    margin-top: 1rem;
+    /* margin-top: 1rem; */
     padding-top: 1rem;
     border-top: 1px solid var(--border-default);
     display: flex;
@@ -1451,6 +1451,10 @@ input.date-custom-input {
     margin-top: 0.75rem;
     font-size: 0.9rem;
     color: var(--text-muted);
+    font-weight: 400;
+}
+
+.similaire-location-badge {
     font-weight: 400;
 }
 
