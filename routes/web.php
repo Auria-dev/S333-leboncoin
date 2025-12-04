@@ -26,7 +26,7 @@ Route::get('/', function () {
 Route::get('/recherche', [RechercheController::class, 'index']);
 
 Route::post('/resultats', [RechercheController::class, 'results']);
-Route::get('/annonce/{id}', [AnnonceController::class, 'view']);
+Route::get('/annonce/{id}', [AnnonceController::class, 'view'])->name('annonce');
 
 Route::get('/proprio/{id}', [ProprietaireController::class, 'view']);
 
