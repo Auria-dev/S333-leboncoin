@@ -50,3 +50,8 @@ Route::get('/modifier_compte', [CompteController::class, 'view_modifier'])->midd
 Route::put('/modifier_compte/update', [CompteController::class, 'modifier'])->middleware('auth');
 
 Route::post('/upload', [CompteController::class, 'upload'])->middleware('auth');
+
+
+// pour yoyo&ninie
+// Route::get('/creer_annonce', [AnnonceController::class, 'affichier_form'])->middleware('auth');
+// Route::post('/creer_annonce', [AnnonceController::class, 'ajouter_annonce'])->middleware('auth');
