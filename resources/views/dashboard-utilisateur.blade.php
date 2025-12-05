@@ -3,10 +3,13 @@
 @section('title', 'Dashboard')
 
 @section('content')
-    
+<div style="width: 100%; display:flex; justify-content: center;">
+<div style="display:flex; flex-direction: column; gap:1rem;width: 1100px;">
+
     <h1>Bonjour {{ $utilisateur->prenom_utilisateur . ' ' . $utilisateur->nom_utilisateur }} </h1>
 
     <p>Bienvenue dans le tableau de bord de votre compte {{ strtolower($utilisateur->getTypeParticulier()) }}.</p>
+    <a href="{{ url('/modifier_compte') }}" class="other-btn"  style='' wire:navigate>Modifier mon compte</a>
 
     @if ($utilisateur->getTypeParticulier() == 'Propriétaire' || $utilisateur->getTypeParticulier() == 'Locataire & Propriétaire')
     <div class="res-section">
@@ -183,84 +186,83 @@
                     <p>Aucun favoris.</p>
                 </div>
             @endforelse
+            </div>
         </div>
-    </div>
-    <div class="res-section">
-    <p class="section-title">Mes recherches sauvegardées</p>
+        <div class="res-section">
+        <p class="section-title">Mes recherches sauvegardées</p>
 
-    <div class="res-scroller">
-        @forelse($utilisateur->recherche as $savedSearch)
-            <div class="search-card">
-                
-                <form action="{{ route('recherche.destroy', $savedSearch->idcritere) }}" method="POST" class="delete-search-form">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn-delete-search" title="Supprimer la recherche">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M3 6h18"></path>
-                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                        </svg>
-                    </button>
-                </form>
-
-                <a href="{{ route('resultats', [
-                    'search'      => $savedSearch->mot_clef,
-                    'nbVoyageurs' => $savedSearch->nb_voyageurs,
-                    'datedebut'   => $savedSearch->date_debut_recherche,
-                    'datefin'     => $savedSearch->date_fin_recherche,
-                    'prixMin'     => $savedSearch->prix_min,
-                    'prixMax'     => $savedSearch->prix_max,
-                    'filtreTypeHebergement' => $savedSearch->pivot->filtreTypeHebergement
-                ]) }}" class="search-card-link">
+        <div class="res-scroller">
+            @forelse($utilisateur->recherche as $savedSearch)
+                <div class="search-card">
                     
-                    <div>
-                        <div class="search-title">{{ $savedSearch->pivot->titre_recherche }}</div>
-                        <span class="search-tag">
-                            {{ $savedSearch->type_hebergement ?? 'Tous types' }}
-                        </span>
-                    </div>
+                    <form action="{{ route('recherche.destroy', $savedSearch->idcritere) }}" method="POST" class="delete-search-form">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn-delete-search" title="Supprimer la recherche">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M3 6h18"></path>
+                                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                            </svg>
+                        </button>
+                    </form>
 
-                    <div class="search-criteria">
-                        <div class="criteria-row">
-                            <svg class="criteria-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-                            <span>{{ $savedSearch->mot_clef ?: 'Partout' }}</span>
-                        </div>
-
-                        <div class="criteria-row">
-                            <svg class="criteria-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
-                            <span>
-                                @if($savedSearch->date_debut_recherche)
-                                    {{ \Carbon\Carbon::parse($savedSearch->date_debut_recherche)->format('d/m') }} - {{ \Carbon\Carbon::parse($savedSearch->date_fin_recherche)->format('d/m') }}
-                                @else
-                                    Dates flexibles
-                                @endif
+                    <a href="{{ route('resultats', [
+                        'search'      => $savedSearch->mot_clef,
+                        'nbVoyageurs' => $savedSearch->nb_voyageurs,
+                        'datedebut'   => $savedSearch->date_debut_recherche,
+                        'datefin'     => $savedSearch->date_fin_recherche,
+                        'prixMin'     => $savedSearch->prix_min,
+                        'prixMax'     => $savedSearch->prix_max,
+                        'filtreTypeHebergement' => $savedSearch->pivot->filtreTypeHebergement
+                    ]) }}" class="search-card-link">
+                        
+                        <div>
+                            <div class="search-title">{{ $savedSearch->pivot->titre_recherche }}</div>
+                            <span class="search-tag">
+                                {{ $savedSearch->type_hebergement ?? 'Tous types' }}
                             </span>
                         </div>
 
-                        <div class="criteria-row">
-                            <svg class="criteria-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                            <span>{{ $savedSearch->nb_voyageurs ?? 1 }} voyageur(s)</span>
-                        </div>
-                    </div>
+                        <div class="search-criteria">
+                            <div class="criteria-row">
+                                <svg class="criteria-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                                <span>{{ $savedSearch->mot_clef ?: 'Partout' }}</span>
+                            </div>
 
-                </a>
-            </div>
-        @empty
-            <div class="search-empty">
-                <p>Aucune recherche sauvegardée.</p>
-            </div>
-        @endforelse
+                            <div class="criteria-row">
+                                <svg class="criteria-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+                                <span>
+                                    @if($savedSearch->date_debut_recherche)
+                                        {{ \Carbon\Carbon::parse($savedSearch->date_debut_recherche)->format('d/m') }} - {{ \Carbon\Carbon::parse($savedSearch->date_fin_recherche)->format('d/m') }}
+                                    @else
+                                        Dates flexibles
+                                    @endif
+                                </span>
+                            </div>
+
+                            <div class="criteria-row">
+                                <svg class="criteria-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                <span>{{ $savedSearch->nb_voyageurs ?? 1 }} voyageur(s)</span>
+                            </div>
+                        </div>
+
+                    </a>
+                </div>
+            @empty
+                <div class="search-empty">
+                    <p>Aucune recherche sauvegardée.</p>
+                </div>
+            @endforelse
+        </div>
     </div>
-</div>
 
     @endif
 
-    <a href="{{ url('/creer_annonce') }}" class="other-btn"  style='margin-top: 1rem;' wire:navigate>Déposer une annonce</a>
-    <a href="{{ url('/modifier_compte') }}" class="other-btn"  style='margin-top: 1rem;' wire:navigate>Modifier mon compte</a>
-
-    <form method="POST" action="{{ url('logout') }}" style='margin-top: 1rem;'>
+    <form method="POST" action="{{ url('logout') }}" style='width: fit-content;'>
         @csrf
         <button type="submit" class="other-btn">Se déconnecter</button>
     </form>
+</div>
+</div>
 @endsection

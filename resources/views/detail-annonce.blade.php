@@ -442,8 +442,12 @@
         </a>
         @endforeach
     </div>
-</div>
 
+    <!-- IF l'annonce appartient au compte actuellement connecter -->
+    <!-- afficher une liste des reservations de cette annonce (les dates, prix, durée...) -->
+    <!-- avis, idlocataire, nb nuits, montant total, date début et fin, statut de la réservation -->
+</div>
+    
 @endsection
 @push('scripts')
 <script>
