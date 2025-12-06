@@ -102,7 +102,7 @@
     <form class="form-pdp" method="POST" action="{{ url('modifier_compte/upload') }}" enctype="multipart/form-data">  
         @csrf  
         <input type="file" name="file" id="fileInput" accept="image/png, image/jpeg, image/jpg">  
-        <button type="submit">Modifier</button>  
+        <button type="submit">Enregistrer l'image</button>  
     </form>
 
    
@@ -181,9 +181,13 @@
         </div>
 
         <div class="field-group" 
-             x-data="addressField('{{ old('adresse', $user->adresse_utilisateur) }}', '{{ old('ville', $ville->nom_ville ?? '') }}', '{{ old('code_postal', $ville->code_postal ?? '') }}')"
-             @click.outside="closeDropdown()">
-            
+            x-data="addressField(
+                '{{ addslashes(old('adresse', $user->adresse_utilisateur)) }}', 
+                '{{ addslashes(old('ville', $ville->nom_ville ?? '')) }}', 
+                '{{ addslashes(old('code_postal', $ville->code_postal ?? '')) }}'
+            )"
+            @click.outside="closeDropdown()">
+                        
             <label class="font-bold">Adresse</label>
             <div class="input-wrapper">
                 <input type="text" name="adresse" x-model="display"
@@ -308,21 +312,6 @@
     </script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const fileInput = document.getElementById('fileInput');
-            const imagePreview = document.getElementById('imagePreview');
-
-            fileInput.addEventListener('change', function(event) {
-                if (event.target.files && event.target.files[0]) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        imagePreview.src = e.target.result;
-                    };
-                    reader.readAsDataURL(event.target.files[0]);
-                }
-            });
-        });
-
         document.addEventListener('alpine:init', () => {
             
             Alpine.data('formManager', () => ({
@@ -379,9 +368,12 @@
 
                 enable() {
                     this.editing = true;
+                    
                     this.$nextTick(() => {
-                        this.$refs.input.focus();
-                        this.$refs.input.select();
+                        setTimeout(() => {
+                            this.$refs.input.focus();
+                            this.$refs.input.select();
+                        }, 50);
                     });
                 },
 

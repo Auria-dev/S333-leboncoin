@@ -12,4 +12,7 @@ class Particulier extends Model
     protected $primaryKey = "idparticulier";
     public $timestamps = false;
     
+    public function Utilisateur() {
+        return $this->belongsTo(Utilisateur::class, "idparticulier");
+    }
 }

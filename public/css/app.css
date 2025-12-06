@@ -159,6 +159,17 @@ label {
     width: fit-content;
 }
 
+.subtitle {
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.reviews {
+    background-color: white;
+    padding: 1rem; 
+    width: 290px;
+}
+
 input[type="text"],
 input[type="password"],
 input[type="email"],
@@ -376,6 +387,7 @@ input[type="submit"]:hover {
     font-weight: 600;
     color: var(--primary);
     overflow: hidden;
+    transition: all ease 0.3s;
 }
 
 .carrousel-conatainer {
@@ -485,6 +497,7 @@ input[type="submit"]:hover {
     background-color: rgba(255, 146, 0, 0.2);
     cursor: pointer;
     opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
 .carousel-placeholder:hover #view-photos-overlay {
@@ -642,6 +655,9 @@ input[type="submit"]:hover {
     background-color: var(--bg-subtle);
     position: relative;
     overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 @media (min-width: 600px) {
@@ -739,7 +755,6 @@ input[type="submit"]:hover {
     font-size: 1.5rem;
     font-weight: 800;
     padding-bottom: 0.5rem;
-    border-bottom: 3px solid var(--primary-light);
     color: var(--text-main);
     display: inline-block;
     padding-right: 1rem;
@@ -1445,7 +1460,6 @@ input.date-custom-input {
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
-
 }
 
 .similaire-info {
@@ -1472,6 +1486,9 @@ input.date-custom-input {
 
 .similaire-location-badge {
     font-weight: 400;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .fav-card {
@@ -1691,4 +1708,8 @@ input.date-custom-input {
 .pdp {
     justify-self: center;
     margin-bottom: 0.8rem;
+}
+
+.no-photo {
+    text-align: center;
 }

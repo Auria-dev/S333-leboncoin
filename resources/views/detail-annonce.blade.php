@@ -16,15 +16,22 @@
 <div class="annonce-grid">
     <div class="photo-column">
         <div class="carousel-placeholder">
-            <img src="{{ $annonce->photo[0]->nomphoto }}" alt="" style="width:100%; height:auto;">
-            <div id="view-photos-overlay" onclick="openModal()">
-                Voir les photos
-            </div>
+            @if($annonce->photo && count($annonce->photo) > 0)
+                <img src="{{ $annonce->photo[0]->nomphoto }}" alt="" style="width:100%; height:auto;">
+                <div id="view-photos-overlay" onclick="openModal()">
+                    Voir les photos
+                </div>
+            @else
+                <img src="/path/to/default-image.jpg" alt="Sans photo" style="width:100%; height:auto; display:flex; align-items:center; justify-content:center; color: var(--text-muted);">
+            @endif
         </div>
+
         <div class="photo-list">
-            @forEach($annonce->photo as $photo)
-                <img src="{{ $photo->nomphoto }}" alt="" style="width:100%; height:auto;" class="photo-item" data-index="{{ $loop->index }}">
-            @endforEach
+            @if($annonce->photo)
+                @foreach($annonce->photo as $photo)
+                    <img src="{{ $photo->nomphoto }}" alt="" style="width:100%; height:auto;" class="photo-item" data-index="{{ $loop->index }}">
+                @endforeach
+            @endif
         </div>
         <div style="width: 100%; display:flex; flex-direction: column;" class="center">
 
@@ -442,17 +449,34 @@
         </a>
         @endforeach
     </div>
+</div>
 
-    <!-- IF l'annonce appartient au compte actuellement connecter -->
-    <!-- afficher une liste des reservations de cette annonce (les dates, prix, durée...) -->
-    <!-- avis, idlocataire, nb nuits, montant total, date début et fin, statut de la réservation -->
+<div class="res-section">
+    <p class="section-title">Réservation(s)</p>
+    @forelse($annonce->reservation as $r)
+    <div class="reviews">
+        <p>{{ $r->particulier->utilisateur->prenom_utilisateur }} {{ $r->particulier->utilisateur->nom_utilisateur }} a passe <b>{{ $r->nb_nuits }} nuits</b> ici</p>
+        <p style="margin-bottom: 1rem;"class='subtitle'>Du {{ $r->date_debut_resa }} au {{ $r->date_fin_resa }}</p>
+        
+        @if($r->avis)
+            <span class="stars" style="--rating: {{ $r->avis->note }}; margin-right: 5px;"></span> {{ $r->avis->note }}
+                
+            @if($r->avis->commentaire)
+                <p style="margin-top: 0.5rem;">"{{ $r->avis->commentaire }}"</p>
+            @endif
+        @else
+            <p style="font-style: italic; color: var(--text-muted);">Pas d'avis laissé</p>
+        @endif
+
+    </div>
+    @empty
+        <p>Pas de réservations</p>
+    @endforelse
 </div>
     
 @endsection
 @push('scripts')
 <script>
-
-
     function openModal() {
         document.getElementById('modal-overlay').style.display = 'flex';
 
@@ -466,9 +490,6 @@
         }
     }
 
-    
-
-
     const track = document.querySelector('.carrousel-slide');
     const slides = document.querySelectorAll('.slide');
     const prevBtn = document.getElementById('prevBtn');
@@ -479,8 +500,6 @@
     const itemPhoto = document.querySelectorAll('.photo-item');
     
     let currentIndex = 0;
-
-
 
     itemPhoto.forEach(item => {
         item.addEventListener('click', () => {
@@ -495,7 +514,6 @@
             }, 50);
         });
     });
-
 
     slides.forEach((slide, index) => {
         const dot = document.createElement('div');
