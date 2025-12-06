@@ -159,32 +159,50 @@
             </div>
         </div>
 
-
-
-        <div>
-            <label for="DepotEquipement">Equipements</label>
-            <select class="multi-select" name="DepotEquipement[]" id="DepotEquipement" multiple>
+        <div class="form-group">
+            <label>Equipements</label>
+            <div>
                 @if(isset($equipements))
                     @foreach($equipements as $eq)
-                        <option value="{{ $eq->nom_equipement }}" @selected(request('DepotEquipement') == $eq->nom_equipement)>
-                            {{ $eq->nom_equipement }}
-                        </option>
+                        <label class="pill-label">
+                            <input type="checkbox" 
+                                name="DepotEquipement[]" 
+                                value="{{ $eq->nom_equipement }}"
+                                @checked(in_array($eq->nom_equipement, request('DepotEquipement', [])))>
+                            
+                            <span class="pill-content">
+                                <span class="icon-wrapper">
+                                    <span class="checkmark-draw"></span>
+                                </span>
+                                <span>{{ $eq->nom_equipement }}</span>
+                            </span>
+                        </label>
                     @endforeach
-                 @endif
-            </select>
+                @endif
+            </div>
         </div>
 
-        <div>
-            <label for="DepotService">Services</label>
-            <select class="multi-select" name="DepotService[]" id="DepotService" multiple>
+        <div class="form-group mt-4">
+            <label>Services</label>
+            <div>
                 @if(isset($services))
                     @foreach($services as $sv)
-                        <option value="{{ $sv->nom_service }}" @selected(request('DepotService') == $sv->nom_service)>
-                            {{ $sv->nom_service }}
-                        </option>
+                        <label class="pill-label">
+                            <input type="checkbox" 
+                                name="DepotService[]" 
+                                value="{{ $sv->nom_service }}"
+                                @checked(in_array($sv->nom_service, request('DepotService', [])))>
+                            
+                            <span class="pill-content">
+                                <span class="icon-wrapper">
+                                    <span class="checkmark-draw"></span>
+                                </span>
+                                <span>{{ $sv->nom_service }}</span>
+                            </span>
+                        </label>
                     @endforeach
-                 @endif
-            </select>
+                @endif
+            </div>
         </div>
 
         <label>Description</label>

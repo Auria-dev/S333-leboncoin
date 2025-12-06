@@ -112,7 +112,6 @@ class AnnonceController extends Controller {
     }
     // OPTIONNEL, vérif que il n'a aucune réservation, et puis fait le juste passer en "Propietaire"
 
-
     $req->validate([
             'titre' => 'required|string|max:128',
             'depot_adresse' => 'required|string',   
