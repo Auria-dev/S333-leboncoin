@@ -22,7 +22,8 @@ class Utilisateur extends Authenticatable {
         'telephone',
         'mail',
         'adresse_utilisateur',
-        'date_creation'
+        'date_creation',
+        'photo_profil'
     ];
 
     public function getAuthPassword() {

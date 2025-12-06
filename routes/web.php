@@ -51,8 +51,7 @@ Route::delete('/recherche/{id}', [RechercheController::class, 'destroy'])->name(
 
 Route::get('/modifier_compte', [CompteController::class, 'view_modifier'])->middleware('auth');
 Route::put('/modifier_compte/update', [CompteController::class, 'modifier'])->middleware('auth');
-
-Route::post('/upload', [CompteController::class, 'upload'])->middleware('auth');
+Route::post('/modifier_compte/upload', [CompteController::class, 'upload'])->middleware('auth');
 
 
 // pour yoyo&ninie

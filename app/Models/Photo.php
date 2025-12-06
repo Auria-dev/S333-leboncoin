@@ -13,6 +13,12 @@ class Photo extends Model
     protected $primaryKey = "idphoto";
     public $timestamps = false;
 
+    protected $fillable = [
+        'idannonce',
+        'nomphoto',
+        'legende'
+    ];
+
     
     public function annonce() {
         return $this->belongsTo(Annonce::class, "idannonce");

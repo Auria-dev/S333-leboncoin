@@ -64,7 +64,8 @@ class CompteController extends Controller {
             'telephone' => $req->telephone,
             'mail' => $req->email,
             'adresse_utilisateur' => $req->adresse,
-            'date_creation' => now()
+            'date_creation' => now(),
+            'photo_profil' => "/images/photo-profil.jpg"
         ]);
 
         Auth::login($user);
@@ -196,6 +197,6 @@ class CompteController extends Controller {
             ]);
         } 
 
-        return back()->with('success', 'Mis à jour de la pfp avec succès.');
+        return back()->with('success', 'Mis à jour de la photo de profil avec succès.');
     }
 }
