@@ -12,7 +12,19 @@ use App\Models\Favoris;
 use App\Models\Calendrier;
 use App\Models\Particulier;
 
+use App\Services\GeoapifyService;
+
 class AnnonceController extends Controller {
+
+
+  protected $geoService;
+
+  public function __construct(GeoapifyService $geoService)
+  {
+      $this->geoService = $geoService;
+  }
+
+
   public function view($id) {
     $iduser = -1;
 
@@ -92,6 +104,7 @@ class AnnonceController extends Controller {
     }
     // OPTIONNEL, vérif que il n'a aucune réservation, et puis fait le juste passer en "Propietaire"
 
+
     $req->validate([
             'titre' => 'required|string|max:128',
             'depot_adresse' => 'required|string',   
@@ -110,6 +123,14 @@ class AnnonceController extends Controller {
 
     $codeville = Ville::where('nom_ville', $req->ville)->first();
     $type_heb = TypeHebergement::where('nom_type_hebergement', $req->DepotTypeHebergement)->first();
+
+
+    $adresseComplete = $req->depot_adresse . ', ' . $req->ville . ', France'; 
+        
+    $coordonnees = $this->geoService->geocode($adresseComplete);
+
+    $latitude = $coordonnees ? $coordonnees['lat'] : null;
+    $longitude = $coordonnees ? $coordonnees['lon'] : null;
   
     // this says
     $annonce = Annonce::create([
@@ -128,8 +149,8 @@ class AnnonceController extends Controller {
         'heure_arrivee' => $req->heure_arr,
         'heure_depart' => $req->heure_dep,
         'nombre_chambre' => $req->nb_chambres,
-        'longitude' => null,
-        'latitude' => null,
+        'longitude' => $longitude,
+        'latitude' => $latitude,
     ]);
 
     return redirect(RouteServiceProvider::HOME);
