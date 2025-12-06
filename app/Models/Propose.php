@@ -12,6 +12,11 @@ class Propose extends Pivot
     // protected $primaryKey = ["idannonce", "idservice"];
     public $timestamps = false;
 
+    protected $fillable = [
+        'idannonce',
+        'idservice',
+    ];
+
     public function annonce()
     {
         return $this->belongsTo(Annonce::class, 'idannonce');
