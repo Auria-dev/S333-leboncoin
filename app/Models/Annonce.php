@@ -30,7 +30,8 @@ class Annonce extends Model
         'heure_depart',
         'nombre_chambre',
         'longitude',
-        'latitude' 
+        'latitude',
+        'photo_profil'
     ];
 
     public function ville() {
@@ -89,12 +90,14 @@ class Annonce extends Model
 
     public function moyenneAvisParAnnonce() {
         $reservations = $this->reservation;
-        if($reservations->isEmpty()) {
-            return ['moyenne'=>0, 'nbAvis'=>0];
-        }
+
         $sommeNotes = 0;
         $nbAvis = 0;
         $moyenne = 0;
+
+        if($reservations->isEmpty()) {
+            return ['moyenne'=> $moyenne, 'nbAvis'=> $nbAvis, 'sommeNotes'=>$sommeNotes];
+        }
         foreach($reservations as $resa) {
             if($resa->avis && isset($resa->avis->note)) {
                 $sommeNotes += $resa->avis->note;

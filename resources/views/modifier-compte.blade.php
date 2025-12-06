@@ -84,18 +84,20 @@
         .password-container.is-editing { background-color: #fff; border-color: var(--primary); }
     </style>
 
-    <form method="POST" action="{{ url('upload') }}" enctype="multipart/form-data">  
+<div style="width: 100%; display:flex; justify-content: center;">    
+<div style="max-width: 650px;">    
+    <form method="POST" action="{{ url('modifier_compte/upload') }}" enctype="multipart/form-data">  
         @csrf  
         <input type="file" name="file" accept="image/png, image/jpeg, image/jpg">  
         <button type="submit">Télécharger</button>  
     </form>
 
-    @if(isset($user->photo_profil) && $user->photo_profil == null)
-        <p> pas de photo </p>
+    @if($user->photo_profil === null)
+        <img src="/images/photo-profil.jpg" style="width:150px; height:150px; object-fit:cover; border-radius:50%; margin-bottom:1rem;">
     @else
-    <img src="{{ $user->photo_profil }}"/ style="width:150px; height:150px; object-fit:cover; border-radius:50%; margin-bottom:1rem;">
+        <img src="{{ $user->photo_profil }}" style="width:150px; height:150px; object-fit:cover; border-radius:50%; margin-bottom:1rem;">
     @endif
-    
+
     <form action="{{ url('modifier_compte/update') }}" method="POST" class="form-container"
           x-data="formManager()"
           @submit.prevent="submitForm">
@@ -290,6 +292,8 @@
         </div>
 
     </form>
+    </div>
+    </div>
 
     <script type="text/html" id="icon-pencil">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
