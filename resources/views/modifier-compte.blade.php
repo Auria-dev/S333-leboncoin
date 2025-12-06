@@ -86,18 +86,26 @@
 
 <div style="width: 100%; display:flex; justify-content: center;">    
 <div style="max-width: 650px;">    
-    <form method="POST" action="{{ url('modifier_compte/upload') }}" enctype="multipart/form-data">  
+
+    <div class="pdp">
+        @php
+            $currentPhoto = Auth::user()->photo_profil ?? 'images/default_profile.png';
+        @endphp
+
+        @if($user->photo_profil === null)
+            <img src="/images/photo-profil.jpg" style="width:150px; height:150px; object-fit:cover; border-radius:50%; margin-bottom:1rem;">
+        @else
+            <img src="{{ asset($currentPhoto) }}" id="imagePreview" style="width:150px; height:150px; object-fit:cover; border-radius:50%; margin-bottom:1rem;">
+        @endif
+    </div>
+
+    <form class="form-pdp" method="POST" action="{{ url('modifier_compte/upload') }}" enctype="multipart/form-data">  
         @csrf  
-        <input type="file" name="file" accept="image/png, image/jpeg, image/jpg">  
-        <button type="submit">Télécharger</button>  
+        <input type="file" name="file" id="fileInput" accept="image/png, image/jpeg, image/jpg">  
+        <button type="submit">Modifier</button>  
     </form>
 
-    @if($user->photo_profil === null)
-        <img src="/images/photo-profil.jpg" style="width:150px; height:150px; object-fit:cover; border-radius:50%; margin-bottom:1rem;">
-    @else
-        <img src="{{ $user->photo_profil }}" style="width:150px; height:150px; object-fit:cover; border-radius:50%; margin-bottom:1rem;">
-    @endif
-
+   
     <form action="{{ url('modifier_compte/update') }}" method="POST" class="form-container"
           x-data="formManager()"
           @submit.prevent="submitForm">
@@ -300,6 +308,21 @@
     </script>
 
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileInput = document.getElementById('fileInput');
+            const imagePreview = document.getElementById('imagePreview');
+
+            fileInput.addEventListener('change', function(event) {
+                if (event.target.files && event.target.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        imagePreview.src = e.target.result;
+                    };
+                    reader.readAsDataURL(event.target.files[0]);
+                }
+            });
+        });
+
         document.addEventListener('alpine:init', () => {
             
             Alpine.data('formManager', () => ({
