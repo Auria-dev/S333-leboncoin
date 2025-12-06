@@ -98,10 +98,12 @@
                     text-decoration: line-through;
                 }
             </style>
-            <script>
+<script>
                 document.addEventListener('DOMContentLoaded', function() {
                     const dispoData = JSON.parse({!! isset($dispoJson) ? json_encode($dispoJson) : '{}' !!});
                     const prixParNuit = parseFloat("{{ $annonce->prix_nuit }}");
+                    // 1. Get the minimum nights from Blade, default to 1 if missing
+                    const minNights = parseInt("{{ $annonce->nb_nuit_min ?? 1 }}"); 
 
                     const today = new Date();
                     today.setHours(0,0,0,0);
@@ -118,6 +120,7 @@
                     const nextBtn = document.getElementById('btn-next');
                     const todayBtn = document.getElementById('btn-today');
                     const clearBtn = document.getElementById('btn-clear');
+                    const errorEl = document.getElementById('cal-error'); // Select the error div
                     
                     const startInput = document.getElementById('booking_start_date');
                     const endInput = document.getElementById('booking_end_date');
@@ -127,6 +130,14 @@
                         const m = String(date.getMonth() + 1).padStart(2, '0');
                         const d = String(date.getDate()).padStart(2, '0');
                         return `${y}-${m}-${d}`;
+                    }
+
+                    function showError(msg) {
+                        errorEl.textContent = msg;
+                        errorEl.style.display = 'block';
+                        setTimeout(() => {
+                            errorEl.style.display = 'none';
+                        }, 3000);
                     }
 
                     function updateHiddenInputs() {
@@ -145,6 +156,28 @@
                         } else {
                             priceEl.textContent = '0';
                         }
+                    }
+
+                    // Helper function to check if a range is free
+                    function isRangeAvailable(start, end) {
+                        let current = new Date(start);
+                        // We check up to (but not including) the end date for availability
+                        // because the end date is the checkout date (morning).
+                        // However, usually availability is checked for the nights stayed.
+                        // Based on your logic: Loop checks days inclusive.
+                        
+                        // We need to check every night user is sleeping.
+                        // If Start is 1st, End is 4th (3 nights). We check availability for 1st, 2nd, 3rd.
+                        const checkoutTime = end.getTime();
+                        
+                        while (current.getTime() < checkoutTime) {
+                            const dateString = formatDateKey(current);
+                            if (dispoData[dateString] && dispoData[dateString].dispo === false) {
+                                return false;
+                            }
+                            current.setDate(current.getDate() + 1);
+                        }
+                        return true;
                     }
 
                     function renderCalendar() {
@@ -206,7 +239,8 @@
                             }
                             gridEl.appendChild(cell);
                         }
-
+                        
+                        // Navigation buttons state logic (unchanged)
                         const prevMonthDate = new Date(year, month - 1);
                         if (year < today.getFullYear() || (year === today.getFullYear() && month <= today.getMonth())) {
                             prevBtn.disabled = true;
@@ -231,35 +265,44 @@
                     }
 
                     function selectDate(date) {
-                        if (!startDate || (startDate && endDate)) {
-                            startDate = date;
-                            endDate = null;
-                        } 
-                        else if (startDate && !endDate) {
-                            if (date < startDate) {
+                        errorEl.style.display = 'none'; // Clear errors on click
+
+                        // SCENARIO 1: New Selection (No start date, or clicking before start, or resetting)
+                        if (!startDate || (startDate && date < startDate) || (startDate && endDate && date < startDate)) {
+                            
+                            // 2. Logic: Attempt to auto-select the minimum range
+                            const proposedEnd = new Date(date);
+                            proposedEnd.setDate(date.getDate() + minNights);
+
+                            // Check if the auto-selected range is valid/available
+                            if (isRangeAvailable(date, proposedEnd)) {
                                 startDate = date;
+                                endDate = proposedEnd;
                             } else {
-                                let isValidRange = true;
-                                let checkDate = new Date(startDate);
-                                checkDate.setDate(checkDate.getDate() + 1);
+                                // If the minimum stay isn't available, we can't start here
+                                showError("La durée minimum n'est pas disponible pour cette date.");
+                                return;
+                            }
+                        } 
+                        // SCENARIO 2: Extending Selection (Clicking after start date)
+                        else if (startDate && date > startDate) {
+                            
+                            // Calculate proposed duration
+                            const diffTime = Math.abs(date - startDate);
+                            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-                                while (checkDate <= date) {
-                                    const dateString = formatDateKey(checkDate);
-                                    
-                                    const isUnavailable = dispoData[dateString] && dispoData[dateString].dispo === false;
-                                    
-                                    if (isUnavailable) {
-                                        isValidRange = false;
-                                        break;
-                                    }
-                                    checkDate.setDate(checkDate.getDate() + 1);
-                                }
+                            // 3. Logic: Prevent selecting less than minimum
+                            if (diffDays < minNights) {
+                                showError(`Le séjour doit être de ${minNights} nuits minimum.`);
+                                return;
+                            }
 
-                                if (isValidRange) {
-                                    endDate = date;
-                                } else {
-                                    startDate = date;
-                                }
+                            // Check availability for the manually extended range
+                            if (isRangeAvailable(startDate, date)) {
+                                endDate = date;
+                            } else {
+                                showError("Certaines dates sélectionnées ne sont pas disponibles.");
+                                return; 
                             }
                         }
 
@@ -292,6 +335,7 @@
                         updateHiddenInputs();
                         renderCalendar();
                         updateTotalPrice();
+                        errorEl.style.display = 'none';
                     });
 
                     renderCalendar();
