@@ -35,4 +35,8 @@ return [
     'base_url' => env('GEOPLATEFORME_URL'),
     ],
 
+    'geoapify' => [
+    'key' => env('GEOAPIFY_API_KEY'),
+],
+
 ];
