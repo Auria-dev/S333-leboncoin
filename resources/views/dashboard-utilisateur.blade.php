@@ -1,15 +1,20 @@
 @extends('layout')
 
-@section('title', 'Dashboard')
+@section('title', 'Tableau de bord')
 
 @section('content')
 <div style="width: 100%; display:flex; justify-content: center;">
 <div style="display:flex; flex-direction: column; gap:1rem;width: 1100px;">
 
-    <h1>Bonjour {{ $utilisateur->prenom_utilisateur . ' ' . $utilisateur->nom_utilisateur }} </h1>
+    @if($utilisateur->photo_profil === null)
+        <img src="/images/photo-profil.jpg" style="width:150px; height:150px; object-fit:cover; border-radius:50%; margin-bottom:1rem;">
+    @else
+        <img src="{{ $utilisateur->photo_profil }}" style="width:150px; height:150px; object-fit:cover; border-radius:50%; margin-bottom:1rem;">
+    @endif   
 
+    <h1>Bonjour {{ $utilisateur->prenom_utilisateur . ' ' . $utilisateur->nom_utilisateur }} </h1>
     <p>Bienvenue dans le tableau de bord de votre compte {{ strtolower($utilisateur->getTypeParticulier()) }}.</p>
-    <a href="{{ url('/modifier_compte') }}" class="other-btn"  style='' wire:navigate>Modifier mon compte</a>
+    <a href="{{ url('/modifier_compte') }}" class="other-btn"  style='width: 25%;' wire:navigate>Modifier mon compte</a>
 
     @if ($utilisateur->getTypeParticulier() == 'Propriétaire' || $utilisateur->getTypeParticulier() == 'Locataire & Propriétaire')
     <div class="res-section">

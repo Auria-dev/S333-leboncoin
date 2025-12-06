@@ -165,6 +165,7 @@ input[type="email"],
 input[type="date"],
 input[type="tel"],
 input[type="number"],
+input[type="time"],
 select,
 textarea {
     display: block;
@@ -1671,3 +1672,23 @@ input.date-custom-input {
 
 
 
+.annonce-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+}
+
+.form-ajouter label {
+    margin-top: 2rem;
+}
+
+.form-pdp {
+    margin-bottom: 3rem;
+    justify-self: center;
+}
+
+.pdp {
+    justify-self: center;
+    margin-bottom: 0.8rem;
+}

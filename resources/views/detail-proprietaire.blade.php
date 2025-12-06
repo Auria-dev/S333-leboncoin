@@ -5,7 +5,11 @@
 
     <!-- Ici $proprietaire c'est jeankevin  -->
     <div id="info-proprio">
-        <img id="img-proprio" src="/images/maison.jpg"/>
+         @if($proprietaire->photo_profil === null)
+            <img src="/images/photo-profil.jpg" id="img-proprio" style="width:150px; height:150px; object-fit:cover; border-radius:50%; margin-bottom:1rem;">
+        @else
+            <img src="{{ $proprietaire->photo_profil }}" id="img-proprio" style="width:150px; height:150px; object-fit:cover; border-radius:50%; margin-bottom:1rem;">
+        @endif
         <div>
             <p><strong>
                 <span style="text-transform: uppercase;"> {{ $proprietaire->nom_utilisateur }} </span> 

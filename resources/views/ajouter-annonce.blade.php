@@ -8,9 +8,11 @@
 
     <div style="width: 100%; display: flex; justify-content: center;">
 
-    <form method="POST" action="{{ url('ajouter_annonce') }}" style="display: flex; flex-direction: column; width: 700px; " enctype="multipart/form-data">
+    <form class="form-ajouter" method="POST" action="{{ url('ajouter_annonce') }}" style="display: flex; flex-direction: column; width: 700px; " enctype="multipart/form-data">
         @csrf   
-        <input type="file" name="file[]" accept="image/png, image/jpeg, image/jpg" multiple>  
+        <input type="file" name="file[]" id="fileInput" accept="image/png, image/jpeg, image/jpg" multiple>  
+
+        <div id="previewsContainer" style="display: flex; gap: 10px; margin-top: 10px;"></div>
 
         <label>Titre</label>
         <input type="text" id="titre" name="titre" placeholder="Maison 3 chambres centre d'Annecy" required>
@@ -111,24 +113,57 @@
                 </ul>
             </div>
 
-        <label>Nombre de nuits minimum</label>
-        <input type="number" id="nb_nuits" name="nb_nuits" placeholder="2" min="1" required>
+        <div class="annonce-group">
+            <div>
+                <label>Nombre de personness maximum</label>
+                <input type="number" id="nb_pers" name="nb_pers" placeholder="4" min="1" required>
+            </div>
 
-        <label>Nombre de personness maximum</label>
-        <input type="number" id="nb_pers" name="nb_pers" placeholder="4" min="1" required>
+            <div>
+                <label>Nombre de chambre</label>
+                <input type="number" id="nb_chambres" name="nb_chambres" placeholder="3" min="1" required>
+            </div>
+        </div>
 
-        <label>Nombre de bébés maximum</label>
-        <input type="number" id="nb_bebes" name="nb_bebes" placeholder="2" min="0" required>
+        <div class="annonce-group">
+            <div>
+                <label>Nombre de bébés maximum</label>
+                <input type="number" id="nb_bebes" name="nb_bebes" placeholder="2" min="0" required>
+            </div>
 
-        <label>Nombre d'animaux maximum</label>
-        <input type="number" id="nb_animaux" name="nb_animaux" placeholder="2" min="0" required>
+            <div>
+                <label>Nombre d'animaux maximum</label>
+                <input type="number" id="nb_animaux" name="nb_animaux" placeholder="2" min="0" required>
+            </div>
+        </div>
 
-        <label>Nombre de chambre</label>
-        <input type="number" id="nb_chambres" name="nb_chambres" placeholder="3" min="1" required>
+        <div class="annonce-group">
+            <div>
+                <label>Nombre de nuits minimum</label>
+                <input type="number" id="nb_nuits" name="nb_nuits" placeholder="2" min="1" required>
+            </div>
+
+            <div>
+                <label>Prix par nuit</label>
+                <input type="number" step="0.01" id="prix_nuit" name="prix_nuit" placeholder="70,50€" required>
+            </div>
+
+            <div>
+                <label>Arrivée</label>
+                <input type="time" id="heure_arr" name="heure_arr" placeholder="09:00"  required>
+            </div>
+
+            <div>
+                <label>Départ</label>
+                <input type="time" id="heure_dep" name="heure_dep" placeholder="17:00"  required>
+            </div>
+        </div>
+
+
 
         <div>
             <label for="DepotEquipement">Equipements</label>
-            <select name="DepotEquipement[]" id="DepotEquipement" multiple>
+            <select class="multi-select" name="DepotEquipement[]" id="DepotEquipement" multiple>
                 @if(isset($equipements))
                     @foreach($equipements as $eq)
                         <option value="{{ $eq->nom_equipement }}" @selected(request('DepotEquipement') == $eq->nom_equipement)>
@@ -141,7 +176,7 @@
 
         <div>
             <label for="DepotService">Services</label>
-            <select name="DepotService[]" id="DepotService" multiple>
+            <select class="multi-select" name="DepotService[]" id="DepotService" multiple>
                 @if(isset($services))
                     @foreach($services as $sv)
                         <option value="{{ $sv->nom_service }}" @selected(request('DepotService') == $sv->nom_service)>
@@ -152,18 +187,9 @@
             </select>
         </div>
 
-        <label>Heure d'arrivée</label>
-        <input type="time" id="heure_arr" name="heure_arr" placeholder="09:00" required>
-
-        <label>Heure de départ</label>
-        <input type="time" id="heure_dep" name="heure_dep" placeholder="17:00" required>
-
         <label>Description</label>
-        <input type="text" id="desc" name="desc" placeholder="Maison chaleureuse..." required>
+        <textarea id="desc" name="desc" placeholder="Maison chaleureuse..." rows="5" required></textarea>
         
-        <label>Prix par nuit</label>
-        <input type="number" step="0.01" id="prix_nuit" name="prix_nuit" placeholder="70,50€" required>
-
         <div style="margin-top: 1rem;">
         <input type="submit" value="Déposer" class="submit-btn">
 
@@ -171,4 +197,37 @@
     </form>
 
     </div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const fileInput = document.getElementById('fileInput');
+        const container = document.getElementById('previewsContainer');
+
+        fileInput.addEventListener('change', function(event) {
+            container.innerHTML = ''; 
+
+            const files = event.target.files;
+            
+            if (files.length > 0) {
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+
+                        reader.onload = function(e) {
+                            const img = document.createElement('img');
+                            img.src = e.target.result; 
+                            img.alt = 'Aperçu photo ' + (i + 1);
+                            img.style.maxWidth = '100px';
+                            img.style.maxHeight = '100px';
+
+                            container.appendChild(img);
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                }
+            }
+        });
+    });
+</script>
 @endsection
