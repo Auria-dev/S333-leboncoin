@@ -62,7 +62,7 @@
                 <div id="cal-error" class="cal-error-msg" style="color: rgb(231, 76, 60); font-size: 0.85em; text-align: center; padding: 5px; display: none;"></div>
 
                 <div class="cal-footer" style="display: flex; justify-content: space-between; gap: 5px; margin-top: 15px;">
-                    <h3>Prix du séjour: <span id="display-price">0</span> € <span style="font-size:0.6em; color:#666">({{ $annonce->prix_nuit }}€ / nuit)</span></h3>
+                    <h3>Prix du séjour : <span id="display-price">0</span> € <span style="font-size:0.6em; color:#666">({{ $annonce->prix_nuit }}€ / nuit)</span></h3>
                 </div>
                 <div class="cal-footer" style="display: flex; justify-content: space-between; gap: 5px;">
                     <button type="button" id="btn-today" class="cal-btn" style="flex: 0 0 auto;">Auj.</button>
@@ -378,7 +378,11 @@
             </li>
             <li class="detail-item">
                 <span class="detail-label">Séjour min</span>
-                {{ $annonce->nb_nuit_min }} nuits
+                @if ($annonce->nb_nuit_min === 1 )
+                    {{ $annonce->nb_nuit_min }} nuit
+                @else
+                    {{ $annonce->nb_nuit_min }} nuits
+                @endif
             </li>
             <li class="detail-item">
                 <span class="detail-label">Bébés</span>
