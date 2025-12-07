@@ -4,8 +4,8 @@
 
 @section('content')
 
-<div style="padding: 1rem 0;">
-    <a href="javascript:history.back()" style="display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none; color: var(--text-color, #333); font-weight: 500;">
+<div class="py-md">
+    <a href="javascript:history.back()" class="back-link">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="m15 18-6-6 6-6"/>
         </svg>
@@ -17,34 +17,34 @@
     <div class="photo-column">
         <div class="carousel-placeholder">
             @if($annonce->photo && count($annonce->photo) > 0)
-                <img src="{{ $annonce->photo[0]->nomphoto }}" alt="" style="width:100%; height:auto;">
+                <img src="{{ $annonce->photo[0]->nomphoto }}" alt="" class="img-responsive">
                 <div id="view-photos-overlay" onclick="openModal()">
                     Voir les photos
                 </div>
             @else
-                <img src="/path/to/default-image.jpg" alt="Sans photo" style="width:100%; height:auto; display:flex; align-items:center; justify-content:center; color: var(--text-muted);">
+                <img src="/path/to/default-image.jpg" alt="Sans photo" class="img-placeholder">
             @endif
         </div>
 
         <div class="photo-list">
             @if($annonce->photo)
                 @foreach($annonce->photo as $photo)
-                    <img src="{{ $photo->nomphoto }}" alt="" style="width:100%; height:auto;" class="photo-item" data-index="{{ $loop->index }}">
+                    <img src="{{ $photo->nomphoto }}" alt="" class="photo-item img-responsive" data-index="{{ $loop->index }}">
                 @endforeach
             @endif
         </div>
-        <div style="width: 100%; display:flex; flex-direction: column;" class="center">
+        <div class="center flex-col w-full">
 
-            <h3 style="margin-top: 3rem;">Disponibilité de cette annonce</h3>
+            <h3 class="mt-xl">Disponibilité de cette annonce</h3>
             <input type="hidden" id="booking_start_date" name="start_date">
             <input type="hidden" id="booking_end_date" name="end_date">
-            <div id="booking-calendar-container" class="center" style="background-color: white; padding: 1rem 1rem; margin-top: 1rem; border-radius: 1rem; width: 430px;">
-                <div class="cal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <button id="btn-prev" class="cal-btn-nav" style="cursor: pointer; padding: 5px;">
+            <div id="booking-calendar-container" class="center calendar-container">
+                <div class="cal-header cal-header-flex">
+                    <button id="btn-prev" class="cal-btn-nav cal-btn-nav-style">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>
                     </button>
-                    <span id="cal-title" class="cal-titre" style="font-weight: bold; font-size: 1.1em;">Loading...</span>
-                    <button id="btn-next" class="cal-btn-nav" style="cursor: pointer; padding: 5px;">
+                    <span id="cal-title" class="cal-titre cal-title-style">Loading...</span>
+                    <button id="btn-next" class="cal-btn-nav cal-btn-nav-style">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>
                     </button>
                 </div>

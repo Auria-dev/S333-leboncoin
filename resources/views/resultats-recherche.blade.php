@@ -86,7 +86,7 @@
         <div id="save-search-btn" class="submit-btn">Sauvegarder recherche</div>
 
         
-        <p style="margin-top: 1rem; color: var(--text-muted); font-size: 0.9rem;">
+        <p class="results-count">
             @if (isset($annonces) && count($annonces) > 0)
                 {{ count($annonces) }} résultats trouvés
             @else
@@ -148,8 +148,8 @@
     </div>
 </div>
 
-<div class="light-box-save-search" style="display: none;">
-    <form action="{{ url('sauvegarder_recherche') }}" method="POST" style="display:inline;">
+<div class="light-box-save-search hidden">
+    <form action="{{ url('sauvegarder_recherche') }}" method="POST" class="inline-form">
         @csrf 
         
         <input type="hidden" name="search" value="{{ $search ?? '' }}">
@@ -161,7 +161,7 @@
         <input type="hidden" name="filtreTypeHebergement" value="{{ $filtreTypeHebergement ?? '' }}">
 
         <div class="light-box-content">
-            <h2 style="text-align: center;">Sauvegarder cette recherche</h2>
+            <h2 class="text-center">Sauvegarder cette recherche</h2>
             <div>
                 <h3>Nom de la recherche</h3>
                 <input type="text" name="nom_sauvegarde" placeholder="'Vacances de noël'" autofocus required />
@@ -185,7 +185,7 @@
                 </div>
             </div>
 
-            <div style="display: flex; text-align: center; margin-top: 1rem; gap: 10px;">
+            <div class="lightbox-actions">
                 <button class="other-btn btn-close-light-box">Annuler</button>
                 <button class="submit-btn btn-confirm-save-search">Confirmer</button>
             </div>

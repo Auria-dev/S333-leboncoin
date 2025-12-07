@@ -6,30 +6,13 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
-    <style>
-        .text-danger {
-            color: #dc3545;
-            font-size: 0.875rem;
-            margin-top: 0.25rem;
-        }
-        .is-invalid {
-            border-color: #dc3545 !important;
-        }
-        .text-danger {
-            animation: fadeIn 0.3s ease-in;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-    </style>
-    <div style="width: 100%; display: flex; justify-content: center;">
+    <div class="center-container">
 
-    <form action="{{ url('register') }}" method="POST" style="display: flex; flex-direction: column; gap: 1.25rem; width: 35vw;">
+    <form action="{{ url('register') }}" method="POST" class="register-form">
             @csrf
             
             @if ($errors->any())
-                <div style="background-color: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; border: 1px solid #f5c6cb;">
+                <div class="alert-error">
                     <strong>Oups !</strong> Il y a des problèmes avec votre saisie.
                 </div>
             @endif
@@ -49,20 +32,20 @@
             </div>
 
             <div class="side-by-side">
-                <div class="input-groupe" style="flex: 1;">
+                <div class="input-groupe flex-1">
                     <label for="prenom">Prénom</label>
                     <input type="text" id="prenom" name="prenom" value="{{ old('prenom') }}" placeholder="Votre prénom" required autofocus
                            class="@error('prenom') is-invalid @enderror">
                     @error('prenom')
-                        <div class="text-danger">{{ $message }}</div>
+                        <div class="text-error">{{ $message }}</div>
                     @enderror
                 </div>
-                <div class="input-groupe" style="flex: 1;">
+                <div class="input-groupe flex-1">
                     <label for="nom">Nom</label>
                     <input type="text" id="nom" name="nom" value="{{ old('nom') }}" placeholder="Votre nom" required
                            class="@error('nom') is-invalid @enderror">
                     @error('nom')
-                        <div class="text-danger">{{ $message }}</div>
+                        <div class="text-error">{{ $message }}</div>
                     @enderror
                 </div>
             </div>
@@ -72,7 +55,7 @@
                 <input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="exemple@email.com" required
                        class="@error('email') is-invalid @enderror">
                 @error('email')
-                    <div class="text-danger">{{ $message }}</div>
+                    <div class="text-error">{{ $message }}</div>
                 @enderror
             </div>
 
@@ -82,7 +65,7 @@
                 <input type="tel" id="telephone" name="telephone" value="{{ old('telephone') }}" placeholder="06 12 34 56 78" required
                         class="@error('telephone') is-invalid @enderror">
                 @error('telephone')
-                    <div class="text-danger">{{ $message }}</div>
+                    <div class="text-error">{{ $message }}</div>
                 @enderror
             </div>
 
@@ -125,7 +108,7 @@
                     }
                 }"
                 @click.outside="showResults = false"
-                style="position: relative;">
+                class="input-groupe relative">
 
                 <label for="adresse">Adresse</label>
 
@@ -145,7 +128,7 @@
                 <input type="hidden" name="code_postal" x-model="zip">
 
                 @error('adresse')
-                    <div class="text-danger">{{ $message }}</div>
+                    <div class="text-error">{{ $message }}</div>
                 @enderror
 
                 <ul x-show="showResults && results.length > 0" 
@@ -154,8 +137,8 @@
                     
                     <template x-for="feature in results" :key="feature.properties.id">
                         <li @click="selectAddress(feature)" 
-                            style="padding: 8px; cursor: pointer"
-                            @mouseenter="$el.style.backgroundColor = '#f8f9fa'"
+                            class="suggestion-item"
+                            @mouseenter="$el.style.backgroundColor = '#f0f0f0'"
                             @mouseleave="$el.style.backgroundColor = 'white'">
                             
                             <span x-text="feature.properties.label" style="font-weight: bold; display: block;"></span>
@@ -169,15 +152,15 @@
                 </ul>
             </div>
 
-            <div id="entrepriseFields" style="display: none; flex-direction: column; gap: 1.25rem;">
-                <div style="width: 100%; height: 1px; background: var(--border-default); margin: 0.5rem 0;"></div>
+            <div id="entrepriseFields" class="entreprise-fields">
+                <div class="separator"></div>
                 
                 <div class="input-groupe">
                     <label for="siret">Numéro SIRET</label>
                     <input type="text" id="siret" name="siret" value="{{ old('siret') }}" placeholder="14 chiffres"
                            class="@error('siret') is-invalid @enderror">
                     @error('siret')
-                        <div class="text-danger">{{ $message }}</div>
+                        <div class="text-error">{{ $message }}</div>
                     @enderror
                 </div>
                 
@@ -194,7 +177,7 @@
                         @endif
                     </select>
                     @error('secteur')
-                        <div class="text-danger">{{ $message }}</div>
+                        <div class="text-error">{{ $message }}</div>
                     @enderror
                 </div>
                 
@@ -206,20 +189,20 @@
                 <input type="password" id="password" name="password" placeholder="Votre mot de passe" required
                        class="@error('password') is-invalid @enderror">
                 @error('password')
-                    <div class="text-danger">{{ $message }}</div>
+                    <div class="text-error">{{ $message }}</div>
                 @enderror
             </div>
-            <div class="input-groupe" style="flex: 1;">
+            <div class="input-groupe flex-1">
                 <label for="password_confirmation">Confirmation</label>
                 <input type="password" id="password_confirmation" name="password_confirmation" placeholder="Votre mot de passe" required
                        class="@error('password_confirmation') is-invalid @enderror">
             </div>
 
-            <div style="margin-top: 1rem;">
+            <div class="mt-md">
                 <input type="submit" value="S'inscrire" class="submit-btn">
             </div>
 
-            <div style="text-align: center; margin-top: 1rem; color: var(--text-muted); font-size: 0.9rem;">
+            <div class="login-link-container">
                 <p>Déjà un compte ? <a href="{{ url('login') }}" class="hyperlink" wire:navigate>Connectez-vous ici</a>.</p>
             </div>
         </form>
