@@ -31,7 +31,7 @@
             }"
             @click.outside="showResults = false">
 
-            <label for="search">Selectionner un lieu</label>
+            <label for="search">Sélectionnez un lieu</label>
             
             <div class="input-groupe">
                 <input 
