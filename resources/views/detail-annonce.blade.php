@@ -1,6 +1,6 @@
 @extends('layout')
 
-@section('title', 'Détail Annonce')
+@section('title', 'Détails Annonce')
 
 @section('content')
 
@@ -352,7 +352,7 @@
             </p>
             
             <p style="margin-top: 0.5rem;">
-                Annonce posté par 
+                Annonce postée par 
                 <a class="hyperlink" href="{{ url('/proprio/' . $annonce->idproprietaire ) }}" >
                     <span style="text-transform: uppercase;">{{ $annonce->utilisateur->nom_utilisateur }} </span> {{ $annonce->utilisateur->prenom_utilisateur }}
                 </a>
@@ -498,21 +498,23 @@
 <div class="res-section">
     <p class="section-title">Réservation(s)</p>
     @forelse($annonce->reservation as $r)
-    <div class="reviews">
-        <p>{{ $r->particulier->utilisateur->prenom_utilisateur }} {{ $r->particulier->utilisateur->nom_utilisateur }} a passe <b>{{ $r->nb_nuits }} nuits</b> ici</p>
-        <p style="margin-bottom: 1rem;"class='subtitle'>Du {{ $r->date_debut_resa }} au {{ $r->date_fin_resa }}</p>
-        
-        @if($r->avis)
-            <span class="stars" style="--rating: {{ $r->avis->note }}; margin-right: 5px;"></span> {{ $r->avis->note }}
-                
-            @if($r->avis->commentaire)
-                <p style="margin-top: 0.5rem;">"{{ $r->avis->commentaire }}"</p>
+    <a href="{{ url('/proprio/' . $annonce->idproprietaire ) }}" >
+        <div class="reviews">
+            <p>{{ $r->particulier->utilisateur->prenom_utilisateur }} {{ $r->particulier->utilisateur->nom_utilisateur }} a passé <b>{{ $r->nb_nuits }} nuits</b> ici</p>
+            <p style="margin-bottom: 1rem;"class='subtitle'>Du {{ $r->date_debut_resa }} au {{ $r->date_fin_resa }}</p>
+            
+            @if($r->avis)
+                <span class="stars" style="--rating: {{ $r->avis->note }}; margin-right: 5px;"></span> {{ $r->avis->note }}
+                    
+                @if($r->avis->commentaire)
+                    <p style="margin-top: 0.5rem;">"{{ $r->avis->commentaire }}"</p>
+                @endif
+            @else
+                <p style="font-style: italic; color: var(--text-muted);">Pas d'avis laissé</p>
             @endif
-        @else
-            <p style="font-style: italic; color: var(--text-muted);">Pas d'avis laissé</p>
-        @endif
 
-    </div>
+        </div>
+    </a>
     @empty
         <p>Pas de réservations</p>
     @endforelse

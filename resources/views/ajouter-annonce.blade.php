@@ -115,12 +115,12 @@
 
         <div class="annonce-group">
             <div>
-                <label>Nombre de personness maximum</label>
+                <label>Nombre de personnes maximum</label>
                 <input type="number" id="nb_pers" name="nb_pers" placeholder="4" min="1" required>
             </div>
 
             <div>
-                <label>Nombre de chambre</label>
+                <label>Nombre de chambres</label>
                 <input type="number" id="nb_chambres" name="nb_chambres" placeholder="3" min="1" required>
             </div>
         </div>
