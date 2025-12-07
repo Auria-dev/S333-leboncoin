@@ -18,6 +18,7 @@ use App\Models\Equipe;
 use App\Models\Service;
 use App\Models\Propose;
 use App\Models\Date;
+use App\Models\AnnonceSimilaire;
 
 
 use App\Services\GeoapifyService;
@@ -219,6 +220,30 @@ class AnnonceController extends Controller {
         ->toArray();
       $annonce->service()->sync($idsServices);
     }
+
+    // $similaires = Annonce::where(function($query) use ($annonce) {
+    //     $query->where('idville', $annonce->idville)
+    //           ->orWhere('idtypehebergement', $annonce->idtypehebergement)
+    //           ->orWhere('nb_personnes_max', '>=', $annonce->nb_personnes_max);
+    // })
+    // ->where('idannonce', '!=', $annonce->idannonce)
+    // ->get();
+
+    $similaires = Annonce::whereHas('ville.departement', function($query) use ($annonce) {
+        $query->where('iddepartement', $annonce->ville->departement->iddepartement);
+      })
+      ->where('idtypehebergement', $annonce->idtypehebergement)
+      ->where('nb_personnes_max', '>=', $annonce->nb_personnes_max)
+      ->where('idannonce', '!=', $annonce->idannonce)
+      ->get();
+  
+
+    foreach($similaires as $s)	{    
+        $similaire = AnnonceSimilaire::create([
+          'idannonce' => $annonce->idannonce,
+          'idsimilaire' => $s->idannonce,
+        ]);
+      }
 
     return redirect('/profile');
   }
