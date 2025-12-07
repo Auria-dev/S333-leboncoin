@@ -12,4 +12,10 @@ class AnnonceSimilaire extends Model
     protected $table = "annonce_similaire";
     // protected $primaryKey = ["idannonce", "idsimilaire"];
     public $timestamps = false;
+    public $incrementing = false;
+
+    protected $fillable = [
+        'idannonce',
+        'idsimilaire',
+    ];
 }
