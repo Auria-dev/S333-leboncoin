@@ -15,6 +15,13 @@ class Calendrier extends Model
     public $timestamps = false;
     public $incrementing = false;
 
+    protected $fillable = [
+        'iddate',
+        'idannonce',
+        'idutilisateur',
+        'code_dispo',
+    ];
+
     public function date() {
         return $this->belongsTo(Date::class, "iddate");
     }
