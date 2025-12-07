@@ -141,6 +141,10 @@ nav a {
     border-radius: 50px;
     transition: all 0.2s ease;
 }
+nav a:hover {
+    background-color: var(--primary-light);
+    color: var(--primary-hover);
+}
 nav a.active {
     color: var(--text-inverse);
     background-color: var(--primary);
@@ -1585,7 +1589,7 @@ input.date-custom-input {
 
 .action-btn:hover { color: var(--primary); background: var(--bg-subtle); }
 
-input:not(:disabled) ~ .action-btn.edit-trigger { display: none; }
+/* input:not(:disabled) ~ .action-btn.edit-trigger { display: none; } */
 
 .text-error { color: var(--danger); font-size: 0.85rem; margin-top: 2px; }
 .is-invalid { border-color: var(--danger) !important; }

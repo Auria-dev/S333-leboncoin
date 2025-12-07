@@ -221,7 +221,7 @@
                         'datefin'     => $savedSearch->date_fin_recherche,
                         'prixMin'     => $savedSearch->prix_min,
                         'prixMax'     => $savedSearch->prix_max,
-                        'filtreTypeHebergement' => $savedSearch->pivot->filtreTypeHebergement
+                        'filtreTypeHebergement' => $savedSearch->type_hebergement
                     ]) }}" class="search-card-link">
                         
                         <div>
