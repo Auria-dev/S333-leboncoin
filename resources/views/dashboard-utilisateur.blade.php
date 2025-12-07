@@ -3,19 +3,19 @@
 @section('title', 'Tableau de bord')
 
 @section('content')
-<div style="width: 100%; display:flex; justify-content: center;">
-<div style="display:flex; flex-direction: column; gap:1rem;width: 1100px;">
+<div class="center-container">
+<div class="dashboard-container">
 
-<div class="side-by-side" style="align-items: center; margin-bottom: 2rem; gap:2rem;">
+<div class="side-by-side dashboard-header">
     @if($utilisateur->photo_profil === null)
-        <img src="/images/photo-profil.jpg" style="width:150px; height:150px; object-fit:cover; border-radius:50%; margin-bottom:1rem;">
+        <img src="/images/photo-profil.jpg" class="profile-img">
     @else
-        <img src="{{ $utilisateur->photo_profil }}" style="width:150px; height:150px; object-fit:cover; border-radius:50%; margin-bottom:1rem;">
+        <img src="{{ $utilisateur->photo_profil }}" class="profile-img">
     @endif   
-    <div style="display:flex; flex-direction: column; gap:0.5rem;">
+    <div class="flex-col-gap-sm">
         <h1>Bonjour {{ $utilisateur->prenom_utilisateur . ' ' . $utilisateur->nom_utilisateur }} </h1>
         <p>Bienvenue dans le tableau de bord de votre compte {{ strtolower($utilisateur->getTypeParticulier()) }}.</p>
-        <a href="{{ url('/modifier_compte') }}" class="other-btn" stlye="width: fit-content;" wire:navigate>Modifier mon compte</a>
+        <a href="{{ url('/modifier_compte') }}" class="other-btn w-fit" wire:navigate>Modifier mon compte</a>
     </div>
 </div>
     @if ($utilisateur->getTypeParticulier() == 'Propriétaire' || $utilisateur->getTypeParticulier() == 'Locataire & Propriétaire')
@@ -29,7 +29,7 @@
                     @if(isset($similaire->photo) && count($similaire->photo) > 0)
                         <img class="similaire-image" loading="lazy" src="{{ $similaire->photo[0]->nomphoto }}" alt="Photo annonce"/>
                     @else
-                        <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color: var(--text-muted);">
+                        <div class="no-photo-placeholder">
                             Sans photo
                         </div>
                     @endif
@@ -266,7 +266,7 @@
 
     @endif
 
-    <form method="POST" action="{{ url('logout') }}" style='width: fit-content;'>
+    <form method="POST" action="{{ url('logout') }}" class="w-fit">
         @csrf
         <button type="submit" class="other-btn">Se déconnecter</button>
     </form>

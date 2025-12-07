@@ -6,13 +6,13 @@
     <!-- Ici $proprietaire c'est jeankevin  -->
     <div id="info-proprio">
          @if($proprietaire->photo_profil === null)
-            <img src="/images/photo-profil.jpg" id="img-proprio" style="width:150px; height:150px; object-fit:cover; border-radius:50%; margin-bottom:1rem;">
+            <img src="/images/photo-profil.jpg" id="img-proprio" class="profile-img">
         @else
-            <img src="{{ $proprietaire->photo_profil }}" id="img-proprio" style="width:150px; height:150px; object-fit:cover; border-radius:50%; margin-bottom:1rem;">
+            <img src="{{ $proprietaire->photo_profil }}" id="img-proprio" class="profile-img">
         @endif
         <div>
             <p><strong>
-                <span style="text-transform: uppercase;"> {{ $proprietaire->nom_utilisateur }} </span> 
+                <span class="uppercase"> {{ $proprietaire->nom_utilisateur }} </span> 
                     {{ $proprietaire->prenom_utilisateur }} 
             </strong></p>
             <div class="notation">
@@ -30,7 +30,7 @@
         </div>
     </div>
 
-    <div style="margin-bottom: 1rem; margin-left: 1rem; color: #4A3B32;"><strong>Annonce(s) publiées par {{$proprietaire->nom_utilisateur . ' ' . $proprietaire->prenom_utilisateur}}</strong></div>
+    <div class="proprio-annonces-title"><strong>Annonce(s) publiées par {{$proprietaire->nom_utilisateur . ' ' . $proprietaire->prenom_utilisateur}}</strong></div>
 
         <div class="res-scroller">
             @forelse($proprietaire->annonce as $similaire)
@@ -39,7 +39,7 @@
                     @if(isset($similaire->photo) && count($similaire->photo) > 0)
                         <img class="similaire-image" loading="lazy" src="{{ $similaire->photo[0]->nomphoto }}" alt="Photo annonce"/>
                     @else
-                        <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color: var(--text-muted);">
+                        <div class="no-photo-placeholder">
                             Sans photo
                         </div>
                     @endif

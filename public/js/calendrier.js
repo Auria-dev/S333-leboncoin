@@ -44,7 +44,7 @@ class GestionnaireDate {
         this.input.type = 'text';
         this.input.setAttribute('readonly', true);
         this.input.classList.add('date-custom-input');
-        this.input.placeholder = 'Cliquer pour choisir une date...'
+        this.input.placeholder = 'Cliquez pour choisir une date...'
 
         const iconContainer = document.createElement('div');
         iconContainer.className = 'input-icon';

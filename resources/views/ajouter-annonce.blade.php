@@ -6,13 +6,13 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
-    <div style="width: 100%; display: flex; justify-content: center;">
+    <div class="center-container">
 
-    <form class="form-ajouter" method="POST" action="{{ url('ajouter_annonce') }}" style="display: flex; flex-direction: column; width: 700px; " enctype="multipart/form-data">
+    <form class="form-ajouter add-annonce-form" method="POST" action="{{ url('ajouter_annonce') }}" enctype="multipart/form-data">
         @csrf   
         <input type="file" name="file[]" id="fileInput" accept="image/png, image/jpeg, image/jpg" multiple>  
 
-        <div id="previewsContainer" style="display: flex; gap: 10px; margin-top: 10px;"></div>
+        <div id="previewsContainer" class="previews-container"></div>
 
         <label>Titre</label>
         <input type="text" id="titre" name="titre" placeholder="Maison 3 chambres centre d'Annecy" required>
@@ -69,7 +69,7 @@
                     }
                 }"
                 @click.outside="showResults = false"
-                style="position: relative;">
+                class="input-groupe relative">
 
                 <label for="adresse">Adresse</label>
 
@@ -89,7 +89,7 @@
                 <input type="hidden" name="code_postal" x-model="zip">
 
                 @error('depot-adresse')
-                    <div class="text-danger">{{ $message }}</div>
+                    <div class="text-error">{{ $message }}</div>
                 @enderror
 
                 <ul x-show="showResults && results.length > 0" 
@@ -98,13 +98,13 @@
                     
                     <template x-for="feature in results" :key="feature.properties.id">
                         <li @click="selectAddress(feature)" 
-                            style="padding: 8px; cursor: pointer"
+                            class="suggestion-item"
                             @mouseenter="$el.style.backgroundColor = '#f8f9fa'"
                             @mouseleave="$el.style.backgroundColor = 'white'">
                             
-                            <span x-text="feature.properties.label" style="font-weight: bold; display: block;"></span>
+                            <span x-text="feature.properties.label" class="font-bold block"></span>
                             
-                            <span style="font-size: 0.85em; color: #666;">
+                            <span class="text-sm text-muted-color">
                                 <span x-text="feature.properties.postcode"></span> 
                                 <span x-text="feature.properties.city"></span>
                             </span>
@@ -208,7 +208,7 @@
         <label>Description</label>
         <textarea id="desc" name="desc" placeholder="Maison chaleureuse..." rows="5" required></textarea>
         
-        <div style="margin-top: 1rem;">
+        <div class="mt-md">
         <input type="submit" value="Déposer" class="submit-btn">
 
         </div>
