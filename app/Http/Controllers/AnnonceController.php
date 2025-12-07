@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use App\Providers\RouteServiceProvider;
 use App\Models\Ville;
 use App\Models\Annonce;
@@ -16,6 +17,8 @@ use App\Models\Equipement;
 use App\Models\Equipe;
 use App\Models\Service;
 use App\Models\Propose;
+use App\Models\Date;
+
 
 use App\Services\GeoapifyService;
 
@@ -187,6 +190,19 @@ class AnnonceController extends Controller {
           'legende' => null,
         ]);
     }
+
+    $calendrier = DB::table('calendrier')->insertUsing(
+      ['iddate', 'idannonce', 'idutilisateur', 'code_dispo'],
+      DB::table('date as d')
+        ->crossJoin('annonce as a')
+        ->where('a.idannonce', $annonce->idannonce)
+        ->select(
+          'd.iddate',
+          'a.idannonce',
+          DB::raw('NULL as idutilisateur'),
+          DB::raw('TRUE as code_dispo')
+        )
+      );
 
     $nomsEquipements = $req->DepotEquipement;
     if (!empty($nomsEquipements) && is_array($nomsEquipements)) {
