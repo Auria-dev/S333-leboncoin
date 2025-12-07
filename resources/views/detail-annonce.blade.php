@@ -406,6 +406,7 @@
                     {{ $annonce->nombre_chambre . ' chambre'}}
                 @else 
                     {{ $annonce->nombre_chambre . ' chambres'}}
+                @endif
             </li>
             <li class="detail-item" style="grid-column: span 2;">
                 <span class="detail-label">Réf.</span>
