@@ -87,8 +87,10 @@
 
         
         <p class="results-count">
-            @if (isset($annonces) && count($annonces) > 0)
+            @if (isset($annonces) && count($annonces) > 1)
                 {{ count($annonces) }} résultats trouvés
+            @elseif (isset($annonces) && count($annonces) == 1)
+                1 résultat trouvé
             @else
                 Aucun résultat
             @endif

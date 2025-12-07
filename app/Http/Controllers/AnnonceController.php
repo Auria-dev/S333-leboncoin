@@ -33,7 +33,6 @@ class AnnonceController extends Controller {
       $this->geoService = $geoService;
   }
 
-
   public function view($id) {
     $iduser = -1;
 
