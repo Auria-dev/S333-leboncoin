@@ -184,6 +184,14 @@
             </div>
             
             <div class="password-container" :class="{ 'is-editing': editing }">
+                
+                <div class="text-error mt-sm" x-show="errorType === 'length'">
+                    Le mot de passe doit contenir au moins 8 caractères.
+                </div>
+                <div class="text-error mt-sm" x-show="errorType === 'match'">
+                    Les mots de passe ne correspondent pas.
+                </div>
+
                 <div class="row-group">
                     <div class="field-group">
                         <label class="font-bold">Nouveau mot de passe</label>
@@ -204,13 +212,6 @@
                                    :class="{ 'is-invalid': errorType === 'match' }">
                         </div>
                     </div>
-                </div>
-
-                <div class="text-error mt-sm" x-show="errorType === 'length'">
-                    Le mot de passe doit contenir au moins 8 caractères.
-                </div>
-                <div class="text-error mt-sm" x-show="errorType === 'match'">
-                    Les mots de passe ne correspondent pas.
                 </div>
             </div>
         </div>
