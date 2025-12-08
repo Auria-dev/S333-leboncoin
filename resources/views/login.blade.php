@@ -37,8 +37,9 @@
             <input type="submit" class="submit-btn" value="Se connecter" />
         </div>
         
-        <div>
+        <div class="login-link-container">
             <p>Pas encore de compte ? <a href="{{ url('register') }}" class="hyperlink" wire:navigate>Créez-en un ici</a>.</p>
         </div>
+
     </form>
 @endsection

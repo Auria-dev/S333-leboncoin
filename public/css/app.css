@@ -830,7 +830,8 @@ input.date-custom-input {
     color: var(--text-inverse);
 }
 .cal-cellule.disabled {
-    color: var(--input-placeholder);
+    opacity: 0.3;
+    color: var(--text-main);
     background-color: var(--bg-subtle);
     cursor: not-allowed;
     pointer-events: none;
@@ -1591,7 +1592,7 @@ input.date-custom-input {
 
 /* input:not(:disabled) ~ .action-btn.edit-trigger { display: none; } */
 
-.text-error { color: var(--danger); font-size: 0.85rem; margin-top: 2px; }
+.text-error { color: var(--danger); font-size: 0.85rem; margin-top: 2px; margin-bottom: 8px; }
 .is-invalid { border-color: var(--danger) !important; }
 
 .dropdown-results {
@@ -1620,7 +1621,7 @@ input.date-custom-input {
 .profile-img { width:150px; height:150px; object-fit:cover; border-radius:50%; margin-bottom:1rem; }
 .alert-error { background: var(--danger-bg); color: var(--danger-text); padding:1rem; border-radius:6px; }
 .alert-success { background: var(--success-bg); color: var(--success-text); padding:1rem; border-radius:6px; }
-.submit-btn-custom { padding: 10px 20px; background: var(--primary); color: white; border-radius: 6px; }
+.submit-btn-custom { padding: 10px 20px; background: var(--primary); color: white; border-radius: 6px; border: none; }
 
 .mt-sm { margin-top: 0.625rem; }
 .mt-md { margin-top: 1rem; }
