@@ -1,284 +1,318 @@
-<!-- resources/views/cookie-banner.blade.php -->
-<!-- 
-    Ce fichier gère le consentement des cookies conformément au RGPD.
-    Il doit être inclus dans le layout principal (layout.blade.php).
--->
-
 <style>
-    /* --- STYLE CSS DU BANDEAU ET DE LA MODALE --- */
     :root {
-        --primary-color: #ff6e14; /* Orange Leboncoin */
-        --text-color: #1a1a1a;
-        --bg-color: #ffffff;
-        --border-radius: 8px;
+        --lbc-orange: #ec5a13;
+        --lbc-orange-hover: #d34b0e;
+        --lbc-black: #1a1a1a;
+        --lbc-grey: #f4f6f7;
+        --lbc-dark-grey: #757575;
+        --lbc-border: #e0e0e0;
+        --shadow-soft: 0 4px 20px rgba(0,0,0,0.15);
+        --radius: 12px;
+        --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
-    /* 1. BANDEAU (En bas de page) */
-    #cookie-banner {
-        display: none; /* Masqué par défaut, géré par JS */
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        background-color: var(--bg-color);
-        box-shadow: 0 -4px 12px rgba(0,0,0,0.1);
-        padding: 20px;
-        z-index: 9999;
-        font-family: Arial, sans-serif;
-        border-top: 4px solid var(--primary-color);
-    }
-
-    .banner-content {
-        max-width: 1200px;
-        margin: 0 auto;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        align-items: center;
-        gap: 20px;
-    }
-
-    .banner-text {
-        flex: 1;
-        font-size: 0.95rem;
-        color: var(--text-color);
+    #cookie-container {
+        font-family: var(--font-family);
+        color: var(--lbc-black);
         line-height: 1.5;
     }
 
-    .banner-title {
-        font-weight: bold;
-        display: block;
-        margin-bottom: 5px;
-        font-size: 1.1rem;
+    #cookie-banner {
+        display: none;
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 90%;
+        max-width: 1000px;
+        background-color: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-soft);
+        padding: 24px;
+        z-index: 9999;
+        border-left: 6px solid var(--lbc-orange);
     }
 
-    .banner-buttons {
+    .banner-header {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 8px;
         display: flex;
+        align-items: center;
         gap: 10px;
     }
+    
+    .banner-text {
+        font-size: 0.95rem;
+        color: #4a4a4a;
+        margin-bottom: 20px;
+    }
 
-    /* Styles des boutons */
+    .banner-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+
+
     .btn-cookie {
         padding: 10px 20px;
-        border-radius: var(--border-radius);
-        border: none;
-        cursor: pointer;
+        border-radius: 8px;
         font-weight: 600;
-        font-size: 0.9rem;
-        transition: background 0.2s;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: none;
     }
 
-    .btn-accept {
-        background-color: var(--primary-color);
+    .btn-primary {
+        background-color: var(--lbc-orange);
         color: white;
     }
-    .btn-accept:hover { background-color: #e55e0c; }
+    .btn-primary:hover { background-color: var(--lbc-orange-hover); }
 
-    .btn-refuse {
-        background-color: #f4f4f4;
-        color: var(--text-color);
-        border: 1px solid #ddd;
+    .btn-secondary {
+        background-color: white;
+        color: var(--lbc-black);
+        border: 1px solid var(--lbc-border);
     }
-    .btn-refuse:hover { background-color: #e0e0e0; }
+    .btn-secondary:hover { background-color: var(--lbc-grey); border-color: #ccc; }
 
-    /* 2. MODALE DE PERSONNALISATION */
+    .btn-link {
+        background: none;
+        color: var(--lbc-dark-grey);
+        text-decoration: underline;
+        padding: 10px;
+    }
+    .btn-link:hover { color: var(--lbc-black); }
+
     #cookie-modal {
         display: none;
         position: fixed;
         top: 0; left: 0;
         width: 100%; height: 100%;
-        background: rgba(0,0,0,0.6);
+        background: rgba(0,0,0,0.5);
+        backdrop-filter: blur(2px);
         z-index: 10000;
         align-items: center;
         justify-content: center;
     }
 
-    .modal-box {
+    .modal-content {
         background: white;
-        width: 90%;
-        max-width: 700px;
-        border-radius: var(--border-radius);
-        padding: 25px;
+        width: 95%;
+        max-width: 650px;
+        border-radius: var(--radius);
+        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        display: flex;
+        flex-direction: column;
         max-height: 90vh;
-        overflow-y: auto;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        overflow: hidden;
     }
 
     .modal-header {
+        padding: 20px 25px;
+        border-bottom: 1px solid var(--lbc-border);
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 20px;
-        border-bottom: 1px solid #eee;
-        padding-bottom: 15px;
+        background: #fff;
+    }
+    .modal-header h3 { margin: 0; font-size: 1.3rem; }
+    .close-icon { cursor: pointer; font-size: 1.5rem; color: var(--lbc-dark-grey); }
+
+    .modal-body {
+        padding: 25px;
+        overflow-y: auto;
+        background-color: #fafafa;
     }
 
-    .modal-header h3 { margin: 0; color: var(--text-color); }
-    .close-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; }
-
-    /* Liste des catégories */
-    .cookie-category {
-        margin-bottom: 20px;
-        padding: 15px;
-        border: 1px solid #eee;
-        border-radius: var(--border-radius);
-        background: #fafafa;
+    .cookie-card {
+        background: white;
+        border: 1px solid var(--lbc-border);
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 15px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
     }
 
-    .cat-header {
+    .card-top {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 10px;
     }
 
-    .cat-title { font-weight: bold; font-size: 1rem; }
-    .cat-status { font-size: 0.8rem; font-weight: bold; color: var(--primary-color); text-transform: uppercase; }
-    .cat-desc { font-size: 0.85rem; color: #555; }
-
-    /* Toggle Switch (Boutons Oui/Non) */
-    .toggle-group { display: flex; border: 1px solid #ccc; border-radius: 4px; overflow: hidden; }
-    .toggle-btn {
-        padding: 5px 15px; border: none; cursor: pointer; background: white; font-size: 0.85rem;
+    .card-title { font-weight: 700; font-size: 1rem; color: var(--lbc-black); }
+    .card-desc { font-size: 0.85rem; color: var(--lbc-dark-grey); margin: 0; }
+    
+    .badge-required {
+        font-size: 0.75rem;
+        background: #eee;
+        color: #666;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-weight: bold;
+        text-transform: uppercase;
     }
-    .toggle-btn.active { background: var(--primary-color); color: white; }
+
+
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 46px;
+        height: 26px;
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 34px;
+    }
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 20px;
+        width: 20px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    input:checked + .slider { background-color: var(--lbc-orange); }
+    input:checked + .slider:before { transform: translateX(20px); }
 
     .modal-footer {
-        margin-top: 20px;
+        padding: 20px 25px;
+        border-top: 1px solid var(--lbc-border);
+        background: white;
         display: flex;
-        justify-content: flex-end;
-        gap: 10px;
-        border-top: 1px solid #eee;
-        padding-top: 15px;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    @media (max-width: 600px) {
+        .banner-actions { flex-direction: column; }
+        .modal-footer { flex-direction: column; gap: 10px; }
+        .btn-cookie { width: 100%; }
     }
 </style>
 
-<!-- BANDEAU D'INFORMATION -->
-<div id="cookie-banner">
-    <div class="banner-content">
-        <div class="banner-text">
-            <span class="banner-title">🍪 Gestion de vos préférences</span>
-            Nous utilisons des cookies pour assurer le bon fonctionnement du site. Avec votre accord, nous utilisons également des traceurs pour activer la <strong>Carte Interactive</strong>, notre <strong>Chatbot</strong> et mesurer l'audience. Vous pouvez tout accepter, tout refuser ou personnaliser vos choix.
+<div id="cookie-container">
+    
+    <div id="cookie-banner">
+        <div class="banner-header">
+            Votre vie privée est notre priorité
         </div>
-        <div class="banner-buttons">
-            <button class="btn-cookie btn-refuse" onclick="CookieManager.denyAll()">Tout refuser</button>
-            <button class="btn-cookie btn-refuse" onclick="CookieManager.openModal()">Personnaliser</button>
-            <button class="btn-cookie btn-accept" onclick="CookieManager.acceptAll()">Tout accepter</button>
+        <div class="banner-text">
+            Nous utilisons des cookies pour assurer le bon fonctionnement du site et la sécurité de votre compte. 
+            Avec votre accord, nous utilisons également des traceurs pour vous proposer une carte interactive et un support via Chatbot.
+            <br>Conformément au RGPD, vous pouvez retirer votre consentement à tout moment.
+        </div>
+        <div class="banner-actions">
+            <button class="btn-cookie btn-link" onclick="CookieManager.openModal()">Paramétrer les cookies</button>
+            <button class="btn-cookie btn-secondary" onclick="CookieManager.denyAll()">Continuer sans accepter</button>
+            <button class="btn-cookie btn-primary" onclick="CookieManager.acceptAll()">Tout accepter</button>
         </div>
     </div>
-</div>
 
-<!-- MODALE DE PERSONNALISATION -->
-<div id="cookie-modal">
-    <div class="modal-box">
-        <div class="modal-header">
-            <h3>Centre de préférences de confidentialité</h3>
-            <button class="close-btn" onclick="CookieManager.closeModal()">&times;</button>
-        </div>
-        <div class="modal-body">
-            <p style="font-size:0.9rem; color:#666; margin-bottom:20px;">
-                Gérez vos consentements pour chaque catégorie. Les cookies techniques indispensables ne peuvent pas être désactivés.
-            </p>
-
-            <!-- 1. NÉCESSAIRES -->
-            <div class="cookie-category">
-                <div class="cat-header">
-                    <span class="cat-title">🔒 Fonctionnement & Sécurité</span>
-                    <span class="cat-status">OBLIGATOIRE</span>
-                </div>
-                <div class="cat-desc">
-                    Indispensables pour l'authentification (Session Laravel), la sécurité des formulaires (CSRF) et les paiements sécurisés (Stripe).
-                </div>
+    <div id="cookie-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Paramètres de confidentialité</h3>
+                <span class="close-icon" onclick="CookieManager.closeModal()">&times;</span>
             </div>
 
-            <!-- 2. FONCTIONNELS (Carte, Chat) -->
-            <div class="cookie-category">
-                <div class="cat-header">
-                    <span class="cat-title">🛠️ Fonctionnalités & Outils</span>
-                    <div class="toggle-group" id="toggle-func">
-                        <button class="toggle-btn active" onclick="CookieManager.toggle('functional', false)">Non</button>
-                        <button class="toggle-btn" onclick="CookieManager.toggle('functional', true)">Oui</button>
+            <div class="modal-body">
+                <p style="margin-bottom: 20px; font-size: 0.9rem; color: #666;">
+                    Gérez vos préférences ci-dessous. Les cookies techniques sont nécessaires au fonctionnement du site et ne peuvent être désactivés.
+                </p>
+
+                <div class="cookie-card">
+                    <div class="card-top">
+                        <span class="card-title">Cookies techniques (Essentiels)</span>
+                        <span class="badge-required">Toujours actif</span>
                     </div>
+                    <p class="card-desc">
+                        Nécessaires pour l'authentification, la sécurité (protection CSRF) et le paiement. Sans eux, le site ne peut pas fonctionner.
+                    </p>
                 </div>
-                <div class="cat-desc">
-                    Permet d'afficher la <strong>Carte Google Maps</strong> pour localiser les biens et d'activer le <strong>Chatbot</strong> d'assistance.
-                </div>
-            </div>
 
-            <!-- 3. ANALYTICS (GA4) -->
-            <div class="cookie-category">
-                <div class="cat-header">
-                    <span class="cat-title">📊 Mesure d'audience</span>
-                    <div class="toggle-group" id="toggle-analytics">
-                        <button class="toggle-btn active" onclick="CookieManager.toggle('analytics', false)">Non</button>
-                        <button class="toggle-btn" onclick="CookieManager.toggle('analytics', true)">Oui</button>
+                <div class="cookie-card">
+                    <div class="card-top">
+                        <span class="card-title">Fonctionnalités avancées</span>
+                        <label class="switch">
+                            <input type="checkbox" id="chk-functional" onchange="CookieManager.updateState()">
+                            <span class="slider"></span>
+                        </label>
                     </div>
+                    <p class="card-desc">
+                        Autorise l'affichage de la <strong>Carte Interactive (Google Maps)</strong> pour localiser les biens et active notre <strong>Chatbot</strong> d'assistance technique.
+                    </p>
                 </div>
-                <div class="cat-desc">
-                    Nous permet d'analyser anonymement le trafic via <strong>Google Analytics 4</strong> (IP Anonymisée).
+
+                <div class="cookie-card">
+                    <div class="card-top">
+                        <span class="card-title">Mesure d'audience</span>
+                        <label class="switch">
+                            <input type="checkbox" id="chk-analytics" onchange="CookieManager.updateState()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <p class="card-desc">
+                        Nous permet d'analyser le trafic de manière anonyme (Google Analytics 4 avec masquage IP) pour améliorer nos services.
+                    </p>
                 </div>
             </div>
 
-        </div>
-        <div class="modal-footer">
-            <button class="btn-cookie btn-refuse" onclick="CookieManager.denyAll()">Tout refuser</button>
-            <button class="btn-cookie btn-accept" onclick="CookieManager.savePreferences()">Enregistrer mes choix</button>
+            <div class="modal-footer">
+                <button class="btn-cookie btn-secondary" onclick="CookieManager.denyAll()">Tout refuser</button>
+                <button class="btn-cookie btn-primary" onclick="CookieManager.savePreferences()">Enregistrer mes choix</button>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-    /* * GESTIONNAIRE DE CONSENTEMENT (Simule une CMP comme Tarteaucitron)
-     * Stocke les choix dans le LocalStorage du navigateur.
-     */
     const CookieManager = {
-        // État par défaut : tout est refusé sauf le nécessaire
-        consent: {
-            functional: false, // Maps, Chatbot
-            analytics: false   // GA4
-        },
+        consent: { functional: false, analytics: false },
 
         init: function() {
-            // Vérifie si l'utilisateur a déjà fait un choix
-            const storedConsent = localStorage.getItem('sae_cookie_consent');
-            
-            if (!storedConsent) {
-                // Pas de choix => Afficher le bandeau
+            const stored = localStorage.getItem('sae_cookie_consent');
+            if (!stored) {
                 document.getElementById('cookie-banner').style.display = 'block';
             } else {
-                // Choix existant => Charger les préférences et activer les scripts
-                this.consent = JSON.parse(storedConsent);
-                this.applyConsent(); 
+                this.consent = JSON.parse(stored);
+                this.applyConsent();
             }
         },
 
         openModal: function() {
-            document.getElementById('cookie-modal').style.display = 'flex';
             document.getElementById('cookie-banner').style.display = 'none';
-            // Met à jour l'affichage des boutons selon l'état actuel
-            this.updateToggleUI('functional', this.consent.functional);
-            this.updateToggleUI('analytics', this.consent.analytics);
+            document.getElementById('cookie-modal').style.display = 'flex';
+            document.getElementById('chk-functional').checked = this.consent.functional;
+            document.getElementById('chk-analytics').checked = this.consent.analytics;
         },
 
         closeModal: function() {
             document.getElementById('cookie-modal').style.display = 'none';
-            // Si pas encore sauvé, réafficher le bandeau
             if (!localStorage.getItem('sae_cookie_consent')) {
                 document.getElementById('cookie-banner').style.display = 'block';
             }
         },
 
-        toggle: function(category, value) {
-            this.consent[category] = value;
-            this.updateToggleUI(category, value);
-        },
-
-        updateToggleUI: function(category, value) {
-            const group = document.getElementById('toggle-' + (category === 'functional' ? 'func' : 'analytics'));
-            const btns = group.getElementsByClassName('toggle-btn');
-            // Bouton 0 = Non, Bouton 1 = Oui
-            btns[0].classList.toggle('active', !value);
-            btns[1].classList.toggle('active', value);
+        updateState: function() {
+            this.consent.functional = document.getElementById('chk-functional').checked;
+            this.consent.analytics = document.getElementById('chk-analytics').checked;
         },
 
         acceptAll: function() {
@@ -292,48 +326,39 @@
         },
 
         savePreferences: function() {
-            // Sauvegarde dans le navigateur (valable pour ce navigateur)
             localStorage.setItem('sae_cookie_consent', JSON.stringify(this.consent));
             localStorage.setItem('sae_consent_date', new Date().toISOString());
-
-            // Fermer les interfaces
             document.getElementById('cookie-modal').style.display = 'none';
             document.getElementById('cookie-banner').style.display = 'none';
-
-            // Appliquer les changements (charger ou bloquer les scripts)
             this.applyConsent();
         },
 
         applyConsent: function() {
-            console.log("Application des consentements :", this.consent);
+            console.log("Application des consentements RGPD :", this.consent);
+            
 
-            // 1. GESTION GOOGLE MAPS & CHATBOT
             if (this.consent.functional) {
-                console.log("✅ Chargement de Google Maps et du Chatbot...");
-                // Ici, vous pourriez décommenter le code pour charger les vrais scripts
-                // loadScript('https://maps.googleapis.com/maps/api/js?key=VOTRE_API_KEY');
-            } else {
-                console.log("❌ Google Maps et Chatbot bloqués.");
+                console.log("--> Chargement Modules Fonctionnels");
             }
-
-            // 2. GESTION GOOGLE ANALYTICS 4
+            
             if (this.consent.analytics) {
-                console.log("✅ Chargement de Google Analytics (Anonymisé)...");
-                // Code GA4 standard ici
-                /*
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){dataLayer.push(arguments);}
-                gtag('js', new Date());
-                gtag('config', 'G-XXXXXXXX', { 'anonymize_ip': true });
-                */
-            } else {
-                console.log("❌ Google Analytics bloqué.");
+                console.log("--> Chargement Analytics");
             }
         }
     };
 
-    // Démarrage automatique au chargement de la page
-    document.addEventListener('DOMContentLoaded', function() {
-        CookieManager.init();
-    });
+    document.addEventListener('DOMContentLoaded', () => CookieManager.init());
+
+    init: function() {
+
+    localStorage.removeItem('sae_cookie_consent'); 
+
+    const stored = localStorage.getItem('sae_cookie_consent');
+    if (!stored) {
+        document.getElementById('cookie-banner').style.display = 'block';
+    } else {
+        this.consent = JSON.parse(stored);
+        this.applyConsent();
+    }
+},
 </script>
