@@ -44,7 +44,17 @@ class Utilisateur extends Authenticatable {
 
     public function demandesReservations() {
         return $this->hasManyThrough(Reservation::class, Annonce::class, 'idproprietaire', 'idannonce', 'idutilisateur', 'idannonce')
-        ->orderBy('statut_reservation', 'asc')
+        ->orderByRaw("
+            CASE statut_reservation
+                WHEN 'en attente' THEN 1
+                WHEN 'en cours' THEN 2
+                WHEN 'validée' THEN 3
+                WHEN 'complétée' THEN 4
+                WHEN 'annulée' THEN 5
+                WHEN 'refusée' THEN 6
+                ELSE 7
+            END ASC
+        ")
         ->orderBy('date_demande', 'desc');
     }
 

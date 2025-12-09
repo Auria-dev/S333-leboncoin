@@ -76,7 +76,7 @@
             </form>
 
             <style>
-                .cal-cellule.selected {
+                /* .cal-cellule.selected {
                     background-color: var(--primary);
                     color: white;
                 }
@@ -98,7 +98,7 @@
                     opacity: 0.3;
                     pointer-events: none;
                     text-decoration: line-through;
-                }
+                } */
             </style>
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
@@ -228,13 +228,13 @@
                                 const eTime = endDate ? endDate.getTime() : null;
 
                                 if (sTime && dateTime === sTime) {
-                                    cell.classList.add('selected', 'start-date');
+                                    cell.classList.add('selectionne', 'debut-plage');
                                 }
                                 else if (eTime && dateTime === eTime) {
-                                    cell.classList.add('selected', 'end-date');
+                                    cell.classList.add('selectionne', 'fin-plage');
                                 }
                                 else if (sTime && eTime && dateTime > sTime && dateTime < eTime) {
-                                    cell.classList.add('in-range');
+                                    cell.classList.add('dans-plage');
                                 }
                             }
                             gridEl.appendChild(cell);
@@ -494,31 +494,31 @@
     </div>
 </div>
 
+
+<!-- only show to owner -->
+@if (auth()->check() && auth()->user()->idutilisateur === $annonce->idproprietaire)
 <div class="res-section">
     <p class="section-title">Réservation(s)</p>
-    @forelse($annonce->reservation as $r)
-    <a href="{{ url('/proprio/' . $annonce->idproprietaire ) }}" >
-        <div class="reviews">
-            <p>{{ $r->particulier->utilisateur->prenom_utilisateur }} {{ $r->particulier->utilisateur->nom_utilisateur }} a passé <b>{{ $r->nb_nuits }} nuits</b> ici</p>
-            <p style="margin-bottom: 1rem;"class='subtitle'>Du {{ \Carbon\Carbon::parse($annonce->date_debut_resa)->format('d/m/Y') }} au {{ \Carbon\Carbon::parse($annonce->date_fin_resa)->format('d/m/Y') }} </p>
-            
-            @if($r->avis)
-                <span class="stars" style="--rating: {{ $r->avis->note }}; margin-right: 5px;"></span> {{ $r->avis->note }}
-                    
-                @if($r->avis->commentaire)
-                    <p style="margin-top: 0.5rem;">"{{ $r->avis->commentaire }}"</p>
-                @endif
-            @else
-                <p style="font-style: italic; color: var(--text-muted);">Pas d'avis laissé</p>
-            @endif
+    <div class="res-scroller">
+        @forelse($annonce->reservation as $r)
+        <a href="{{ url('/proprio/' . $annonce->idproprietaire ) }}" >
+            <div class="reviews">
+                <p>{{ $r->particulier->utilisateur->prenom_utilisateur }} {{ $r->particulier->utilisateur->nom_utilisateur }} a passé <b>{{ $r->nb_nuits }} nuits</b> ici</p>
+                <p style="margin-bottom: 1rem;"class='subtitle'>Du {{ \Carbon\Carbon::parse($annonce->date_debut_resa)->format('d/m/Y') }} au {{ \Carbon\Carbon::parse($annonce->date_fin_resa)->format('d/m/Y') }} </p>
+                
 
-        </div>
-    </a>
-    @empty
-        <p>Pas de réservations</p>
-    @endforelse
+
+            </div>
+        </a>
+        @empty
+            <p>Pas de réservations</p>
+        @endforelse
+    </div>
 </div>
-    
+@endif
+
+<!-- TODO: avis -->
+
 @endsection
 @push('scripts')
 <script>
