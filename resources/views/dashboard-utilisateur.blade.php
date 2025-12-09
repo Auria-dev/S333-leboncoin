@@ -72,12 +72,13 @@
 
         <div class="res-scroller">
             @forelse($utilisateur->reservation as $res)
-                <a class="res-card" href="{{ url('annonce/'.strval($res->idannonce)) }}" >
+                <a class="res-card" href="{{ url('reservation/'.strval($res->idreservation)) }}" >
                     <div class="res-header">
                         <div>
                             <h3 class="res-id">Annonce #{{ $res->idannonce }}</h3>
                             <span class="res-dates">
-                                {{ \Carbon\Carbon::parse($res->date_debut_resa)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($res->date_fin_resa)->format('d/m/Y') }}
+                                {{ \Carbon\Carbon::parse($res->date_debut_resa)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($res->date_fin_resa)->format('d/m/Y') }}<br>
+                                Annonce #{{ $res->idreservation }}
                             </span>
                         </div>
                         <span class="res-badge">
@@ -152,6 +153,41 @@
             @endforelse
         </div>
     </div>
+    
+    <div class="res-section">
+        <p class="section-title">Mes demandes de réservation</p>
+
+        <div class="res-scroller">
+            @forelse($utilisateur->demandesReservations as $demande)
+                <a class="res-card" href="{{ url('reservation/'.strval($demande->idreservation)) }}" >
+                    <div class="res-header">
+                        <div>
+                            <h3 class="res-id">#{{ $demande->idreservation }}</h3>
+                            <span class="res-dates">
+                                {{ \Carbon\Carbon::parse($demande->date_debut_resa)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($demande->date_fin_resa)->format('d/m/Y') }}<br>
+                                Annonce #{{ $demande->idannonce }}
+                            </span>
+                            <span class="res-requester">
+                                Demande de {{ strtoupper($demande->particulier->utilisateur->nom_utilisateur) }} {{ $demande->particulier->utilisateur->prenom_utilisateur }}
+                            </span>
+
+                            <div class="res-info-row">
+                                <svg class="res-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-icon lucide-user"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                <span>{{ $demande->nb_adultes + $demande->nb_enfants + $demande->nb_bebes }} voyageur(s)</span>
+                            </div>  
+                        </div>
+                        <span class="res-badge pending">
+                            {{ $demande->statut_reservation }}
+                        </span>
+                    </div>
+                </a>
+            @empty
+                <div class="res-empty">
+                    <p>Aucune demande de réservation.</p>
+                </div>
+            @endforelse
+        </div>
+    </div>
     <div class="res-section">
         <p class="section-title">Mes favoris</p>
     
@@ -195,6 +231,9 @@
             @endforelse
             </div>
         </div>
+
+
+
         <div class="res-section">
         <p class="section-title">Mes recherches sauvegardées</p>
 
