@@ -34,44 +34,46 @@
             @endif
         </div>
         <div class="center flex-col w-full">
+            <h3 class="mt-xl">Demander une réservation</h3>
+            <form id="booking-form" method="GET" action="{{ url('/demander_reservation/' . $annonce->idannonce) }}">
+                @csrf
+                <input type="hidden" id="booking_start_date" name="start_date">
+                <input type="hidden" id="booking_end_date" name="end_date">
+                <div id="booking-calendar-container" class="center calendar-container">
+                    <div class="cal-header cal-header-flex">
+                        <button type="button" id="btn-prev" class="cal-btn-nav cal-btn-nav-style">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>
+                        </button>
+                        <span id="cal-title" class="cal-titre cal-title-style">Loading...</span>
+                        <button type="button" id="btn-next" class="cal-btn-nav cal-btn-nav-style">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>
+                        </button>
+                    </div>
 
-            <h3 class="mt-xl">Disponibilité de cette annonce</h3>
-            <input type="hidden" id="booking_start_date" name="start_date">
-            <input type="hidden" id="booking_end_date" name="end_date">
-            <div id="booking-calendar-container" class="center calendar-container">
-                <div class="cal-header cal-header-flex">
-                    <button id="btn-prev" class="cal-btn-nav cal-btn-nav-style">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>
-                    </button>
-                    <span id="cal-title" class="cal-titre cal-title-style">Loading...</span>
-                    <button id="btn-next" class="cal-btn-nav cal-btn-nav-style">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>
-                    </button>
-                </div>
+                    <div id="cal-grid" class="cal-grid">
+                        <div class="cal-jour-semaine">Lun</div>
+                        <div class="cal-jour-semaine">Mar</div>
+                        <div class="cal-jour-semaine">Mer</div>
+                        <div class="cal-jour-semaine">Jeu</div>
+                        <div class="cal-jour-semaine">Ven</div>
+                        <div class="cal-jour-semaine">Sam</div>
+                        <div class="cal-jour-semaine">Dim</div>
+                    </div>
 
-                <div id="cal-grid" class="cal-grid">
-                    <div class="cal-jour-semaine">Lun</div>
-                    <div class="cal-jour-semaine">Mar</div>
-                    <div class="cal-jour-semaine">Mer</div>
-                    <div class="cal-jour-semaine">Jeu</div>
-                    <div class="cal-jour-semaine">Ven</div>
-                    <div class="cal-jour-semaine">Sam</div>
-                    <div class="cal-jour-semaine">Dim</div>
-                </div>
+                    <div id="cal-error" class="cal-error-msg" style="color: rgb(231, 76, 60); font-size: 0.85em; text-align: center; padding: 5px; display: none;"></div>
 
-                <div id="cal-error" class="cal-error-msg" style="color: rgb(231, 76, 60); font-size: 0.85em; text-align: center; padding: 5px; display: none;"></div>
-
-                <div class="cal-footer" style="display: flex; justify-content: space-between; gap: 5px; margin-top: 15px;">
-                    <h3>Prix du séjour : <span id="display-price">0</span> € <span style="font-size:0.6em; color:#666">({{ $annonce->prix_nuit }}€ / nuit)</span></h3>
-                </div>
-                <div class="cal-footer" style="display: flex; justify-content: space-between; gap: 5px;">
-                    <button type="button" id="btn-today" class="cal-btn" style="flex: 0 0 auto;">Auj.</button>
-                    <div>
-                        <button type="button" id="btn-clear" class="cal-btn cal-btn-effacer">Désélectionner</button>
-                        <button type="button" id="btn-validate" class="cal-btn cal-btn-valider">Réserver</button>
+                    <div class="cal-footer" style="display: flex; justify-content: space-between; gap: 5px; margin-top: 15px;">
+                        <h3>Prix du séjour : <span id="display-price">0</span> € <span style="font-size:0.6em; color:#666">({{ $annonce->prix_nuit }}€ / nuit)</span></h3>
+                    </div>
+                    <div class="cal-footer" style="display: flex; justify-content: space-between; gap: 5px;">
+                        <button type="button" id="btn-today" class="cal-btn" style="flex: 0 0 auto;">Auj.</button>
+                        <div>
+                            <button type="button" id="btn-clear" class="cal-btn cal-btn-effacer">Désélectionner</button>
+                            <input type="submit" id="btn-validate" class="cal-btn cal-btn-valider" value="Réserver" disabled style="opacity: 0.5; cursor: not-allowed;">
+                        </div>
                     </div>
                 </div>
-            </div>
+            </form>
 
             <style>
                 .cal-cellule.selected {
@@ -98,11 +100,10 @@
                     text-decoration: line-through;
                 }
             </style>
-<script>
+            <script>
                 document.addEventListener('DOMContentLoaded', function() {
                     const dispoData = JSON.parse({!! isset($dispoJson) ? json_encode($dispoJson) : '{}' !!});
                     const prixParNuit = parseFloat("{{ $annonce->prix_nuit }}");
-                    // 1. Get the minimum nights from Blade, default to 1 if missing
                     const minNights = parseInt("{{ $annonce->nb_nuit_min ?? 1 }}"); 
 
                     const today = new Date();
@@ -120,6 +121,7 @@
                     const nextBtn = document.getElementById('btn-next');
                     const todayBtn = document.getElementById('btn-today');
                     const clearBtn = document.getElementById('btn-clear');
+                    const validateBtn = document.getElementById('btn-validate');
                     const errorEl = document.getElementById('cal-error'); // Select the error div
                     
                     const startInput = document.getElementById('booking_start_date');
@@ -153,21 +155,19 @@
                             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
                             const total = diffDays * prixParNuit;
                             priceEl.textContent = total.toFixed(2);
+                            validateBtn.disabled = false;
+                            validateBtn.style.opacity = '1';
+                            validateBtn.style.cursor = 'pointer';
                         } else {
                             priceEl.textContent = '0';
+                            validateBtn.disabled = true;
+                            validateBtn.style.opacity = '0.5';
+                            validateBtn.style.cursor = 'not-allowed';
                         }
                     }
 
-                    // Helper function to check if a range is free
                     function isRangeAvailable(start, end) {
                         let current = new Date(start);
-                        // We check up to (but not including) the end date for availability
-                        // because the end date is the checkout date (morning).
-                        // However, usually availability is checked for the nights stayed.
-                        // Based on your logic: Loop checks days inclusive.
-                        
-                        // We need to check every night user is sleeping.
-                        // If Start is 1st, End is 4th (3 nights). We check availability for 1st, 2nd, 3rd.
                         const checkoutTime = end.getTime();
                         
                         while (current.getTime() < checkoutTime) {
@@ -240,7 +240,6 @@
                             gridEl.appendChild(cell);
                         }
                         
-                        // Navigation buttons state logic (unchanged)
                         const prevMonthDate = new Date(year, month - 1);
                         if (year < today.getFullYear() || (year === today.getFullYear() && month <= today.getMonth())) {
                             prevBtn.disabled = true;
@@ -265,39 +264,31 @@
                     }
 
                     function selectDate(date) {
-                        errorEl.style.display = 'none'; // Clear errors on click
+                        errorEl.style.display = 'none';
 
-                        // SCENARIO 1: New Selection (No start date, or clicking before start, or resetting)
                         if (!startDate || (startDate && date < startDate) || (startDate && endDate && date < startDate)) {
                             
-                            // 2. Logic: Attempt to auto-select the minimum range
                             const proposedEnd = new Date(date);
                             proposedEnd.setDate(date.getDate() + minNights);
 
-                            // Check if the auto-selected range is valid/available
                             if (isRangeAvailable(date, proposedEnd)) {
                                 startDate = date;
                                 endDate = proposedEnd;
                             } else {
-                                // If the minimum stay isn't available, we can't start here
                                 showError("La durée minimum n'est pas disponible pour cette date.");
                                 return;
                             }
                         } 
-                        // SCENARIO 2: Extending Selection (Clicking after start date)
                         else if (startDate && date > startDate) {
                             
-                            // Calculate proposed duration
                             const diffTime = Math.abs(date - startDate);
                             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-                            // 3. Logic: Prevent selecting less than minimum
                             if (diffDays < minNights) {
                                 showError(`Le séjour doit être de ${minNights} nuits minimum.`);
                                 return;
                             }
 
-                            // Check availability for the manually extended range
                             if (isRangeAvailable(startDate, date)) {
                                 endDate = date;
                             } else {
@@ -509,7 +500,7 @@
     <a href="{{ url('/proprio/' . $annonce->idproprietaire ) }}" >
         <div class="reviews">
             <p>{{ $r->particulier->utilisateur->prenom_utilisateur }} {{ $r->particulier->utilisateur->nom_utilisateur }} a passé <b>{{ $r->nb_nuits }} nuits</b> ici</p>
-            <p style="margin-bottom: 1rem;"class='subtitle'>Du {{ $r->date_debut_resa }} au {{ $r->date_fin_resa }}</p>
+            <p style="margin-bottom: 1rem;"class='subtitle'>Du {{ \Carbon\Carbon::parse($annonce->date_debut_resa)->format('d/m/Y') }} au {{ \Carbon\Carbon::parse($annonce->date_fin_resa)->format('d/m/Y') }} </p>
             
             @if($r->avis)
                 <span class="stars" style="--rating: {{ $r->avis->note }}; margin-right: 5px;"></span> {{ $r->avis->note }}
