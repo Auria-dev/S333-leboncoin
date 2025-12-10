@@ -32,7 +32,6 @@ class Utilisateur extends Authenticatable {
     public function getAuthPassword() {
         return $this->mot_de_passe;
     }
-
     
     public function ville() {
         return $this->belongsTo(Ville::class, "idville");
@@ -46,10 +45,25 @@ class Utilisateur extends Authenticatable {
         return $this->hasMany(Reservation::class, "idlocataire");
     }
 
+    public function demandesReservations() {
+        return $this->hasManyThrough(Reservation::class, Annonce::class, 'idproprietaire', 'idannonce', 'idutilisateur', 'idannonce')
+        ->orderByRaw("
+            CASE statut_reservation
+                WHEN 'en attente' THEN 1
+                WHEN 'en cours' THEN 2
+                WHEN 'validée' THEN 3
+                WHEN 'complétée' THEN 4
+                WHEN 'annulée' THEN 5
+                WHEN 'refusée' THEN 6
+                ELSE 7
+            END ASC
+        ")
+        ->orderBy('date_demande', 'desc');
+    }
+
     public function recherche() {
-    return $this->belongsToMany(Critere::class, 'recherche', 'idutilisateur', 'idcritere')
-                ->withPivot('titre_recherche');
-}
+        return $this->belongsToMany(Critere::class, 'recherche', 'idutilisateur', 'idcritere')->withPivot('titre_recherche');
+    }
 
     public function favoris() {
         return $this->belongsToMany(Annonce::class, 'favoris', 'idutilisateur', 'idannonce');
