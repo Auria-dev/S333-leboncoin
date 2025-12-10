@@ -15,6 +15,7 @@ class VerifierProfilController extends Controller
         $user = Auth::user();
         $id = $user->idutilisateur;
         $isParticulier = DB::table('particulier')->where('idparticulier', $id)->exists();
+        $req->validate(['file' => 'required|file|mimes:pdf|max:2048']);
 
         if($isParticulier) {
             if($req->hasFile('file')) {  
@@ -28,7 +29,7 @@ class VerifierProfilController extends Controller
                     ->update(['piece_identite' => $fileName]);
             }
         }
-        return redirect('/creer_annonce')->with('success', 'Profil complété ! Vous pouvez maintenant déposer votre annonce.');
+        return redirect('/creer_annonce')->with('success', 'Profil complété ! Vous pouvez dès maintenant déposer votre annonce.');
     }
 
 

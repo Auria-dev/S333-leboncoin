@@ -10,7 +10,7 @@
 
     <form class="form-ajouter add-annonce-form" method="POST" action="{{ url('ajouter_annonce') }}" enctype="multipart/form-data">
         @csrf   
-        <input type="file" name="file[]" id="fileInput" accept="image/png, image/jpeg, image/jpg" multiple required>  
+        <input type="file" name="file[]" id="fileInput" accept=".png, .jpeg, .jpg" multiple required>  
 
         <div id="previewsContainer" class="previews-container"></div>
 
@@ -236,8 +236,8 @@
                             const img = document.createElement('img');
                             img.src = e.target.result; 
                             img.alt = 'Aperçu photo ' + (i + 1);
-                            img.style.maxWidth = '100px';
-                            img.style.maxHeight = '100px';
+                            img.style.maxWidth = '200px';
+                            img.style.maxHeight = '200px';
 
                             container.appendChild(img);
                         };
