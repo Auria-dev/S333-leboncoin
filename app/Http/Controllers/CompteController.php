@@ -60,13 +60,6 @@ class CompteController extends Controller {
 
         $codeville = Ville::where('nom_ville', $req->ville)->first();
         
-        $fileName = null;
-        if($req->hasFile('file')) {  
-            $file = $req->file('file');  
-            $fileName = '/CNI/cni_utilisateur_' . $user->idutilisateur . '.pdf';
-            $file->move(public_path('CNI'), $fileName);
-            $url = asset('CNI/'. $fileName);
-        }
 
         $user = Utilisateur::create([
             'idville' => $codeville->idville,
@@ -83,6 +76,14 @@ class CompteController extends Controller {
         Auth::login($user);
 
         $user = auth()->user();
+        
+        $fileName = null;
+        if($req->hasFile('file')) {  
+            $file = $req->file('file');  
+            $fileName = '/CNI/cni_utilisateur_' . $user->idutilisateur . '.pdf';
+            $file->move(public_path('CNI'), $fileName);
+            $url = asset('CNI/'. $fileName);
+        }
         
         if ($req->typeCompte == 'particulier') {
             DB::table('particulier')->insert(
