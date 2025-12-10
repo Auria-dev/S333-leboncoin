@@ -11,10 +11,7 @@
             <img src="{{ $proprietaire->photo_profil }}" id="img-proprio" class="profile-img">
         @endif
         <div>
-            <p><strong>
-                <span class="uppercase"> {{ $proprietaire->nom_utilisateur }} </span> 
-                    {{ $proprietaire->prenom_utilisateur }} 
-            </strong></p>
+            <p style="font-size: 25px;"><strong> {!! $proprietaire->displayName() !!} </strong></p>
             <div class="notation">
                 <p> <span class="stars" style="--rating: {{ $moyenneAvis }};"></span> {{ $moyenneAvis . ' (' . $nbAvis . ' avis) '}} </p>
             </div>

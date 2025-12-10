@@ -386,11 +386,11 @@
             </li>
             <li class="detail-item">
                 <span class="detail-label">Bébés</span>
-                {{ $annonce->nb_bebe_max > 0 ? 'Acceptés' : 'Non' }}
+                {{ $annonce->nb_bebe_max > 0 ? 'Acceptés ('. $annonce->nb_bebe_max . ')' : 'Non' }}
             </li>
             <li class="detail-item">
                 <span class="detail-label">Animaux</span>
-                {{ $annonce->nb_animaux_max > 0 ? 'Admis' : 'Interdits' }}
+                {{ $annonce->nb_animaux_max > 0 ? 'Admis ('. $annonce->nb_animaux_max . ')' : 'Interdits' }}
             </li>
             <li class="detail-item">
                 <span class="detail-label">Heure arrivée</span>

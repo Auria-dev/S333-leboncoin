@@ -10,7 +10,7 @@
 
     <form class="form-ajouter add-annonce-form" method="POST" action="{{ url('ajouter_annonce') }}" enctype="multipart/form-data">
         @csrf   
-        <input type="file" name="file[]" id="fileInput" accept="image/png, image/jpeg, image/jpg" multiple>  
+        <input type="file" name="file[]" id="fileInput" accept="image/png, image/jpeg, image/jpg" multiple required>  
 
         <div id="previewsContainer" class="previews-container"></div>
 

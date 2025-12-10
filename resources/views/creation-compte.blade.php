@@ -10,7 +10,7 @@
 
     <form action="{{ url('register') }}" method="POST" class="register-form"
           x-data="registerForm()"
-          @submit.prevent="submitForm">
+          @submit.prevent="submitForm" enctype="multipart/form-data">
             
             @csrf
             <p class="subtitle">Les champs obligatoires sont marqués d'un astérisque (*) </p>
@@ -156,6 +156,13 @@
                            x-model="p2" @input="check()"
                            :class="{ 'is-invalid': errorType === 'match', '@error('password_confirmation') is-invalid @enderror': !errorType }">
                     
+                </div>
+            </div>
+
+            <div x-show="accountType === 'particulier'">
+                <div class="input-groupe">
+                    <label for="siret">Afin de publier des annonces, la vérification de votre identité est requise. Vous pouvez transmettre votre pièce d'identité <u>dès maintenant</u> ou <u>ultérieurement</u> sous forme de PDF.</label>
+                    <input type="file" name="file" id="fileInput" accept="application/pdf">
                 </div>
             </div>
 

@@ -31,7 +31,7 @@
    
     <form action="{{ url('modifier_compte/update') }}" method="POST" class="form-container"
           x-data="formManager()"
-          @submit.prevent="submitForm">
+          @submit.prevent="submitForm" enctype="multipart/form-data">
         
         @csrf
         @method('PUT')
@@ -215,6 +215,13 @@
                 </div>
             </div>
         </div>
+
+        @if(!$isEntreprise && $user->particulier->piece_identite === null)
+            <div class="input-groupe">
+                <label for="siret">Transmettre votre pièce d'identité.</label>
+                <input type="file" name="file" id="fileInput" accept="application/pdf" @change="$dispatch('field-touched')">
+            </div>
+        @endif
 
         <div class="row-group flex-between-center mt-md">
             <a href="{{ url('/') }}" class="text-gray-500 hover:text-gray-800">Annuler</a>
