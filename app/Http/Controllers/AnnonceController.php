@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\TypePaiement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use App\Providers\RouteServiceProvider;
 use App\Models\Ville;
 use App\Models\Annonce;
 use App\Models\TypeHebergement;
@@ -14,11 +14,9 @@ use App\Models\Calendrier;
 use App\Models\Particulier;
 use App\Models\Photo;
 use App\Models\Equipement;
-use App\Models\Equipe;
 use App\Models\Service;
-use App\Models\Propose;
-use App\Models\Date;
 use App\Models\AnnonceSimilaire;
+use Carbon\Carbon;
 
 
 use App\Services\GeoapifyService;
@@ -260,45 +258,110 @@ class AnnonceController extends Controller
     }
 
     function reserver(Request $req) {
-        // insert into reservation
-
+        
         $req->validate([
             'idannonce' => 'required|integer|exists:annonce,idannonce',
             'date_debut_resa' => 'required|date',
             'date_fin_resa' => 'required|date|after:date_debut_resa',
             'idutilisateur' => 'required|integer|exists:utilisateur,idutilisateur',
-            'telephone' => 'required|digits:10|'
+            'telephone' => 'required|digits:10',
+            'carte_id' => 'required',
         ]);
 
-        if (Auth::check()) {
-            $user = auth()->user();
-            $iduser = auth()->user()->idutilisateur;
+        
+        $user = auth()->user();
+        $idCarteUtilisee = null;
+
+        try {
+            DB::beginTransaction();
+
+            if ($req->carte_id === 'new') {
+                $req->merge([
+                    'numcarte' => str_replace(' ', '', $req->input('numcarte'))
+                ]);
+
+                $req->validate([
+                    'numcarte' => 'required|numeric|digits_between:15,16',
+                    'dateexpiration' => 'required|string|size:5',
+                    'titulairecarte' => 'required|string',
+                    // 'cvv' => 'required' // We verify presence but DO NOT STORE
+                ]);
+        
+                $cleanNum = $req->numcarte;
+                $parts = explode('/', $req->dateexpiration);
+                $expireDate = Carbon::createFromDate('20' . $parts[1], $parts[0], 1)->toDateString();
+                $isSaved = $req->has('est_sauvegardee') ? true : false;
+
+                $idCarteUtilisee = DB::table('carte_bancaire')->insertGetId([
+                    'idutilisateur' => $user->idutilisateur,
+                    'titulairecarte' => $req->titulairecarte,
+                    'numcarte' => $cleanNum, // TODO: encrypt this
+                    'dateexpiration' => $expireDate,
+                    'est_sauvegardee' => $isSaved
+                ], 'idcartebancaire');
+
+            } else {
+                $card = DB::table('carte_bancaire')
+                    ->where('idcartebancaire', $req->carte_id)
+                    ->where('idutilisateur', $user->idutilisateur)
+                    ->first();
+
+                if (!$card) {
+                    return back()->withErrors(['carte_id' => 'Carte invalide.']);
+                }
+                $idCarteUtilisee = $card->idcartebancaire;
+            }
+
+            $start = Carbon::parse($req->date_debut_resa);
+            $end = Carbon::parse($req->date_fin_resa);
+            $nb_nuits = $start->diffInDays($end);
+
+            $idReservation = DB::table('reservation')->insertGetId([
+                'idannonce' => $req->idannonce,
+                'idlocataire' => $user->idutilisateur,
+                'idtypepaiement' => $req->typepaiement,
+                'statut_reservation' => 'en attente',
+                'date_debut_resa' => $req->date_debut_resa,
+                'date_fin_resa' => $req->date_fin_resa,
+                'date_demande' => now(),
+                
+                'nb_nuits' => $nb_nuits,
+                'montant_total' => $req->total,
+                'frais_services' => $req->frais_service,
+                'taxe_sejour' => $req->taxe_sejour,
+                
+                'nb_adultes' => $req->nb_adultes,
+                'nb_enfants' => $req->nb_enfants,
+                'nb_bebes' => $req->nb_bebes,
+                'nb_animaux' => $req->nb_animaux,
+                
+                // 'telephone_contact' => $req->telephone
+            ], 'idreservation');
+
+            DB::table('paiement')->insert([
+                'idreservation' => $idReservation,
+                'idcartebancaire' => $idCarteUtilisee,
+                'montant_paiement' => $req->total,
+                'date_paiement' => now(),
+                'statut_paiement' => 'Succès',
+                'ref_transaction' => 'TXN-' . strtoupper(uniqid())
+            ]);
+
+            if (empty($user->telephone)) {
+                DB::table('utilisateur')
+                    ->where('idutilisateur', $user->idutilisateur)
+                    ->update(['telephone' => $req->telephone]);
+            }
+
+            DB::commit();
+
+            return redirect()->route('profile')
+                ->with('success', 'Réservation envoyée ! Le paiement est autorisé et sera débité à la validation.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            dd($e->getMessage());
+            return back()->withErrors(['error' => "Une erreur est survenue lors du paiement: " . $e->getMessage()]);
         }
-
-        $typeCompte = $user->getTypeParticulier();
-        if ($typeCompte == 'Proprietaire') {
-            Particulier::where('idparticulier', $iduser)->update(['code_particulier' => 2]);
-        }
-
-        $reservation = DB::table('reservation')->insert([
-            'idtypepaiement' => 1, // TODO: this
-            'idannonce' => $req->idannonce,
-            'idlocataire' => $req->idutilisateur,
-            // 'telephone_contact' => $req->telephone
-            'nb_nuits' => \Carbon\Carbon::parse($req->date_fin_resa)->diffInDays(\Carbon\Carbon::parse($req->date_debut_resa)),
-            'montant_total' => $req->montant_location,
-            'frais_services' => $req->frais_service,
-            'taxe_sejour' => $req->taxe_sejour,
-            'nb_adultes' => $req->nb_adultes,
-            'nb_enfants' => $req->nb_enfants,
-            'nb_bebes' => $req->nb_bebes,
-            'nb_animaux' => $req->nb_animaux,
-            'date_debut_resa' => $req->date_debut_resa,
-            'date_fin_resa' => $req->date_fin_resa,
-            'date_demande' => now(),
-            'statut_reservation' => 'en attente'
-        ]);
-
-        return redirect()->route('profile')->with('success', 'Réservation effectuée avec succès. En attente de confirmation du propriétaire.');
     }
 }
