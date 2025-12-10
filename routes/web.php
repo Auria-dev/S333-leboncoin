@@ -6,7 +6,7 @@ use App\Http\Controllers\AnnonceController;
 use App\Http\Controllers\ProprietaireController;
 use App\Http\Controllers\CompteController;
 use App\Http\Controllers\LocationController;
-use App\Http\Controllers\DashboardContuse;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\VerifierProfilController;
 use App\Http\Controllers\ReservationController;
 
