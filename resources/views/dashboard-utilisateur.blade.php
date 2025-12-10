@@ -13,7 +13,7 @@
         <img src="{{ $utilisateur->photo_profil }}" class="profile-img">
     @endif   
     <div class="flex-col-gap-sm">
-        <h1>Bonjour {{ $utilisateur->prenom_utilisateur . ' ' . $utilisateur->nom_utilisateur }} </h1>
+        <h1>Bonjour {!! $utilisateur->displayName() !!} </h1>
         <p>Bienvenue dans le tableau de bord de votre compte {{ strtolower($utilisateur->getTypeParticulier()) }}.</p>
         <a href="{{ url('/modifier_compte') }}" class="other-btn w-fit" wire:navigate>Modifier mon compte</a>
     </div>

@@ -56,6 +56,15 @@ class CompteController extends Controller {
 
         $codeville = Ville::where('nom_ville', $req->ville)->first();
         
+        $fileName = null;
+        if($req->hasFile('file')) {  
+            $file = $req->file('file');  
+            $filePath = $file->getClientOriginalName();
+            $fileName = '/CNI/cni_utilisateur_' . $filePath . '.pdf';
+            $file->move(public_path('CNI'), $fileName);
+            $url = asset('CNI/'. $fileName);
+        }
+
         $user = Utilisateur::create([
             'idville' => $codeville->idville,
             'nom_utilisateur' => $req->nom,
@@ -65,7 +74,7 @@ class CompteController extends Controller {
             'mail' => $req->email,
             'adresse_utilisateur' => $req->adresse,
             'date_creation' => now(),
-            'photo_profil' => "/images/photo-profil.jpg"
+            'photo_profil' => "/images/photo-profil.jpg",
         ]);
 
         Auth::login($user);
@@ -76,7 +85,8 @@ class CompteController extends Controller {
             DB::table('particulier')->insert(
                 array(
                     'idparticulier'    => $user->idutilisateur, 
-                    'code_particulier' => 0 // 0 by default, user is a locataire until they upload something      
+                    'code_particulier' => 0, // 0 by default, user is a locataire until they upload something 
+                    'piece_identite' => $fileName,   
                 )
             );
         } else {
@@ -137,6 +147,7 @@ class CompteController extends Controller {
             'code_postal' => 'required|string',
         ];
 
+        $isParticulier = DB::table('particulier')->where('idparticulier', $id)->exists();
         $isEntreprise = DB::table('entreprise')->where('identreprise', $id)->exists();
         if ($isEntreprise) {
             $rules['siret'] = 'required|string|max:14';
@@ -175,6 +186,20 @@ class CompteController extends Controller {
                         'numsiret' => $req->siret,
                         'idsecteur' => $secteurObj->idsecteur
                     ]);
+            }
+        }
+
+        if($isParticulier) {
+            if($req->hasFile('file')) {  
+                $file = $req->file('file');  
+                $filePath = $file->getClientOriginalName();
+                $fileName = '/CNI/cni_utilisateur_' . $filePath . '.pdf';
+                $file->move(public_path('CNI'), $fileName);
+                $url = asset('CNI/'. $fileName);
+
+                DB::table('particulier')
+                    ->where('idparticulier', $id)
+                    ->update(['piece_identite' => $fileName]);
             }
         }
 

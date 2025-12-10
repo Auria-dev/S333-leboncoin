@@ -34,7 +34,7 @@
             <ul>
                 <li><a href="{{ url('/') }}" class="{{ Request::is('/') ? 'active' : '' }}" wire:navigate>Accueil</a></li>
                 <li><a href="{{ url('/recherche') }}" class="{{ Request::is('recherche') ? 'active' : '' }}" wire:navigate>Rechercher</a></li>
-                <li><a href="{{ url('/creer_annonce') }}" class="{{ Request::is('creer_annonce') ? 'active' : '' }}" wire:navigate>Déposer une annonce</a>
+                <li><a href="{{ url('/creer_annonce') }}" class="{{ Request::is('creer_annonce') ? 'active' : '' }}" id="btn-deposer-annonce">Déposer une annonce</a>
 
             </ul>
             <div>
@@ -62,5 +62,53 @@
 
     @stack('scripts')
     @include('cookie-banniere')
+
+    <div class="light-box-save-search" id="modal-premiere-annonce" style="display: none;">
+    <form action="{{ url('verifier_profil') }}" method="POST" class="inline-form" enctype="multipart/form-data" style="width: 100%; max-width: 500px;">
+        @csrf
+        
+        <div class="light-box-content">
+            <h4 class="text-center" style="margin-bottom: 5rem; font-size: 22px;">Pour déposer une annonce veuillez transmettre votre pièce d'identité</h4>         
+            <input type="file" name="file" id="fileInput" accept="application/pdf" required>
+            <div class="lightbox-actions">
+                <button type="button" class="other-btn" id="btn-cancel-first-ad">Annuler</button>               
+                <button type="submit" class="submit-btn">Transmettre et Continuer</button>
+            </div>
+        </div>
+
+        
+    </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            const btnDepot = document.getElementById('btn-deposer-annonce');
+            const modal = document.getElementById('modal-premiere-annonce');
+            const btnCancel = document.getElementById('btn-cancel-first-ad');
+
+            const hasAnnonces = @json(Auth::check() && Auth::user()->annonce()->exists());
+            const hasCNI = @json(Auth::check() && Auth::user()->particulier->piece_identite);
+            const isParticulier = @json(Auth::check() && DB::table('particulier')->where('idparticulier', Auth::id())->exists());
+
+            if (btnDepot) {
+                btnDepot.addEventListener('click', function(e) {
+                    if ((hasAnnonces &&  hasCNI != null) || !isParticulier) {
+                        return; 
+                    }
+
+                    e.preventDefault();
+                    modal.style.display = 'flex';
+                });
+            }
+
+            if (btnCancel) {
+                btnCancel.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    modal.style.display = 'none';
+                });
+            }
+        });
+    </script>
 </body>
 </html>
