@@ -37,10 +37,12 @@
             @csrf
             <input type="hidden" name="date_debut_resa" value="{{ $date_debut_resa }}">
             <input type="hidden" name="date_fin_resa" value="{{ $date_fin_resa }}">
-            <input type="hidden" name="nb_adultes" id="input_adultes" value="{{ old('nb_adultes', 1) }}">
-            <input type="hidden" name="nb_enfants" id="input_enfants" value="{{ old('nb_enfants', 0) }}">
-            <input type="hidden" name="nb_bebes" id="input_bebes" value="{{ old('nb_bebes', 0) }}">
-            <input type="hidden" name="nb_animaux" id="input_animaux" value="{{ old('nb_animaux', 0) }}">
+            
+            <input type="hidden" name="nb_adultes" x-model="guests.adultes">
+            <input type="hidden" name="nb_enfants" x-model="guests.enfants">
+            <input type="hidden" name="nb_bebes" x-model="guests.bebes">
+            <input type="hidden" name="nb_animaux" x-model="guests.animaux">
+
             <input type="hidden" name="idannonce" value="{{ $annonce->idannonce }}">
             <input type="hidden" name="idutilisateur" value="{{ auth()->user()->idutilisateur }}">
             <input type="hidden" name="montant_location" value="{{ $montant_location }}">
@@ -54,11 +56,17 @@
                     <span class="picker-subtext">18 ans et plus</span>
                 </div>
                 <div class="picker-controls">
-                    <button type="button" class="picker-btn" id="btn_minus_adultes" onclick="updateCounter('adultes', -1)">
+                    <button type="button" class="picker-btn" 
+                        @click="updateCounter('adultes', -1)" 
+                        :disabled="guests.adultes <= 1">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg>
                     </button>
-                    <span id="display_adultes" class="picker-value">{{ old('nb_adultes', 1) }}</span>
-                    <button type="button" class="picker-btn" id="btn_plus_adultes" onclick="updateCounter('adultes', 1)">
+                    
+                    <span class="picker-value" x-text="guests.adultes"></span>
+                    
+                    <button type="button" class="picker-btn" 
+                        @click="updateCounter('adultes', 1)"
+                        :disabled="(guests.adultes + guests.enfants) >= limits.maxPersons">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
                     </button>
                 </div>
@@ -70,11 +78,17 @@
                     <span class="picker-subtext">De 3 à 17 ans</span>
                 </div>
                 <div class="picker-controls">
-                    <button type="button" class="picker-btn" id="btn_minus_enfants" onclick="updateCounter('enfants', -1)">
+                    <button type="button" class="picker-btn" 
+                        @click="updateCounter('enfants', -1)"
+                        :disabled="guests.enfants <= 0">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg>
                     </button>
-                    <span id="display_enfants" class="picker-value">{{ old('nb_enfants', 0) }}</span>
-                    <button type="button" class="picker-btn" id="btn_plus_enfants" onclick="updateCounter('enfants', 1)">
+                    
+                    <span class="picker-value" x-text="guests.enfants"></span>
+                    
+                    <button type="button" class="picker-btn" 
+                        @click="updateCounter('enfants', 1)"
+                        :disabled="(guests.adultes + guests.enfants) >= limits.maxPersons">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
                     </button>
                 </div>
@@ -86,11 +100,17 @@
                     <span class="picker-subtext">Moins de 3 ans</span>
                 </div>
                 <div class="picker-controls">
-                    <button type="button" class="picker-btn" id="btn_minus_bebes" onclick="updateCounter('bebes', -1)">
+                    <button type="button" class="picker-btn" 
+                        @click="updateCounter('bebes', -1)"
+                        :disabled="guests.bebes <= 0">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg>
                     </button>
-                    <span id="display_bebes" class="picker-value">{{ old('nb_bebes', 0) }}</span>
-                    <button type="button" class="picker-btn" id="btn_plus_bebes" onclick="updateCounter('bebes', 1)">
+                    
+                    <span class="picker-value" x-text="guests.bebes"></span>
+                    
+                    <button type="button" class="picker-btn" 
+                        @click="updateCounter('bebes', 1)"
+                        :disabled="guests.bebes >= limits.maxBebes">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
                     </button>
                 </div>
@@ -102,11 +122,17 @@
                     <span class="picker-subtext">Cela inclut les animaux d'assistance</span>
                 </div>
                 <div class="picker-controls">
-                    <button type="button" class="picker-btn" id="btn_minus_animaux" onclick="updateCounter('animaux', -1)">
+                    <button type="button" class="picker-btn" 
+                        @click="updateCounter('animaux', -1)"
+                        :disabled="guests.animaux <= 0">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg>
                     </button>
-                    <span id="display_animaux" class="picker-value">{{ old('nb_animaux', 0) }}</span>
-                    <button type="button" class="picker-btn" id="btn_plus_animaux" onclick="updateCounter('animaux', 1)">
+                    
+                    <span class="picker-value" x-text="guests.animaux"></span>
+                    
+                    <button type="button" class="picker-btn" 
+                        @click="updateCounter('animaux', 1)"
+                        :disabled="guests.animaux >= limits.maxAnimaux">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
                     </button>
                 </div>
@@ -282,7 +308,6 @@
                 @endphp
                 <select name="typepaiement">
                     @foreach (TypePaiement::all() as $t)
-                    <!-- id like to see an AI do this lmfao -->
                     <option value="{{ $t->idtypepaiement }}">{{ strtoupper($t->nom_type_paiement[0]) . substr($t->nom_type_paiement, 1) }}</option>
                     @endforeach
                 </select>
@@ -356,10 +381,16 @@
             savedCardCvv: '',
             newCard: { number: '', expiry: '', cvv: '', name: '' },
 
+            limits: {
+                maxPersons: {{ $max_capacity }},
+                maxBebes: {{ $max_bebe }},
+                maxAnimaux: {{ $max_animaux }}
+            },
+
             guests: {
                 adultes: {{ old('nb_adultes', 1) }},
                 enfants: {{ old('nb_enfants', 0) }},
-                bebes: {{ old('nb_bebes', 0) }},
+                bebes:   {{ old('nb_bebes', 0) }},
                 animaux: {{ old('nb_animaux', 0) }}
             },
 
@@ -371,12 +402,27 @@
             phoneErrorMessage: '',
 
             updateCounter(type, change) {
+                let currentVal = this.guests[type];
+                let newVal = currentVal + change;
+
                 let min = (type === 'adultes') ? 1 : 0;
-                let newVal = this.guests[type] + change;
-                
-                if (newVal >= min) {
-                    this.guests[type] = newVal;
+                if (newVal < min) return;
+
+                if (type === 'bebes' && newVal > this.limits.maxBebes) return;
+                if (type === 'animaux' && newVal > this.limits.maxAnimaux) return;
+
+                if (type === 'adultes' || type === 'enfants') {
+                    let totalHumans = 0;
+                    if (type === 'adultes') {
+                        totalHumans = newVal + this.guests.enfants;
+                    } else {
+                        totalHumans = this.guests.adultes + newVal;
+                    }
+
+                    if (totalHumans > this.limits.maxPersons) return;
                 }
+
+                this.guests[type] = newVal;
             },
 
             formatCardNumber() {
@@ -436,11 +482,6 @@
                 }
 
                 if (allValid) {
-                    document.getElementById('input_adultes').value = this.guests.adultes;
-                    document.getElementById('input_enfants').value = this.guests.enfants;
-                    document.getElementById('input_bebes').value = this.guests.bebes;
-                    document.getElementById('input_animaux').value = this.guests.animaux;
-
                     this.$el.submit();
                 } else {
                     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -448,73 +489,5 @@
             }
         }));
     });
-
-    const MAX_PERSONS = {{ $max_capacity }};
-    const MAX_BEBES = {{ $max_bebe }};
-    const MAX_ANIMAUX = {{ $max_animaux }};
-
-    document.addEventListener('DOMContentLoaded', function() {
-        updateCounter('adultes', 0);
-        updateCounter('enfants', 0);
-        updateCounter('bebes', 0);
-        updateCounter('animaux', 0);
-
-        updateButtonStates();
-    });
-
-    function updateCounter(type, change) {
-        const input = document.getElementById('input_' + type);
-        const display = document.getElementById('display_' + type);
-        let currentValue = parseInt(input.value);
-        let newValue = currentValue + change;
-
-        let minLimit = (type === 'adultes') ? 1 : 0;
-        if (newValue < minLimit) return;
-
-        if (type === 'bebes' && newValue > MAX_BEBES) return;
-        if (type === 'animaux' && newValue > MAX_ANIMAUX) return;
-
-        if (type === 'adultes' || type === 'enfants') {
-            const currentAdults = parseInt(document.getElementById('input_adultes').value);
-            const currentEnfants = parseInt(document.getElementById('input_enfants').value);
-            
-            let projectedAdults = (type === 'adultes') ? newValue : currentAdults;
-            let projectedEnfants = (type === 'enfants') ? newValue : currentEnfants;
-            
-            if ((projectedAdults + projectedEnfants) > MAX_PERSONS) {
-                return; 
-            }
-        }
-
-        input.value = newValue;
-        display.textContent = newValue;
-        
-        updateButtonStates();
-    }
-
-    function updateButtonStates() {
-        const adults = parseInt(document.getElementById('input_adultes').value);
-        const enfants = parseInt(document.getElementById('input_enfants').value);
-        const bebes = parseInt(document.getElementById('input_bebes').value);
-        const animaux = parseInt(document.getElementById('input_animaux').value);
-        
-        const totalHumans = adults + enfants;
-
-        document.getElementById('btn_minus_adultes').disabled = (adults <= 1);
-        document.getElementById('btn_plus_adultes').disabled = (totalHumans >= MAX_PERSONS);
-
-        document.getElementById('btn_minus_enfants').disabled = (enfants <= 0);
-        document.getElementById('btn_plus_enfants').disabled = (totalHumans >= MAX_PERSONS);
-
-        if(document.getElementById('btn_minus_bebes')) {
-            document.getElementById('btn_minus_bebes').disabled = (bebes <= 0);
-            document.getElementById('btn_plus_bebes').disabled = (bebes >= MAX_BEBES);
-        }
-
-        if(document.getElementById('btn_minus_animaux')) {
-            document.getElementById('btn_minus_animaux').disabled = (animaux <= 0);
-            document.getElementById('btn_plus_animaux').disabled = (animaux >= MAX_ANIMAUX);
-        }
-    }
 </script>
 @endsection

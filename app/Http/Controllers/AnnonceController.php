@@ -310,10 +310,13 @@ class AnnonceController extends Controller
                 ], 'idcartebancaire');
 
             } else {
+
                 $card = DB::table('carte_bancaire')
                     ->where('idcartebancaire', $req->carte_id)
                     ->where('idutilisateur', $user->idutilisateur)
                     ->first();
+
+                // TODO: validate CVV here
 
                 if (!$card) {
                     return back()->withErrors(['carte_id' => 'Carte invalide.']);
@@ -347,6 +350,7 @@ class AnnonceController extends Controller
                 // 'telephone_contact' => $req->telephone
             ], 'idreservation');
 
+
             DB::table('paiement')->insert([
                 'idreservation' => $idReservation,
                 'idcartebancaire' => $idCarteUtilisee,
@@ -369,7 +373,6 @@ class AnnonceController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            dd($e->getMessage());
             return back()->withErrors(['error' => "Une erreur est survenue lors du paiement: " . $e->getMessage()]);
         }
     }
