@@ -24,7 +24,7 @@
 
     <form class="form-pdp" method="POST" action="{{ url('modifier_compte/upload') }}" enctype="multipart/form-data">  
         @csrf  
-        <input type="file" name="file" id="fileInput" accept="image/png, image/jpeg, image/jpg">  
+        <input type="file" name="file" id="fileInput" accept=".png, .jpeg, .jpg">  
         <button type="submit">Enregistrer l'image</button>  
     </form>
 
@@ -218,8 +218,8 @@
 
         @if(!$isEntreprise && $user->particulier->piece_identite === null)
             <div class="input-groupe">
-                <label for="siret">Transmettre votre pièce d'identité.</label>
-                <input type="file" name="file" id="fileInput" accept="application/pdf" @change="$dispatch('field-touched')">
+                <label>Transmettre votre pièce d'identité.</label>
+                <input type="file" name="file" id="fileInput" accept=".pdf" @change="$dispatch('field-touched')">
             </div>
         @endif
 

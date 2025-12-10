@@ -6,6 +6,9 @@ use App\Models\TypePaiement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
+use App\Providers\RouteServiceProvider;
 use App\Models\Ville;
 use App\Models\Annonce;
 use App\Models\TypeHebergement;
@@ -132,7 +135,7 @@ class AnnonceController extends Controller
             'heure_dep' => 'required|date_format:H:i',
             'desc' => 'required|string|max:2000',
             'file' => 'required|array',
-            'file*' => 'image|max:2048',
+            'file*' => 'image|mimes:jpg, png, jpeg|max:2048',
         ]);
 
         $codeville = Ville::where('nom_ville', $req->ville)->first();
@@ -170,15 +173,21 @@ class AnnonceController extends Controller
 
         $num_photo = Photo::where('idannonce', $annonce->idannonce)->count() + 1;
         if ($req->hasFile('file')) {
+            $manager = new ImageManager(new Driver());
             foreach ($req->file('file') as $file) {
-                $fileName = '/images/photo_annonce_' . $annonce->idannonce . '_' . $num_photo . '.jpg';
-                // $dbFileName = "/images/" . $fileName;
-                $file->move(public_path('images'), $fileName);
+                $fileName = 'photo_annonce_' . $annonce->idannonce . '_' . $num_photo . '.jpg';
+                $fileNameDB = '/images/photo_annonce_' . $annonce->idannonce . '_' . $num_photo . '.jpg';
+                $imgDestination = public_path('images');
                 $url = asset('images/' . $fileName);
+
+                $img = $manager->read($file);
+                $img->scaleDown(width: 1000, height: 1000);
+                $img->toJpeg(90)->save($imgDestination . '/' . $fileName);
+                //$imgResized->move(public_path('images'), $fileName);
 
                 $photo = Photo::create([
                     'idannonce' => $annonce->idannonce,
-                    'nomphoto' => $fileName,
+                    'nomphoto' => $fileNameDB,
                     'legende' => null,
                 ]);
                 
