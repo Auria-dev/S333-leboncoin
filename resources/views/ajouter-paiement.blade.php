@@ -1,6 +1,6 @@
 @extends('layout')
 
-@section('title', 'Déposer une annonce')
+@section('title', 'Ajouter une carte bancaire')
 
 @section('content')
 
@@ -393,7 +393,7 @@
     .card-item__number {
         font-weight: 500;
         line-height: 1;
-        color: var(--text);
+        color: rgb(var(--white-rgb));
         font-size: 27px;
         margin-bottom: 35px;
         display: inline-block;
@@ -447,7 +447,7 @@
     }
 
     .card-item__content {
-        color: var(--text);
+        color: rgb(var(--white-rgb));
         display: flex;
         align-items: flex-start;
     }
@@ -484,6 +484,7 @@
         font-size: 13px;
         padding-bottom: 6px;
         width: 100%;
+        color:rgb(var(--white-rgb));
     }
 
     @media screen and (max-width: 480px) {
@@ -536,7 +537,7 @@
         padding-right: 10px;
         font-size: 15px;
         font-weight: 500;
-        color: var(--text);
+        color: rgb(var(--white-rgb));
         margin-bottom: 5px;
     }
 

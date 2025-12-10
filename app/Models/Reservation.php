@@ -38,7 +38,7 @@ class Reservation extends Model
     }
 
     // Statut reservation values:
-    // 'en attente' => waiting for approval
+    // 'en attente' => paid for, waiting for approval
     // 'validée' => approved, awaiting stay
     // 'en cours' => ongoing stay
     // 'complétée' => user has completed their stay

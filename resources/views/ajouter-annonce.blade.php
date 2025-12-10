@@ -99,8 +99,8 @@
                     <template x-for="feature in results" :key="feature.properties.id">
                         <li @click="selectAddress(feature)" 
                             class="suggestion-item"
-                            @mouseenter="$el.style.backgroundColor = '#f8f9fa'"
-                            @mouseleave="$el.style.backgroundColor = 'white'">
+                            @mouseenter="$el.style.backgroundColor = 'var(--bg-highlight)'"
+                            @mouseleave="$el.style.backgroundColor = 'transparent'">
                             
                             <span x-text="feature.properties.label" class="font-bold block"></span>
                             

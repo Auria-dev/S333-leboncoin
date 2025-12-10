@@ -238,4 +238,17 @@ class CompteController extends Controller {
     public function modifier_paiement() {
 
     }
+
+    public function afficher_paiement($idreservation) {
+        $reservation = Reservation::findOrFail($idreservation);
+        if (auth()->user()->idutilisateur != $reservation->idlocataire) {
+            return redirect()->route('profile')->with('error', "Vous n'avez pas accès à cette page.");
+        }
+
+        return view('gerer-paiement',
+         [
+            'reservation'=> $reservation
+         ]
+        );
+    }
 }
