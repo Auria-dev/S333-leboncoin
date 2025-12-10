@@ -118,7 +118,6 @@ class AnnonceController extends Controller
         if ($typeCompte == 'Locataire') {
             Particulier::where('idparticulier', $iduser)->update(['code_particulier' => 2]);
         }
-        // OPTIONNEL, vérif que il n'a aucune réservation, et puis fait le juste passer en "Propietaire"
 
         $req->validate([
             'titre' => 'required|string|max:128',
@@ -134,6 +133,8 @@ class AnnonceController extends Controller
             'heure_arr' => 'required|date_format:H:i',
             'heure_dep' => 'required|date_format:H:i',
             'desc' => 'required|string|max:2000',
+            'file' => 'required|array',
+            'file*' => 'image|max:2048',
         ]);
 
         $codeville = Ville::where('nom_ville', $req->ville)->first();
@@ -149,7 +150,6 @@ class AnnonceController extends Controller
 
         $service = Service::where('nom_service', $req->DepotService)->first();
 
-        // this says
         $annonce = Annonce::create([
             'idtypehebergement' => $type_heb->idtypehebergement,
             'idproprietaire' => $iduser,
@@ -170,11 +170,10 @@ class AnnonceController extends Controller
             'latitude' => $latitude,
         ]);
 
-        $num_photo = 1;
+        $num_photo = Photo::where('idannonce', $annonce->idannonce)->count() + 1;
         if ($req->hasFile('file')) {
             foreach ($req->file('file') as $file) {
-                $filePath = $file->getClientOriginalName();
-                $fileName = '/images/photo_annonce_' . $user->idutilisateur . '_' . $filePath . '.jpg';
+                $fileName = '/images/photo_annonce_' . $annonce->idannonce . '_' . $num_photo . '.jpg';
                 // $dbFileName = "/images/" . $fileName;
                 $file->move(public_path('images'), $fileName);
                 $url = asset('images/' . $fileName);
@@ -184,10 +183,11 @@ class AnnonceController extends Controller
                     'nomphoto' => $fileName,
                     'legende' => null,
                 ]);
-
-                $num_photo++;
+                
+                $num_photo += 1;
             }
-        } else {
+        }
+        else {
             $photo = Photo::create([
                 'idannonce' => $annonce->idannonce,
                 'nomphoto' => "/images/photo-annonce.jpg",
@@ -224,13 +224,6 @@ class AnnonceController extends Controller
             $annonce->service()->sync($idsServices);
         }
 
-        // $similaires = Annonce::where(function($query) use ($annonce) {
-        //     $query->where('idville', $annonce->idville)
-        //           ->orWhere('idtypehebergement', $annonce->idtypehebergement)
-        //           ->orWhere('nb_personnes_max', '>=', $annonce->nb_personnes_max);
-        // })
-        // ->where('idannonce', '!=', $annonce->idannonce)
-        // ->get();
 
         $similaires = Annonce::whereHas('ville.departement', function ($query) use ($annonce) {
             $query->where('iddepartement', $annonce->ville->departement->iddepartement);

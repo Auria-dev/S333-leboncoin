@@ -52,6 +52,7 @@ class CompteController extends Controller {
             'telephone' => 'required|digits:10|unique:utilisateur,telephone', // TODO (auria): better phone number handling (remove spaces before checking, so on)
             'adresse' => 'required|string',
             'password' => 'required|string|min:8|confirmed',
+            'file' => 'image|max:2048',
         ]);
 
         $codeville = Ville::where('nom_ville', $req->ville)->first();
@@ -145,6 +146,7 @@ class CompteController extends Controller {
             'password' => 'nullable|string|min:8|confirmed', 
             'ville' => 'required|string',
             'code_postal' => 'required|string',
+            'file' => 'image|max:2048',
         ];
 
         $isParticulier = DB::table('particulier')->where('idparticulier', $id)->exists();

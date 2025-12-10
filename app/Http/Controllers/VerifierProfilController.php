@@ -19,8 +19,7 @@ class VerifierProfilController extends Controller
         if($isParticulier) {
             if($req->hasFile('file')) {  
                 $file = $req->file('file');  
-                $filePath = $file->getClientOriginalName();
-                $fileName = '/CNI/cni_utilisateur_' . $filePath . '.pdf';
+                $fileName = '/CNI/cni_utilisateur_' . $user->idutilisateur . '.pdf';
                 $file->move(public_path('CNI'), $fileName);
                 $url = asset('CNI/'. $fileName);
 
