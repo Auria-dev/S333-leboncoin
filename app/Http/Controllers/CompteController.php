@@ -199,4 +199,16 @@ class CompteController extends Controller {
 
         return back()->with('success', 'Mis à jour de la photo de profil avec succès.');
     }
+
+    public function afficher_ajout_paiement() {
+        return view('ajouter-paiement');
+    }
+
+    public function ajouter_paiement() {
+
+    }
+
+    public function modifier_paiement() {
+
+    }
 }
