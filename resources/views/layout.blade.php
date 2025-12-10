@@ -69,7 +69,7 @@
         
         <div class="light-box-content">
             <h4 class="text-center" style="margin-bottom: 5rem; font-size: 22px;">Pour déposer une annonce veuillez transmettre votre pièce d'identité</h4>         
-            <input type="file" name="file" id="fileInput" accept="application/pdf" required>
+            <input type="file" name="file" id="fileInput" accept=".pdf" required>
             <div class="lightbox-actions">
                 <button type="button" class="other-btn" id="btn-cancel-first-ad">Annuler</button>               
                 <button type="submit" class="submit-btn">Transmettre et Continuer</button>

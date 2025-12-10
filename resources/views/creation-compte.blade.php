@@ -165,8 +165,8 @@
 
             <div x-show="accountType === 'particulier'">
                 <div class="input-groupe">
-                    <label for="siret">Afin de publier des annonces, la vérification de votre identité est requise. Vous pouvez transmettre votre pièce d'identité <u>dès maintenant</u> ou <u>ultérieurement</u> sous forme de PDF.</label>
-                    <input type="file" name="file" id="fileInput" accept="application/pdf">
+                    <label>Afin de publier des annonces, la vérification de votre identité est requise. Vous pouvez transmettre votre pièce d'identité <u>dès maintenant</u> ou <u>ultérieurement</u> sous forme de PDF.</label>
+                    <input type="file" name="file" id="fileInput" accept=".pdf">
                 </div>
             </div>
 
