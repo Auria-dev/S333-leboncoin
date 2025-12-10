@@ -60,6 +60,10 @@ Route::post('/confirmer_reservation', [AnnonceController::class, 'reserver'])->m
 Route::get('/creer_annonce', [AnnonceController::class, 'afficher_form'])->middleware('auth');
 Route::post('/ajouter_annonce', [AnnonceController::class, 'ajouter_annonce'])->middleware('auth');
 
+Route::get('/ajouter_paiement', [CompteController::class, 'afficher_ajout_paiement'])->middleware('auth');
+Route::post('/ajouter_paiement', [CompteController::class, 'ajouter_paiement'])->middleware('auth');
+Route::post('/modifier_paiement', [CompteController::class, 'modifier_paiement'])->middleware('auth');
+
 Route::get('/reservation/{id}', [ReservationController::class, 'view_modifier'])->middleware('auth');
 Route::put('/reservation/update/{id}', [ReservationController::class, 'modifier_reservation'])->middleware('auth');
 Route::post('/reservation/cancel/{id}', [ReservationController::class, 'annuler_reservation'])->middleware('auth');
