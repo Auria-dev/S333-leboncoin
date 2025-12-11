@@ -78,8 +78,15 @@ Route::post('/ajouter_paiement', [CompteController::class, 'ajouter_paiement'])-
 Route::post('/modifier_paiement', [CompteController::class, 'modifier_paiement'])->middleware('auth');
 Route::get('/payer/{id}', [CompteController::class, 'afficher_paiement'])->middleware('auth');
 
+
+Route::get('/reservation/{id}', [ReservationController::class, 'view_modifier'])->middleware('auth');
+Route::put('/reservation/update/{id}', [ReservationController::class, 'modifier_reservation'])->middleware('auth');
+Route::post('/reservation/cancel/{id}', [ReservationController::class, 'annuler_reservation'])->middleware('auth');
+Route::post('/reservation/accept/{id}', [ReservationController::class, 'accepter_reservation'])->middleware('auth');
+Route::post('/reservation/refuse/{id}', [ReservationController::class, 'refuser_reservation'])->middleware('auth');
+Route::get('/reservation/declare/{id}', [ReservationController::class, 'declarer_incident'])->middleware('auth');
+Route::post('/reservation/save_incident', [ReservationController::class, 'save_incident'])->middleware('auth');
 Route::get('/reservation/{id}/avis', [AvisController::class, 'create'])->name('avis.create');
 Route::post('/reservation/{id}/avis', [AvisController::class, 'store'])->name('avis.store');
-
 Route::get('/verification/telephone', [AnnonceController::class, 'afficherFormVerification']) ->middleware('auth')->name('form.verification.telephone');
 Route::post('/verification/telephone', [AnnonceController::class, 'traiterVerification'])->middleware('auth')->name('traiter.verification.telephone');

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Reservation;
+use App\Models\Incident;
 use Illuminate\Support\Facades\DB;
 
 class ReservationController extends Controller
@@ -93,5 +94,27 @@ class ReservationController extends Controller
 
         $reservation->update(['statut_reservation'=> 'refusée']);
         return back()->with('success','Réservation refusée avec succès.');
+    }
+
+    public function declarer_incident($idreservation) {
+        $reservation = Reservation::findOrFail($idreservation);
+        return view("declarer-incident", [
+            'reservation' => $reservation,
+        ]); 
+    }
+
+    public function save_incident(Request $req) {
+        $req->validate(['desc_incident' => 'required|string']);
+        $id = $req->idresa;
+        $incident = Incident::create([
+            'idreservation' => $id,
+            'description_incident' => $req->desc_incident,
+            'date_signalement' => now(),
+            'reponse_incident' => null,
+            'statut_incident' => "déclaré",
+        ]);
+
+        
+        return redirect()->route('profile')->with('success','Incident déclaré, nous vous recontacterons.');
     }
 }
