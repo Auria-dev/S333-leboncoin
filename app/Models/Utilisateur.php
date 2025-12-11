@@ -42,7 +42,19 @@ class Utilisateur extends Authenticatable {
     }
 
     public function reservation() {
-        return $this->hasMany(Reservation::class, "idlocataire");
+        return $this->hasMany(Reservation::class, "idlocataire")
+        ->orderByRaw("
+            CASE statut_reservation
+                WHEN 'en attente' THEN 1
+                WHEN 'en cours' THEN 2
+                WHEN 'validée' THEN 3
+                WHEN 'complétée' THEN 4
+                WHEN 'annulée' THEN 5
+                WHEN 'refusée' THEN 6
+                ELSE 7
+            END ASC
+        ")
+        ->orderBy('date_demande', 'desc');
     }
 
     public function demandesReservations() {
@@ -127,5 +139,9 @@ class Utilisateur extends Authenticatable {
         else {
             return $nom . " " . $prenom;
         }
+    }
+
+    public function cartesBancaires() {
+        return $this->hasMany(CarteBancaire::class, 'idutilisateur')->where('est_sauvegardee', true);
     }
 }

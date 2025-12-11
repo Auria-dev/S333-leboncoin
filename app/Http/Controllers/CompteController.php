@@ -60,13 +60,6 @@ class CompteController extends Controller {
 
         $codeville = Ville::where('nom_ville', $req->ville)->first();
         
-        $fileName = null;
-        if($req->hasFile('file')) {  
-            $file = $req->file('file');  
-            $fileName = '/CNI/cni_utilisateur_' . $user->idutilisateur . '.pdf';
-            $file->move(public_path('CNI'), $fileName);
-            $url = asset('CNI/'. $fileName);
-        }
 
         $user = Utilisateur::create([
             'idville' => $codeville->idville,
@@ -83,6 +76,14 @@ class CompteController extends Controller {
         Auth::login($user);
 
         $user = auth()->user();
+        
+        $fileName = null;
+        if($req->hasFile('file')) {  
+            $file = $req->file('file');  
+            $fileName = '/CNI/cni_utilisateur_' . $user->idutilisateur . '.pdf';
+            $file->move(public_path('CNI'), $fileName);
+            $url = asset('CNI/'. $fileName);
+        }
         
         if ($req->typeCompte == 'particulier') {
             DB::table('particulier')->insert(
@@ -246,5 +247,18 @@ class CompteController extends Controller {
 
     public function modifier_paiement() {
 
+    }
+
+    public function afficher_paiement($idreservation) {
+        $reservation = Reservation::findOrFail($idreservation);
+        if (auth()->user()->idutilisateur != $reservation->idlocataire) {
+            return redirect()->route('profile')->with('error', "Vous n'avez pas accès à cette page.");
+        }
+
+        return view('gerer-paiement',
+         [
+            'reservation'=> $reservation
+         ]
+        );
     }
 }
