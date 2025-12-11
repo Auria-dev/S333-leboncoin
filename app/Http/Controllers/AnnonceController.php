@@ -120,142 +120,147 @@ class AnnonceController extends Controller
             Particulier::where('idparticulier', $iduser)->update(['code_particulier' => 2]);
         }
 
-        $req->validate([
-            'titre' => 'required|string|max:128',
-            'depot_adresse' => 'required|string',
-            'ville' => 'required|string',
-            'DepotTypeHebergement' => 'required',
-            'prix_nuit' => 'required|numeric|min:0.01',
-            'nb_nuits' => 'required|integer|min:1',
-            'nb_pers' => 'required|integer|min:1',
-            'nb_bebes' => 'nullable|integer|min:0',
-            'nb_animaux' => 'nullable|integer|min:0',
-            'nb_chambres' => 'required|integer|min:1',
-            'heure_arr' => 'required|date_format:H:i',
-            'heure_dep' => 'required|date_format:H:i',
-            'desc' => 'required|string|max:2000',
-            'file' => 'required|array',
-            'file*' => 'image|mimes:jpg, png, jpeg|max:2048',
-        ]);
+        DB::beginTransaction();
+        
+        try {
 
-        $codeville = Ville::where('nom_ville', $req->ville)->first();
-        $type_heb = TypeHebergement::where('nom_type_hebergement', $req->DepotTypeHebergement)->first();
+            $req->validate([
+                'titre' => 'required|string|max:128',
+                'depot_adresse' => 'required|string',
+                'ville' => 'required|string',
+                'DepotTypeHebergement' => 'required',
+                'prix_nuit' => 'required|numeric|min:0.01',
+                'nb_nuits' => 'required|integer|min:1',
+                'nb_pers' => 'required|integer|min:1',
+                'nb_bebes' => 'nullable|integer|min:0',
+                'nb_animaux' => 'nullable|integer|min:0',
+                'nb_chambres' => 'required|integer|min:1',
+                'heure_arr' => 'required|date_format:H:i',
+                'heure_dep' => 'required|date_format:H:i',
+                'desc' => 'required|string|max:2000',
+                'file' => 'required|array',
+                'file*' => 'image|mimes:jpg, png, jpeg|max:2048',
+            ]);
 
-
-        $adresseComplete = $req->depot_adresse . ', ' . $req->ville . ', France';
-
-        $coordonnees = $this->geoService->geocode($adresseComplete);
-
-        $latitude = $coordonnees ? $coordonnees['lat'] : null;
-        $longitude = $coordonnees ? $coordonnees['lon'] : null;
-
-        $service = Service::where('nom_service', $req->DepotService)->first();
-
-        $annonce = Annonce::create([
-            'idtypehebergement' => $type_heb->idtypehebergement,
-            'idproprietaire' => $iduser,
-            'idville' => $codeville->idville,
-            'titre_annonce' => $req->titre,
-            'prix_nuit' => $req->prix_nuit,
-            'nb_nuit_min' => $req->nb_nuits,
-            'nb_bebe_max' => $req->nb_bebes,
-            'nb_personnes_max' => $req->nb_pers,
-            'nb_animaux_max' => $req->nb_animaux,
-            'adresse_annonce' => $req->depot_adresse,
-            'description_annonce' => $req->desc,
-            'date_publication' => now(),
-            'heure_arrivee' => $req->heure_arr,
-            'heure_depart' => $req->heure_dep,
-            'nombre_chambre' => $req->nb_chambres,
-            'longitude' => $longitude,
-            'latitude' => $latitude,
-        ]);
-
-        $num_photo = Photo::where('idannonce', $annonce->idannonce)->count() + 1;
-        if ($req->hasFile('file')) {
-            $manager = new ImageManager(new Driver());
-            foreach ($req->file('file') as $file) {
-                $fileName = 'photo_annonce_' . $annonce->idannonce . '_' . $num_photo . '.jpg';
-                $fileNameDB = '/images/photo_annonce_' . $annonce->idannonce . '_' . $num_photo . '.jpg';
-                $imgDestination = public_path('images');
-                $url = asset('images/' . $fileName);
-
-                $img = $manager->read($file);
-                $img->scaleDown(width: 1000, height: 1000);
-                $img->toJpeg(90)->save($imgDestination . '/' . $fileName);
-                //$imgResized->move(public_path('images'), $fileName);
-
+            $codeville = Ville::where('nom_ville', $req->ville)->first();
+            $type_heb = TypeHebergement::where('nom_type_hebergement', $req->DepotTypeHebergement)->first();
+            
+            
+            $adresseComplete = $req->depot_adresse . ', ' . $req->ville . ', France';
+            
+            $coordonnees = $this->geoService->geocode($adresseComplete);
+            
+            $latitude = $coordonnees ? $coordonnees['lat'] : null;
+            $longitude = $coordonnees ? $coordonnees['lon'] : null;
+            
+            $service = Service::where('nom_service', $req->DepotService)->first();
+            
+            $annonce = Annonce::create([
+                'idtypehebergement' => $type_heb->idtypehebergement,
+                'idproprietaire' => $iduser,
+                'idville' => $codeville->idville,
+                'titre_annonce' => $req->titre,
+                'prix_nuit' => $req->prix_nuit,
+                'nb_nuit_min' => $req->nb_nuits,
+                'nb_bebe_max' => $req->nb_bebes,
+                'nb_personnes_max' => $req->nb_pers,
+                'nb_animaux_max' => $req->nb_animaux,
+                'adresse_annonce' => $req->depot_adresse,
+                'description_annonce' => $req->desc,
+                'date_publication' => now(),
+                'heure_arrivee' => $req->heure_arr,
+                'heure_depart' => $req->heure_dep,
+                'nombre_chambre' => $req->nb_chambres,
+                'longitude' => $longitude,
+                'latitude' => $latitude,
+            ]);
+            
+            $num_photo = Photo::where('idannonce', $annonce->idannonce)->count() + 1;
+            if ($req->hasFile('file')) {
+                $manager = new ImageManager(new Driver());
+                foreach ($req->file('file') as $file) {
+                    $fileName = 'photo_annonce_' . $annonce->idannonce . '_' . $num_photo . '.jpg';
+                    $fileNameDB = '/images/photo_annonce_' . $annonce->idannonce . '_' . $num_photo . '.jpg';
+                    $imgDestination = public_path('images');
+                    $url = asset('images/' . $fileName);
+                    
+                    $img = $manager->read($file);
+                    $img->scaleDown(width: 1000, height: 1000);
+                    $img->toJpeg(90)->save($imgDestination . '/' . $fileName);
+                    //$imgResized->move(public_path('images'), $fileName);
+                    
+                    $photo = Photo::create([
+                        'idannonce' => $annonce->idannonce,
+                        'nomphoto' => $fileNameDB,
+                        'legende' => null,
+                    ]);
+                    
+                    $num_photo += 1;
+                }
+            }
+            else {
                 $photo = Photo::create([
                     'idannonce' => $annonce->idannonce,
-                    'nomphoto' => $fileNameDB,
+                    'nomphoto' => "/images/photo-annonce.jpg",
                     'legende' => null,
                 ]);
-                
-                $num_photo += 1;
             }
-        }
-        else {
-            $photo = Photo::create([
-                'idannonce' => $annonce->idannonce,
-                'nomphoto' => "/images/photo-annonce.jpg",
-                'legende' => null,
-            ]);
-        }
-
-        $calendrier = DB::table('calendrier')->insertUsing(
-            ['iddate', 'idannonce', 'idutilisateur', 'code_dispo'],
-            DB::table('date as d')
+            
+            $calendrier = DB::table('calendrier')->insertUsing(
+                ['iddate', 'idannonce', 'idutilisateur', 'code_dispo'],
+                DB::table('date as d')
                 ->crossJoin('annonce as a')
                 ->where('a.idannonce', $annonce->idannonce)
                 ->select(
-                    'd.iddate',
-                    'a.idannonce',
+                    'd.iddate', 'a.idannonce',
                     DB::raw('NULL as idutilisateur'),
-                    DB::raw('TRUE as code_dispo')
-                )
-        );
-
-        $nomsEquipements = $req->DepotEquipement;
-        if (!empty($nomsEquipements) && is_array($nomsEquipements)) {
-            $idsEquipements = Equipement::whereIn('nom_equipement', $nomsEquipements)
+                    DB::raw('TRUE as code_dispo'))
+            );
+                
+            $nomsEquipements = $req->DepotEquipement;
+            if (!empty($nomsEquipements) && is_array($nomsEquipements)) {
+                $idsEquipements = Equipement::whereIn('nom_equipement', $nomsEquipements)
                 ->pluck('idequipement')
                 ->toArray();
-            $annonce->equipement()->sync($idsEquipements);
-        }
-
-        $nomsServices = $req->DepotService;
-        if (!empty($nomsServices) && is_array($nomsServices)) {
-            $idsServices = Service::whereIn('nom_service', $nomsServices)
+                $annonce->equipement()->sync($idsEquipements);
+            }
+            
+            $nomsServices = $req->DepotService;
+            if (!empty($nomsServices) && is_array($nomsServices)) {
+                $idsServices = Service::whereIn('nom_service', $nomsServices)
                 ->pluck('idservice')
                 ->toArray();
-            $annonce->service()->sync($idsServices);
-        }
+                $annonce->service()->sync($idsServices);
+            }
+            
+            $similaires = Annonce::whereHas('ville.departement', function ($query) use ($annonce) {
+                $query->where('iddepartement', $annonce->ville->departement->iddepartement);
+            })->where('idtypehebergement', $annonce->idtypehebergement)
+              ->where('nb_personnes_max', '>=', $annonce->nb_personnes_max)
+              ->where('idannonce', '!=', $annonce->idannonce)
+              ->get();
+                
+            
+            foreach ($similaires as $s) {
+                $similaire = AnnonceSimilaire::create([
+                    'idannonce' => $annonce->idannonce,
+                    'idsimilaire' => $s->idannonce,
+                ]);
+            }
+        } catch (Exception $e) {
+            // TODO: find a way to log serverside any errors
+            return redirect()->back()->withErrors('error', "Impossible de créer l'annonce");
+        } 
 
-
-        $similaires = Annonce::whereHas('ville.departement', function ($query) use ($annonce) {
-            $query->where('iddepartement', $annonce->ville->departement->iddepartement);
-        })
-            ->where('idtypehebergement', $annonce->idtypehebergement)
-            ->where('nb_personnes_max', '>=', $annonce->nb_personnes_max)
-            ->where('idannonce', '!=', $annonce->idannonce)
-            ->get();
-
-
-        foreach ($similaires as $s) {
-            $similaire = AnnonceSimilaire::create([
-                'idannonce' => $annonce->idannonce,
-                'idsimilaire' => $s->idannonce,
-            ]);
-        }
-
-        return redirect('/profile');
+        DB::commit();
+        return redirect()->route('profile')->with('success', 'Annonce créée avec succès');
     }
 
     function view_reserver(Request $req, $idannonce) {
         $annonce = Annonce::findOrFail($idannonce);
 
         if (!$annonce || !$req->start_date || !$req->end_date) {
-            return redirect()->back()->withErrors(['error' => 'Annonce or dates not found.']);
+            return redirect()->back()->withErrors(['error' => "Impossible de trouver l'annonce ou les dates"]);
         }
 
         return view("reserver-annonce", [
