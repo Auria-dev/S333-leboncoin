@@ -21,12 +21,15 @@ use App\Models\Service;
 use App\Models\AnnonceSimilaire;
 use Carbon\Carbon;
 
+use Vonage\Client;
+use Vonage\Client\Credentials\Basic;
+use Vonage\SMS\Message\SMS;
+
 
 use App\Services\GeoapifyService;
 
 class AnnonceController extends Controller
 {
-
 
     protected $geoService;
 
@@ -119,7 +122,6 @@ class AnnonceController extends Controller
         if ($typeCompte == 'Locataire') {
             Particulier::where('idparticulier', $iduser)->update(['code_particulier' => 2]);
         }
-
         DB::beginTransaction();
         
         try {
@@ -205,11 +207,11 @@ class AnnonceController extends Controller
                     'legende' => null,
                 ]);
             }
-            
+          
             $calendrier = DB::table('calendrier')->insertUsing(
                 ['iddate', 'idannonce', 'idutilisateur', 'code_dispo'],
                 DB::table('date as d')
-                ->crossJoin('annonce as a')
+               ->crossJoin('annonce as a')
                 ->where('a.idannonce', $annonce->idannonce)
                 ->select(
                     'd.iddate', 'a.idannonce',
@@ -221,7 +223,9 @@ class AnnonceController extends Controller
             if (!empty($nomsEquipements) && is_array($nomsEquipements)) {
                 $idsEquipements = Equipement::whereIn('nom_equipement', $nomsEquipements)
                 ->pluck('idequipement')
+
                 ->toArray();
+
                 $annonce->equipement()->sync($idsEquipements);
             }
             
@@ -229,6 +233,7 @@ class AnnonceController extends Controller
             if (!empty($nomsServices) && is_array($nomsServices)) {
                 $idsServices = Service::whereIn('nom_service', $nomsServices)
                 ->pluck('idservice')
+
                 ->toArray();
                 $annonce->service()->sync($idsServices);
             }
@@ -272,7 +277,7 @@ class AnnonceController extends Controller
     }
 
     function reserver(Request $req) {
-        
+       
         $req->validate([
             'idannonce' => 'required|integer|exists:annonce,idannonce',
             'date_debut_resa' => 'required|date',
@@ -282,7 +287,7 @@ class AnnonceController extends Controller
             'carte_id' => 'required',
         ]);
 
-        
+       
         $user = auth()->user();
         $idCarteUtilisee = null;
 
@@ -300,7 +305,7 @@ class AnnonceController extends Controller
                     'titulairecarte' => 'required|string',
                     // 'cvv' => 'required' // We verify presence but DO NOT STORE
                 ]);
-        
+       
                 $cleanNum = $req->numcarte;
                 $parts = explode('/', $req->dateexpiration);
                 $expireDate = Carbon::createFromDate('20' . $parts[1], $parts[0], 1)->toDateString();
@@ -341,17 +346,17 @@ class AnnonceController extends Controller
                 'date_debut_resa' => $req->date_debut_resa,
                 'date_fin_resa' => $req->date_fin_resa,
                 'date_demande' => now(),
-                
+               
                 'nb_nuits' => $nb_nuits,
                 'montant_total' => $req->total,
                 'frais_services' => $req->frais_service,
                 'taxe_sejour' => $req->taxe_sejour,
-                
+               
                 'nb_adultes' => $req->nb_adultes,
                 'nb_enfants' => $req->nb_enfants,
                 'nb_bebes' => $req->nb_bebes,
                 'nb_animaux' => $req->nb_animaux,
-                
+               
                 // 'telephone_contact' => $req->telephone
             ], 'idreservation');
 
