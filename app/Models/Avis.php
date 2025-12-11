@@ -13,3 +13,13 @@ class Avis extends Model
     protected $primaryKey = "idavis";
     public $timestamps = false;
 }
+
+    public function reservation()
+    {
+        return $this->belongsTo(Reservation::class, 'IDRESERVATION', 'IDRESERVATION');
+    }
+
+    public function utilisateur()
+    {
+        return $this->belongsTo(User::class, 'IDUTILISATEUR', 'IDUTILISATEUR');
+    }

@@ -55,7 +55,10 @@
         justify-content: flex-end;
     }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> e270e8659d3c5b60c80d4d3013e80ca140891483
     .btn-cookie {
         padding: 10px 20px;
         border-radius: 8px;

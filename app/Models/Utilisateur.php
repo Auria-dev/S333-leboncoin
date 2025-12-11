@@ -22,7 +22,8 @@ class Utilisateur extends Authenticatable {
         'telephone',
         'mail',
         'adresse_utilisateur',
-        'date_creation'
+        'date_creation',
+        'photo_profil'
     ];
 
     public function getAuthPassword() {
@@ -40,6 +41,15 @@ class Utilisateur extends Authenticatable {
 
     public function reservation() {
         return $this->hasMany(Reservation::class, "idlocataire");
+    }
+
+    public function recherche() {
+    return $this->belongsToMany(Critere::class, 'recherche', 'idutilisateur', 'idcritere')
+                ->withPivot('titre_recherche');
+}
+
+    public function favoris() {
+        return $this->belongsToMany(Annonce::class, 'favoris', 'idutilisateur', 'idannonce');
     }
 
     public function particulier() {

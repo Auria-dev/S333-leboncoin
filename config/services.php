@@ -31,4 +31,12 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'geoplateforme' => [
+    'base_url' => env('GEOPLATEFORME_URL'),
+    ],
+
+    'geoapify' => [
+    'key' => env('GEOAPIFY_API_KEY'),
+],
+
 ];

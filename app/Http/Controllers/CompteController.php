@@ -64,7 +64,8 @@ class CompteController extends Controller {
             'telephone' => $req->telephone,
             'mail' => $req->email,
             'adresse_utilisateur' => $req->adresse,
-            'date_creation' => now()
+            'date_creation' => now(),
+            'photo_profil' => "/images/photo-profil.jpg"
         ]);
 
         Auth::login($user);
@@ -178,5 +179,24 @@ class CompteController extends Controller {
         }
 
         return back()->with('success', 'Compte mis à jour avec succès.');
+    }
+
+    function upload(Request $request) {
+        $user = Auth::user();
+
+        if($request->hasFile('file')) {  
+            $file = $request->file('file');  
+	    
+            $fileName = '/images/photo_utilisateur_' . $user->idutilisateur . '.jpg';
+            // TODO: convert all images to jpg and resize them to be smaller..?
+            $file->move(public_path('images'), $fileName);
+            $url = asset('images/'. $fileName);
+
+            DB::table('utilisateur')->where('idutilisateur', $user->idutilisateur)->update([
+                'photo_profil' => $fileName
+            ]);
+        } 
+
+        return back()->with('success', 'Mis à jour de la photo de profil avec succès.');
     }
 }

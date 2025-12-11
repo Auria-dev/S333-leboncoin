@@ -4,7 +4,7 @@
 
 @section('content')
 
-    <form method="post" action="{{ url('resultats') }}" style="width: 100%; max-width: 400px; margin: 0 auto;">
+    <form method="get" action="{{ url('resultats') }}" style="width: 100%; max-width: 400px; margin: 0 auto;">
         @csrf
 
         <div class="full-width search-container" 
@@ -31,7 +31,7 @@
             }"
             @click.outside="showResults = false">
 
-            <label for="search">Selectionner un lieu</label>
+            <label for="search">Sélectionnez un lieu</label>
             
             <div class="input-groupe">
                 <input 
@@ -84,5 +84,6 @@
         <div class="full-width">
             <input type="submit" class="submit-btn" value="Rechercher" />
         </div>
+
     </form>
 @endsection
