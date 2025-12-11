@@ -81,7 +81,19 @@
                                 Annonce #{{ $res->idreservation }}
                             </span>
                         </div>
-                        <span class="res-badge">
+                        @php
+                            $s = strtolower($res->statut_reservation);
+                            $st_class = 'st-default';
+                            
+                            if(Str::contains($s, ['valid', 'accept'])) {
+                                $st_class = 'st-accepted';
+                            } elseif(Str::contains($s, ['refus', 'annul'])) {
+                                $st_class = 'st-rejected';
+                            } elseif(Str::contains($s, ['attent'])) {
+                                $st_class = 'st-pending';
+                            }
+                        @endphp
+                        <span class="status-dot {{ $st_class }}">
                             {{ $res->statut_reservation }}
                         </span>
                     </div>

@@ -49,6 +49,12 @@ class ReservationController extends Controller
         }
 
         $reservation->update(['statut_reservation' => 'annulée']);
+        $paiement = paiement::findOrFail($request->paiement);
+        $paiement->update(['statut_paiement' => 'annulé']);
+
+         $datesToUpdate = DB::table('date')
+         ->whereBetween('date', [$reservation->date_debut_resa, $reservation->date_fin_resa])
+         ->pluck('iddate');
 
         return redirect()->route('profile')->with('success', 'Réservation annulée avec succès.');
     }

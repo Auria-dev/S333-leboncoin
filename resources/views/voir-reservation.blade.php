@@ -8,8 +8,8 @@
     $isRequester = $user->idutilisateur == $reservation->idlocataire;
     $isOwner = $user->idutilisateur == $reservation->annonce->idproprietaire;
 
-    $start = \Carbon\Carbon::parse($reservation->date_debut);
-    $end = \Carbon\Carbon::parse($reservation->date_fin);
+    $start = \Carbon\Carbon::parse($reservation->date_debut_resa);
+    $end = \Carbon\Carbon::parse($reservation->date_fin_resa);
     $nb_nuits = $start->diffInDays($end);
 
     if ($isRequester) {
@@ -225,7 +225,7 @@
         <div class="reservation-summary-column">
             
         <div style="position: sticky; top: 4.5rem;">
-            <div class="reservation-summary-card mb-sm">
+            <div class="reservation-summary-card mb-mm">
                 <div class="summary-header">
                     @if($reservation->annonce->photo && count($reservation->annonce->photo) > 0)
                         <img src="{{ $reservation->annonce->photo[0]->nomphoto }}" alt="" class="summary-image">
@@ -236,7 +236,14 @@
 
                     <div>
                         <h3 class="summary-title">{{ $reservation->annonce->titre_annonce }}</h3>
+                        <div class="text-muted text-sm mb-sm">
+                            <p>{{ $reservation->annonce->nombre_chambre }} chambre(s), {{ $reservation->annonce->nb_personnes_max }} personne(s)</p>
+                        </div>
+                        <div class="text-sm mb-sm">
+                            <p>À {{ $reservation->annonce->ville->nom_ville ?? '' }}</p>
+                        </div>
                         <a href="{{ url('/annonce/' . $reservation->annonce->idannonce) }}" class="hyperlink text-sm">Voir l'annonce</a>
+                         
                     </div>
                 </div>
                 
