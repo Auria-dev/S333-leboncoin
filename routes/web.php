@@ -71,3 +71,5 @@ Route::put('/reservation/update/{id}', [ReservationController::class, 'modifier_
 Route::post('/reservation/cancel/{id}', [ReservationController::class, 'annuler_reservation'])->middleware('auth');
 Route::post('/reservation/accept/{id}', [ReservationController::class, 'accepter_reservation'])->middleware('auth');
 Route::post('/reservation/refuse/{id}', [ReservationController::class, 'refuser_reservation'])->middleware('auth');
+Route::get('/reservation/declare/{id}', [ReservationController::class, 'declarer_incident'])->middleware('auth');
+Route::post('/reservation/save_incident', [ReservationController::class, 'save_incident'])->middleware('auth');

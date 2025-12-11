@@ -176,8 +176,8 @@
                         <button class="other-btn">Contacter {{ $otherProfile->prenom_utilisateur }} {{ $otherProfile->nom_utilisateur }}</button>
                         
                         @if($isRequester)
-                            @if($reservation->statut_reservation == 'validée' && $now >= $reservation->date_debut_resa && $now <= $reservation->date_fin_resa)
-                                <a href="{{ url('/proprio/' . $otherProfile->idutilisateur) }}" class="other-btn" style="width: 100%; display: block; text-align: center;">Déclarer un incident</a>
+                            @if($reservation->statut_reservation == 'validée' && $now->format('Y-m-d') >= $reservation->date_debut_resa && $now->format('Y-m-d') <= $reservation->date_fin_resa)
+                                <a href="{{ url('/reservation/declare/' . $reservation->idreservation) }}" class="other-btn" style="color: var(--danger); border-color: var(--danger);">Déclarer un incident</a>
                             @endif
                         @endif
                         
