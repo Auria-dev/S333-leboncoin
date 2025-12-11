@@ -74,6 +74,43 @@ class RechercheController extends Controller {
 			});
 		}
 
+		if ($request->filled('nbVoyageurs')) {
+			$nbVoyageurs = (int) $request->get('nbVoyageurs');
+			
+			$filteredAnnonces = $filteredAnnonces->filter(function(Annonce $annonce) use ($nbVoyageurs) {
+				return $annonce->nb_personnes_max >= $nbVoyageurs;
+			});
+		}
+
+		if ($request->filled('nbBebes')) {
+			$nbBebes = (int) $request->get('nbBebes');
+			
+			$filteredAnnonces = $filteredAnnonces->filter(function(Annonce $annonce) use ($nbBebes) {
+				return $annonce->nb_bebe_max >= $nbBebes;
+			});
+		}
+
+		if ($request->filled('prixMin')) {
+			$prixMin = (float) $request->get('prixMin');
+			$filteredAnnonces = $filteredAnnonces->filter(function(Annonce $annonce) use ($prixMin) {
+				return $annonce->prix_nuit >= $prixMin;
+			});
+		}
+
+		if ($request->filled('prixMax')) {
+			$prixMax = (float) $request->get('prixMax');
+			$filteredAnnonces = $filteredAnnonces->filter(function(Annonce $annonce) use ($prixMax) {
+				return $annonce->prix_nuit <= $prixMax;
+			});
+		}
+
+		if ($request->filled('nbChambres')) {
+			$nbChambres = (int) $request->get('nbChambres');
+			$filteredAnnonces = $filteredAnnonces->filter(function(Annonce $annonce) use ($nbChambres) {
+				return $annonce->nombre_chambre >= $nbChambres;
+			});
+		}
+
 		$types = TypeHebergement::all();
 
 		if ($request->filled('filtreTypeHebergement')) {

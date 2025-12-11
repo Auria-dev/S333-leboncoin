@@ -59,42 +59,70 @@
                     </ul>
                 </div>
 
-                <div>
-                    <label for="filtreTypeHebergement">Filtrer par type</label>
-                    <select name="filtreTypeHebergement" id="filtreTypeHebergement">
-                        <option value="">Tous les types</option>
-                        @if(isset($types))
-                            @foreach($types as $th)
-                                <option value="{{ $th->nom_type_hebergement }}" @selected(request('filtreTypeHebergement') == $th->nom_type_hebergement)>
-                                    {{ $th->nom_type_hebergement }}
-                                </option>
-                            @endforeach
-                        @endif
-                    </select>
+                <div class="filters-supp">
+
+                    <div>
+                        <label for="filtreTypeHebergement">Filtrer par type</label>
+                        <select name="filtreTypeHebergement" id="filtreTypeHebergement">
+                            <option value="">Tous les types</option>
+                            @if(isset($types))
+                                @foreach($types as $th)
+                                    <option value="{{ $th->nom_type_hebergement }}" @selected(request('filtreTypeHebergement') == $th->nom_type_hebergement)>
+                                        {{ $th->nom_type_hebergement }}
+                                    </option>
+                                @endforeach
+                            @endif
+                        </select>
+                    </div>
+            
+                    <div class="input-groupe">
+                        <label for="filtreDates">Dates du séjour</label>
+                        <input type="date" id="filtreDates" data-picker-dual="true" data-target-start="datedebut" data-target-end="datefin"/>
+                        <input type="hidden" name="datedebut" id="datedebut" value="{{ request('datedebut') }}">
+                        <input type="hidden" name="datefin" id="datefin" value="{{ request('datefin') }}">
+                    </div>
+
+                    <div>
+                        <label for="nbVoyageurs">Nombre de voyageurs</label>
+                        <input type="number" id="nbVoyageurs" name="nbVoyageurs" min="1" value="{{ old('nbVoyageurs', request('nbVoyageurs', 1)) }}" required/>
+                    </div>
+                    <div>
+                        <label for="nbBebes">Nombre de bébés</label>
+                        <input type="number" id="nbBebes" name="nbBebes" min="0" value="{{ old('nbBebes', request('nbBebes', 0)) }}" />
+                    </div>
+                    <div>
+                        <label for="nbChambres">Nombre de chambres</label>
+                        <input type="number" id="nbChambres" name="nbChambres" min="1" value="{{ old('nbChambres', request('nbChambres', 1)) }}" />
+                    </div>
+                    <div>
+                        <label for="prixMin">Prix min (€)</label>
+                        <input type="number" id="prixMin" name="prixMin" min="0" value="{{ old('prixMin', request('prixMin', 0)) }}" />
+                    </div>
+                    <div>
+                        <label for="prixMax">Prix max (€)</label>
+                        <input type="number" id="prixMax" name="prixMax" min="0" value="{{ old('prixMax', request('prixMax', 1000)) }}" />
+                    </div>
+                    
+                    <input id="filter-btn" type="submit" class="submit-btn" value="Filtrer"/>
                 </div>
-        
-                <div class="input-groupe">
-                    <label for="filtreDates">Dates du séjour</label>
-                    <input type="date" id="filtreDates" data-picker-dual="true" data-target-start="datedebut" data-target-end="datefin"/>
-                    <input type="hidden" name="datedebut" id="datedebut" value="{{ request('datedebut') }}">
-                    <input type="hidden" name="datefin" id="datefin" value="{{ request('datefin') }}">
-                </div>
-                
-                <input type="submit" class="submit-btn" value="Filtrer"/>
             </div>
         </form>
-        <div id="save-search-btn" class="submit-btn">Sauvegarder recherche</div>
+
+        <div class ="results-summary">
+            
+            <p class="results-count">
+                @if (isset($annonces) && count($annonces) > 1)
+                {{ count($annonces) }} résultats trouvés
+                @elseif (isset($annonces) && count($annonces) == 1)
+                1 résultat trouvé
+                @else
+                Aucun résultat
+                @endif
+            </p>
+            <div id="save-search-btn" class="submit-btn">Sauvegarder recherche</div>
+        </div>
 
         
-        <p class="results-count">
-            @if (isset($annonces) && count($annonces) > 1)
-                {{ count($annonces) }} résultats trouvés
-            @elseif (isset($annonces) && count($annonces) == 1)
-                1 résultat trouvé
-            @else
-                Aucun résultat
-            @endif
-        </p>
     </div>
 
     <div class="search-results-container">
