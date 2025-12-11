@@ -2,13 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\TypePaiement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
-use App\Providers\RouteServiceProvider;
 use App\Models\Ville;
 use App\Models\Annonce;
 use App\Models\TypeHebergement;
@@ -21,13 +19,15 @@ use App\Models\Service;
 use App\Models\AnnonceSimilaire;
 use Carbon\Carbon;
 
+// --- Imports pour l'API SMS Vonage ---
+use Vonage\Client;
+use Vonage\Client\Credentials\Basic;
+use Vonage\SMS\Message\SMS;
 
 use App\Services\GeoapifyService;
 
 class AnnonceController extends Controller
 {
-
-
     protected $geoService;
 
     public function __construct(GeoapifyService $geoService)
@@ -58,8 +58,7 @@ class AnnonceController extends Controller
 
         foreach ($disponibilites as $cal) {
             if ($cal->date) {
-                $dateString = \Carbon\Carbon::parse($cal->date->date)->format('Y-m-d');
-
+                $dateString = Carbon::parse($cal->date->date)->format('Y-m-d');
                 $dispoMap[$dateString] = [
                     'dispo' => (bool) $cal->code_dispo,
                 ];
@@ -83,7 +82,7 @@ class AnnonceController extends Controller
             ->exists();
 
         if (!$exists) {
-            $res = Favoris::create([
+            Favoris::create([
                 'idutilisateur' => $iduser,
                 'idannonce' => $idannonce
             ]);
@@ -95,11 +94,11 @@ class AnnonceController extends Controller
 
         return redirect()->route('annonce', [
             'id' => $idannonce,
-            'isFav' => $exists
+            'isFav' => !$exists
         ]);
     }
 
-    function afficher_form()
+    public function afficher_form()
     {
         $types = TypeHebergement::all();
         $equipements = Equipement::all();
@@ -107,12 +106,14 @@ class AnnonceController extends Controller
         return view("ajouter-annonce", ['types' => $types, 'equipements' => $equipements, 'services' => $services]);
     }
 
-    function ajouter_annonce(Request $req)
+    public function ajouter_annonce(Request $req)
     {
-
+        // 1. Récupération de l'utilisateur (avec rechargement pour éviter le cache)
         if (Auth::check()) {
-            $user = auth()->user();
-            $iduser = auth()->user()->idutilisateur;
+            $user = \App\Models\Utilisateur::find(auth()->id());
+            $iduser = $user->idutilisateur;
+        } else {
+            return redirect('login');
         }
 
         $typeCompte = $user->getTypeParticulier();
@@ -135,21 +136,16 @@ class AnnonceController extends Controller
             'heure_dep' => 'required|date_format:H:i',
             'desc' => 'required|string|max:2000',
             'file' => 'required|array',
-            'file*' => 'image|mimes:jpg, png, jpeg|max:2048',
+            'file*' => 'image|mimes:jpg,png,jpeg|max:2048',
         ]);
 
         $codeville = Ville::where('nom_ville', $req->ville)->first();
         $type_heb = TypeHebergement::where('nom_type_hebergement', $req->DepotTypeHebergement)->first();
 
-
         $adresseComplete = $req->depot_adresse . ', ' . $req->ville . ', France';
-
         $coordonnees = $this->geoService->geocode($adresseComplete);
-
         $latitude = $coordonnees ? $coordonnees['lat'] : null;
         $longitude = $coordonnees ? $coordonnees['lon'] : null;
-
-        $service = Service::where('nom_service', $req->DepotService)->first();
 
         $annonce = Annonce::create([
             'idtypehebergement' => $type_heb->idtypehebergement,
@@ -178,31 +174,27 @@ class AnnonceController extends Controller
                 $fileName = 'photo_annonce_' . $annonce->idannonce . '_' . $num_photo . '.jpg';
                 $fileNameDB = '/images/photo_annonce_' . $annonce->idannonce . '_' . $num_photo . '.jpg';
                 $imgDestination = public_path('images');
-                $url = asset('images/' . $fileName);
 
                 $img = $manager->read($file);
                 $img->scaleDown(width: 1000, height: 1000);
                 $img->toJpeg(90)->save($imgDestination . '/' . $fileName);
-                //$imgResized->move(public_path('images'), $fileName);
 
-                $photo = Photo::create([
+                Photo::create([
                     'idannonce' => $annonce->idannonce,
                     'nomphoto' => $fileNameDB,
                     'legende' => null,
                 ]);
-                
-                $num_photo += 1;
+                $num_photo++;
             }
-        }
-        else {
-            $photo = Photo::create([
+        } else {
+            Photo::create([
                 'idannonce' => $annonce->idannonce,
                 'nomphoto' => "/images/photo-annonce.jpg",
                 'legende' => null,
             ]);
         }
 
-        $calendrier = DB::table('calendrier')->insertUsing(
+        DB::table('calendrier')->insertUsing(
             ['iddate', 'idannonce', 'idutilisateur', 'code_dispo'],
             DB::table('date as d')
                 ->crossJoin('annonce as a')
@@ -218,40 +210,71 @@ class AnnonceController extends Controller
         $nomsEquipements = $req->DepotEquipement;
         if (!empty($nomsEquipements) && is_array($nomsEquipements)) {
             $idsEquipements = Equipement::whereIn('nom_equipement', $nomsEquipements)
-                ->pluck('idequipement')
-                ->toArray();
+                ->pluck('idequipement')->toArray();
             $annonce->equipement()->sync($idsEquipements);
         }
 
         $nomsServices = $req->DepotService;
         if (!empty($nomsServices) && is_array($nomsServices)) {
             $idsServices = Service::whereIn('nom_service', $nomsServices)
-                ->pluck('idservice')
-                ->toArray();
+                ->pluck('idservice')->toArray();
             $annonce->service()->sync($idsServices);
         }
-
 
         $similaires = Annonce::whereHas('ville.departement', function ($query) use ($annonce) {
             $query->where('iddepartement', $annonce->ville->departement->iddepartement);
         })
-            ->where('idtypehebergement', $annonce->idtypehebergement)
-            ->where('nb_personnes_max', '>=', $annonce->nb_personnes_max)
-            ->where('idannonce', '!=', $annonce->idannonce)
-            ->get();
-
+        ->where('idtypehebergement', $annonce->idtypehebergement)
+        ->where('nb_personnes_max', '>=', $annonce->nb_personnes_max)
+        ->where('idannonce', '!=', $annonce->idannonce)
+        ->get();
 
         foreach ($similaires as $s) {
-            $similaire = AnnonceSimilaire::create([
+            AnnonceSimilaire::create([
                 'idannonce' => $annonce->idannonce,
                 'idsimilaire' => $s->idannonce,
             ]);
         }
 
-        return redirect('/profile');
+        // --- DEBUT LOGIQUE VONAGE / VERIFICATION ---
+        
+        // On vérifie si le téléphone est validé
+        if (!$user->telephone_verifie) {
+            // 1. Code
+            $code = rand(1000, 9999);
+            // 2. Stockage Session
+            session(['code_sms_temporaire' => $code]);
+
+            // 3. Format numéro
+            $numero = $user->telephone;
+            if (substr($numero, 0, 1) == '0') {
+                $numero = '33' . substr($numero, 1);
+            }
+
+            // 4. Envoi SMS
+            try {
+                $basic  = new Basic(env('VONAGE_KEY'), env('VONAGE_SECRET'));
+                $client = new Client($basic);
+
+                $client->sms()->send(
+                    new SMS($numero, env('VONAGE_FROM', 'SAE301'), "Votre code : $code")
+                );
+
+                return redirect()->route('form.verification.telephone')
+                    ->with('success', 'Annonce enregistrée ! Vérifiez vos SMS.');
+
+            } catch (\Exception $e) {
+                // Secours TP : on affiche le code dans l'erreur pour ne pas bloquer
+                return redirect()->route('form.verification.telephone')
+                    ->with('error', "Erreur d'envoi SMS (Code secours : $code)");
+            }
+        }
+        // --- FIN LOGIQUE VONAGE ---
+
+        return redirect('/profile')->with('success', 'Annonce publiée avec succès !');
     }
 
-    function view_reserver(Request $req, $idannonce) {
+    public function view_reserver(Request $req, $idannonce) {
         $annonce = Annonce::findOrFail($idannonce);
 
         if (!$annonce || !$req->start_date || !$req->end_date) {
@@ -266,7 +289,7 @@ class AnnonceController extends Controller
         ]);
     }
 
-    function reserver(Request $req) {
+    public function reserver(Request $req) {
         
         $req->validate([
             'idannonce' => 'required|integer|exists:annonce,idannonce',
@@ -277,7 +300,6 @@ class AnnonceController extends Controller
             'carte_id' => 'required',
         ]);
 
-        
         $user = auth()->user();
         $idCarteUtilisee = null;
 
@@ -293,7 +315,6 @@ class AnnonceController extends Controller
                     'numcarte' => 'required|numeric|digits_between:15,16',
                     'dateexpiration' => 'required|string|size:5',
                     'titulairecarte' => 'required|string',
-                    // 'cvv' => 'required' // We verify presence but DO NOT STORE
                 ]);
         
                 $cleanNum = $req->numcarte;
@@ -304,19 +325,16 @@ class AnnonceController extends Controller
                 $idCarteUtilisee = DB::table('carte_bancaire')->insertGetId([
                     'idutilisateur' => $user->idutilisateur,
                     'titulairecarte' => $req->titulairecarte,
-                    'numcarte' => $cleanNum, // TODO: encrypt this
+                    'numcarte' => $cleanNum, 
                     'dateexpiration' => $expireDate,
                     'est_sauvegardee' => $isSaved
                 ], 'idcartebancaire');
 
             } else {
-
                 $card = DB::table('carte_bancaire')
                     ->where('idcartebancaire', $req->carte_id)
                     ->where('idutilisateur', $user->idutilisateur)
                     ->first();
-
-                // TODO: validate CVV here
 
                 if (!$card) {
                     return back()->withErrors(['carte_id' => 'Carte invalide.']);
@@ -336,20 +354,15 @@ class AnnonceController extends Controller
                 'date_debut_resa' => $req->date_debut_resa,
                 'date_fin_resa' => $req->date_fin_resa,
                 'date_demande' => now(),
-                
                 'nb_nuits' => $nb_nuits,
                 'montant_total' => $req->total,
                 'frais_services' => $req->frais_service,
                 'taxe_sejour' => $req->taxe_sejour,
-                
                 'nb_adultes' => $req->nb_adultes,
                 'nb_enfants' => $req->nb_enfants,
                 'nb_bebes' => $req->nb_bebes,
                 'nb_animaux' => $req->nb_animaux,
-                
-                // 'telephone_contact' => $req->telephone
             ], 'idreservation');
-
 
             DB::table('paiement')->insert([
                 'idreservation' => $idReservation,
@@ -374,6 +387,35 @@ class AnnonceController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->withErrors(['error' => "Une erreur est survenue lors du paiement: " . $e->getMessage()]);
+        }
+    }
+
+    // --- Méthodes pour la vérification SMS ---
+
+    public function afficherFormVerification()
+    {
+        if (!session()->has('code_sms_temporaire')) {
+            return redirect('/profile');
+        }
+        return view('verifier-telephone');
+    }
+
+    public function traiterVerification(Request $req)
+    {
+        $req->validate(['code_sms' => 'required|numeric']);
+        
+        $vraiCode = session('code_sms_temporaire');
+
+        if ($req->code_sms == $vraiCode) {
+            $user = auth()->user();
+            $user->telephone_verifie = true; 
+            $user->save();
+
+            session()->forget('code_sms_temporaire');
+
+            return redirect('/profile')->with('success', 'Félicitations ! Votre téléphone est vérifié.');
+        } else {
+            return redirect()->back()->with('error', 'Code incorrect. Veuillez vérifier le SMS reçu.');
         }
     }
 }
