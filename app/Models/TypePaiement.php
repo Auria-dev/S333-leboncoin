@@ -4,12 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Avis;
 
-class Avis extends Model
+class TypePaiement extends Model
 {
     use HasFactory;
-    protected $table = "avis";
-    protected $primaryKey = "idavis";
+    protected $table = "type_paiement";
+    protected $primaryKey = "idtypepaiement";
     public $timestamps = false;
 }

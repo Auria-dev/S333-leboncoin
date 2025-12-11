@@ -10,7 +10,7 @@
 
     <form class="form-ajouter add-annonce-form" method="POST" action="{{ url('ajouter_annonce') }}" enctype="multipart/form-data">
         @csrf   
-        <input type="file" name="file[]" id="fileInput" accept="image/png, image/jpeg, image/jpg" multiple>  
+        <input type="file" name="file[]" id="fileInput" accept=".png, .jpeg, .jpg" multiple required>  
 
         <div id="previewsContainer" class="previews-container"></div>
 
@@ -99,8 +99,8 @@
                     <template x-for="feature in results" :key="feature.properties.id">
                         <li @click="selectAddress(feature)" 
                             class="suggestion-item"
-                            @mouseenter="$el.style.backgroundColor = '#f8f9fa'"
-                            @mouseleave="$el.style.backgroundColor = 'white'">
+                            @mouseenter="$el.style.backgroundColor = 'var(--bg-highlight)'"
+                            @mouseleave="$el.style.backgroundColor = 'transparent'">
                             
                             <span x-text="feature.properties.label" class="font-bold block"></span>
                             
@@ -236,8 +236,8 @@
                             const img = document.createElement('img');
                             img.src = e.target.result; 
                             img.alt = 'Aperçu photo ' + (i + 1);
-                            img.style.maxWidth = '100px';
-                            img.style.maxHeight = '100px';
+                            img.style.maxWidth = '200px';
+                            img.style.maxHeight = '200px';
 
                             container.appendChild(img);
                         };
