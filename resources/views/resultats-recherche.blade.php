@@ -182,37 +182,68 @@
     <form action="{{ url('sauvegarder_recherche') }}" method="POST" class="inline-form">
         @csrf 
         
-        <input type="hidden" name="search" value="{{ $search ?? '' }}">
-        <input type="hidden" name="nbVoyageurs" value="{{ $nbVoyageurs ?? '' }}">
-        <input type="hidden" name="prixMin" value="{{ $prixMin ?? '' }}">
-        <input type="hidden" name="prixMax" value="{{ $prixMax ?? '' }}">
-        <input type="hidden" name="datedebut" value="{{ $datedebut ?? '' }}">
-        <input type="hidden" name="datefin" value="{{ $datefin ?? '' }}">
-        <input type="hidden" name="filtreTypeHebergement" value="{{ $filtreTypeHebergement ?? '' }}">
-
         <div class="light-box-content">
             <h2 class="text-center">Sauvegarder cette recherche</h2>
+            
             <div>
                 <h3>Nom de la recherche</h3>
-                <input type="text" name="nom_sauvegarde" placeholder="'Vacances de noël'" autofocus required />
+                <input type="text" name="nom_sauvegarde" placeholder="'Vacances de noël'" required />
             </div>
+
             <div>
                 <h3>Lieu</h3>
-                <input type="text" value="{{$search ?? 'Aucun' }}" disabled/>
+                <input type="text" name="search" value="{{ $search ?? '' }}" readonly style="background-color: var(--bg-subtle); color: var(--text-muted);"/>
             </div>
+
             <div>
-                <h3>Type d'hebergement</h3>
-                <input type="text" value="{{$filtreTypeHebergement ?? 'Tous'}}" disabled/>
+                <h3>Type d'hébergement</h3>
+                <select name="filtreTypeHebergement">
+                    <option value="">Tous les types</option>
+                    @if(isset($types))
+                        @foreach($types as $th)
+                            <option value="{{ $th->nom_type_hebergement }}" @selected(($filtreTypeHebergement ?? '') == $th->nom_type_hebergement)>
+                                {{ $th->nom_type_hebergement }}
+                            </option>
+                        @endforeach
+                    @endif
+                </select>
             </div>
+
             <div class="date-inputs">
                 <div>
-                    <h3>Date de debut</h3>
-                    <input type="text" value="{{$datedebut ?? 'NULL' }}" class="date" disabled/>
+                    <h3>Date de début</h3>
+                    <input type="date" name="datedebut" value="{{ $datedebut ?? '' }}" />
                 </div>
                 <div>
                     <h3>Date de fin</h3>
-                    <input type="text" value="{{$datefin ?? 'NULL' }}" class="date" disabled/>
+                    <input type="date" name="datefin" value="{{ $datefin ?? '' }}" />
                 </div>
+            </div>
+
+            <div class="date-inputs" style="margin-top: 0.5rem;">
+                <div>
+                    <h3>Voyageurs</h3>
+                    <input type="number" name="nbVoyageurs" min="1" value="{{ $nbVoyageurs ?? 1 }}" />
+                </div>
+                <div>
+                    <h3>Bébés</h3>
+                    <input type="number" name="nbBebes" min="0" value="{{ $nbBebes ?? 0 }}" />
+                </div>
+                <div>
+                    <h3>Chambres</h3>
+                    <input type="number" name="nbChambres" min="1" value="{{ $nbChambres ?? 1 }}" />
+                </div>
+            </div>
+            <div class="date-inputs" style="margin-top: 0.5rem;">
+                <div>
+                    <h3>Min (€)</h3>
+                    <input type="number" name="prixMin" min="0" value="{{ $prixMin ?? 0 }}" />
+                </div>
+                <div>
+                    <h3>Max (€)</h3>
+                    <input type="number" name="prixMax" min="0" value="{{ $prixMax ?? 1000 }}" />
+                </div>
+
             </div>
 
             <div class="lightbox-actions">
@@ -237,7 +268,39 @@
 
 
         btnSaveSearch.addEventListener('click', () => {
-            console.log('Ouverture de la light box de sauvegarde de recherche');
+
+            const sourceSearch = document.getElementById('search');
+            const sourceType = document.getElementById('filtreTypeHebergement');
+            const sourceDateDebut = document.getElementById('datedebut');
+            const sourceDateFin = document.getElementById('datefin');
+            const sourceNbVoyageurs = document.getElementById('nbVoyageurs');
+            const sourceNbBebes = document.getElementById('nbBebes');
+            const sourceNbChambres = document.getElementById('nbChambres');
+            const sourcePrixMin = document.getElementById('prixMin');
+            const sourcePrixMax = document.getElementById('prixMax');
+
+
+            const lightSearch = document.querySelector('.light-box-save-search [name="search"]');
+            const lightType = document.querySelector('.light-box-save-search [name="filtreTypeHebergement"]');
+            const lightDateDebut = document.querySelector('.light-box-save-search [name="datedebut"]');
+            const lightDateFin = document.querySelector('.light-box-save-search [name="datefin"]');
+            const lightNbVoyageurs = document.querySelector('.light-box-save-search [name="nbVoyageurs"]');
+            const lightNbBebes = document.querySelector('.light-box-save-search [name="nbBebes"]');
+            const lightNbChambres = document.querySelector('.light-box-save-search [name="nbChambres"]');
+            const lightPrixMin = document.querySelector('.light-box-save-search [name="prixMin"]');
+            const lightPrixMax = document.querySelector('.light-box-save-search [name="prixMax"]');
+
+
+            if(lightSearch) lightSearch.value = sourceSearch.value;
+            if(lightType) lightType.value = sourceType.value;           
+            if(lightDateDebut) lightDateDebut.value = sourceDateDebut.value;
+            if(lightDateFin) lightDateFin.value = sourceDateFin.value;           
+            if(lightNbVoyageurs) lightNbVoyageurs.value = sourceNbVoyageurs.value;
+            if(lightNbBebes) lightNbBebes.value = sourceNbBebes.value;
+            if(lightNbChambres) lightNbChambres.value = sourceNbChambres.value;
+            if(lightPrixMin) lightPrixMin.value = sourcePrixMin.value;
+            if(lightPrixMax) lightPrixMax.value = sourcePrixMax.value;
+
             lightBox.style.display = 'flex';
         });
 
@@ -288,6 +351,10 @@
         if (annoncesListe.length > 0 && markersGroup.getLayers().length > 0) {
             map.fitBounds(markersGroup.getBounds(), { padding: [50, 50] 
         });
+
+
+
+        
 
     }
             
