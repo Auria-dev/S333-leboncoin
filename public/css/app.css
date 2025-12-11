@@ -2362,3 +2362,10 @@ input.date-custom-input {
     0% { opacity: 1; transform: translateX(0); }
     100% { opacity: 0; transform: translateX(120%); }
 }
+
+#titre-incident {
+    align-self: center;
+    margin-top: 1rem; 
+    margin-bottom: 2rem; 
+    color: var(--text-main);
+}
