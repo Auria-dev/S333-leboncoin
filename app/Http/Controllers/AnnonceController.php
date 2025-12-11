@@ -20,6 +20,7 @@ use App\Models\Equipement;
 use App\Models\Service;
 use App\Models\AnnonceSimilaire;
 use Carbon\Carbon;
+use App\Services\GeocodingService;
 
 
 use App\Services\GeoapifyService;
@@ -142,14 +143,17 @@ class AnnonceController extends Controller
         $type_heb = TypeHebergement::where('nom_type_hebergement', $req->DepotTypeHebergement)->first();
 
 
-        $adresseComplete = $req->depot_adresse . ', ' . $req->ville . ', France';
+        // --- DEBUT MODIFICATION GEOCIDING ---
 
+        // On concatène l'adresse et la ville pour plus de précision
+        $adresseComplete = $req->depot_adresse . ', France'; 
+        
+        // Appel au service injecté
         $coordonnees = $this->geoService->geocode($adresseComplete);
 
+        // On récupère lat/lon ou null si échec
         $latitude = $coordonnees ? $coordonnees['lat'] : null;
         $longitude = $coordonnees ? $coordonnees['lon'] : null;
-
-        $service = Service::where('nom_service', $req->DepotService)->first();
 
         $annonce = Annonce::create([
             'idtypehebergement' => $type_heb->idtypehebergement,

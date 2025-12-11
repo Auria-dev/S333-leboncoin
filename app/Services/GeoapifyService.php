@@ -6,41 +6,41 @@ use Illuminate\Support\Facades\Http;
 
 class GeoapifyService
 {
-    protected $baseUrl = 'https://nominatim.openstreetmap.org/search';
+
+    protected $baseUrl = 'https://api.geoapify.com/v1/geocode/search';
 
     /**
-     * Geocode an address using Nominatim (OSM)
-     * * @param string $address
-     * @return array|null
+     *
+     * @param string $address
+     * @return array|null 
      */
     public function geocode(string $address): ?array
     {
-        $response = Http::withHeaders([
-            'User-Agent' => config('app.name') . ' (mailto:' . config('mail.from.address') . ')'
-        ])->get($this->baseUrl, [
-            'q' => $address,
-            'format' => 'json',
-            'limit' => 1,
-            'addressdetails' => 1
+        $cleanAddress = iconv('UTF-8', 'ASCII//TRANSLIT', $address);
+
+        $response = Http::get($this->baseUrl, [
+            'text' => $cleanAddress,
+            'apiKey' => config('services.geoapify.key'),
+            'limit' => 1
         ]);
 
         if ($response->failed()) {
-            \Log::error('Nominatim API request failed: ' . $response->body());
+
             return null;
         }
 
         $data = $response->json();
 
-        if (empty($data)) {
+        if (empty($data['features']) || !isset($data['features'][0]['geometry']['coordinates'])) {
             return null;
         }
 
-        $firstResult = $data[0];
+        $coordinates = $data['features'][0]['geometry']['coordinates'];
 
         return [
-            'lon' => (float) $firstResult['lon'],
-            'lat' => (float) $firstResult['lat'],
-            'formatted_address' => $firstResult['display_name'] ?? $address
+            'lon' => $coordinates[0],
+            'lat' => $coordinates[1],
+            'formatted_address' => $data['features'][0]['properties']['formatted'] ?? $address
         ];
     }
 }
