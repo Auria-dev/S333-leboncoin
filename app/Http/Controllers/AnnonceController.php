@@ -22,12 +22,14 @@ use App\Models\AnnonceSimilaire;
 use Carbon\Carbon;
 
 
+use Vonage\Client;
+use Vonage\Client\Credentials\Basic;
+use Vonage\SMS\Message\SMS;
+
 use App\Services\GeoapifyService;
 
 class AnnonceController extends Controller
 {
-
-
     protected $geoService;
 
     public function __construct(GeoapifyService $geoService)
@@ -109,7 +111,6 @@ class AnnonceController extends Controller
 
     function ajouter_annonce(Request $req)
     {
-
         if (Auth::check()) {
             $user = auth()->user();
             $iduser = auth()->user()->idutilisateur;
@@ -135,12 +136,11 @@ class AnnonceController extends Controller
             'heure_dep' => 'required|date_format:H:i',
             'desc' => 'required|string|max:2000',
             'file' => 'required|array',
-            'file*' => 'image|mimes:jpg, png, jpeg|max:2048',
+            'file*' => 'image|mimes:jpg,png,jpeg|max:2048',
         ]);
 
         $codeville = Ville::where('nom_ville', $req->ville)->first();
         $type_heb = TypeHebergement::where('nom_type_hebergement', $req->DepotTypeHebergement)->first();
-
 
         $adresseComplete = $req->depot_adresse . ', ' . $req->ville . ', France';
 
@@ -183,7 +183,6 @@ class AnnonceController extends Controller
                 $img = $manager->read($file);
                 $img->scaleDown(width: 1000, height: 1000);
                 $img->toJpeg(90)->save($imgDestination . '/' . $fileName);
-                //$imgResized->move(public_path('images'), $fileName);
 
                 $photo = Photo::create([
                     'idannonce' => $annonce->idannonce,
@@ -231,7 +230,6 @@ class AnnonceController extends Controller
             $annonce->service()->sync($idsServices);
         }
 
-
         $similaires = Annonce::whereHas('ville.departement', function ($query) use ($annonce) {
             $query->where('iddepartement', $annonce->ville->departement->iddepartement);
         })
@@ -240,13 +238,46 @@ class AnnonceController extends Controller
             ->where('idannonce', '!=', $annonce->idannonce)
             ->get();
 
-
         foreach ($similaires as $s) {
             $similaire = AnnonceSimilaire::create([
                 'idannonce' => $annonce->idannonce,
                 'idsimilaire' => $s->idannonce,
             ]);
         }
+
+        
+        if (!$user->telephone_verifie) {
+            
+            $code = rand(1000, 9999);
+            
+            
+            session(['code_sms_temporaire' => $code]);
+
+            
+            $numero = $user->telephone; 
+            if (substr($numero, 0, 1) == '0') {
+                $numero = '33' . substr($numero, 1);
+            }
+
+            
+            try {
+                $basic  = new Basic(env('VONAGE_KEY'), env('VONAGE_SECRET'));
+                $client = new Client($basic);
+
+                $client->sms()->send(
+                    new SMS($numero, env('VONAGE_FROM', 'SAE301'), "Votre code de validation : $code")
+                );
+                
+                return redirect()->route('form.verification.telephone')
+                    ->with('success', 'Annonce enregistrée ! Un code vous a été envoyé par SMS.');
+
+            } catch (\Exception $e) {
+                
+                return redirect()->route('form.verification.telephone')
+                    ->with('error', "Erreur d'envoi SMS. (Mode secours TP : le code est $code)");
+            }
+        }
+        
 
         return redirect('/profile');
     }
@@ -277,7 +308,6 @@ class AnnonceController extends Controller
             'carte_id' => 'required',
         ]);
 
-        
         $user = auth()->user();
         $idCarteUtilisee = null;
 
@@ -293,7 +323,6 @@ class AnnonceController extends Controller
                     'numcarte' => 'required|numeric|digits_between:15,16',
                     'dateexpiration' => 'required|string|size:5',
                     'titulairecarte' => 'required|string',
-                    // 'cvv' => 'required' // We verify presence but DO NOT STORE
                 ]);
         
                 $cleanNum = $req->numcarte;
@@ -304,7 +333,7 @@ class AnnonceController extends Controller
                 $idCarteUtilisee = DB::table('carte_bancaire')->insertGetId([
                     'idutilisateur' => $user->idutilisateur,
                     'titulairecarte' => $req->titulairecarte,
-                    'numcarte' => $cleanNum, // TODO: encrypt this
+                    'numcarte' => $cleanNum, 
                     'dateexpiration' => $expireDate,
                     'est_sauvegardee' => $isSaved
                 ], 'idcartebancaire');
@@ -315,8 +344,6 @@ class AnnonceController extends Controller
                     ->where('idcartebancaire', $req->carte_id)
                     ->where('idutilisateur', $user->idutilisateur)
                     ->first();
-
-                // TODO: validate CVV here
 
                 if (!$card) {
                     return back()->withErrors(['carte_id' => 'Carte invalide.']);
@@ -346,8 +373,6 @@ class AnnonceController extends Controller
                 'nb_enfants' => $req->nb_enfants,
                 'nb_bebes' => $req->nb_bebes,
                 'nb_animaux' => $req->nb_animaux,
-                
-                // 'telephone_contact' => $req->telephone
             ], 'idreservation');
 
 
@@ -374,6 +399,40 @@ class AnnonceController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->withErrors(['error' => "Une erreur est survenue lors du paiement: " . $e->getMessage()]);
+        }
+    }
+
+    
+
+    public function afficherFormVerification()
+    {
+        
+        if (!session()->has('code_sms_temporaire')) {
+            return redirect('/profile');
+        }
+        return view('verifier-telephone');
+    }
+
+    public function traiterVerification(Request $req)
+    {
+        $req->validate(['code_sms' => 'required|numeric']);
+        
+        
+        $vraiCode = session('code_sms_temporaire');
+
+        
+        if ($req->code_sms == $vraiCode) {
+            
+            $user = auth()->user();
+            $user->telephone_verifie = true; 
+            $user->save();
+
+            
+            session()->forget('code_sms_temporaire');
+
+            return redirect('/profile')->with('success', 'Félicitations ! Votre téléphone est vérifié.');
+        } else {
+            return redirect()->back()->with('error', 'Code incorrect. Veuillez vérifier le SMS reçu.');
         }
     }
 }

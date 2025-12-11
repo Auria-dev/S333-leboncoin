@@ -9,6 +9,7 @@ use App\Http\Controllers\LocationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\VerifierProfilController;
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\DeposerAvisController;
 
 
 /*
@@ -75,3 +76,6 @@ Route::get('/payer/{id}', [CompteController::class, 'afficher_paiement'])->middl
 
 Route::get('/reservation/{id}/avis', [AvisController::class, 'create'])->name('avis.create');
 Route::post('/reservation/{id}/avis', [AvisController::class, 'store'])->name('avis.store');
+
+Route::get('/verification/telephone', [AnnonceController::class, 'afficherFormVerification']) ->middleware('auth')->name('form.verification.telephone');
+Route::post('/verification/telephone', [AnnonceController::class, 'traiterVerification'])->middleware('auth')->name('traiter.verification.telephone');
