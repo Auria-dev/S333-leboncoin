@@ -3,11 +3,11 @@
 @section('title', 'Connexion')
 
 @section('content')
-    <form method="post" action="{{ url('login') }}" style="width: 100%; max-width: 400px; margin: 0 auto;">
+    <form method="post" action="{{ url('login') }}" class="login-form">
         @csrf
 
         @error('email')
-            <div style="color: red; margin-bottom: 10px;">{{ $message }}</div>
+            <div class="text-error mb-sm">{{ $message }}</div>
         @enderror
 
         <div class="full-width">
@@ -37,8 +37,9 @@
             <input type="submit" class="submit-btn" value="Se connecter" />
         </div>
         
-        <div>
+        <div class="login-link-container">
             <p>Pas encore de compte ? <a href="{{ url('register') }}" class="hyperlink" wire:navigate>Créez-en un ici</a>.</p>
         </div>
+
     </form>
 @endsection

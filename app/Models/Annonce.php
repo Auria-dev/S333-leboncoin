@@ -13,6 +13,27 @@ class Annonce extends Model
     protected $primaryKey = "idannonce";
     public $timestamps = false;
 
+    protected $fillable = [
+        'idtypehebergement',
+        'idproprietaire',
+        'idville',
+        'titre_annonce',
+        'prix_nuit',
+        'nb_nuit_min',
+        'nb_bebe_max',
+        'nb_personnes_max',
+        'nb_animaux_max',
+        'adresse_annonce',
+        'description_annonce',
+        'date_publication',
+        'heure_arrivee',
+        'heure_depart',
+        'nombre_chambre',
+        'longitude',
+        'latitude',
+        'photo_profil'
+    ];
+
     public function ville() {
         return $this->belongsTo(Ville::class, "idville");
     }
@@ -37,6 +58,22 @@ class Annonce extends Model
         return $this->hasMany(Reservation::class, "idannonce");
     }
 
+    public function similaires_id_annonce() {
+        return $this->belongsToMany(Annonce::class, "annonce_similaire", "idannonce", "idsimilaire");
+    }
+
+    public function similaires_id_similaire() {
+        return $this->belongsToMany(Annonce::class, "annonce_similaire", "idsimilaire", "idannonce");
+    }
+
+    public function getSimilairesAttribute()
+    {
+        $similairesA = $this->similaires_id_annonce;
+        $similairesS = $this->similaires_id_similaire;
+        
+        return $similairesA->merge($similairesS);
+    }
+
     public function equipement() {
         return $this->belongsToMany(Equipement::class, 
         "equipe", 
@@ -53,12 +90,14 @@ class Annonce extends Model
 
     public function moyenneAvisParAnnonce() {
         $reservations = $this->reservation;
-        if($reservations->isEmpty()) {
-            return ['moyenne'=>0, 'nbAvis'=>0];
-        }
+
         $sommeNotes = 0;
         $nbAvis = 0;
         $moyenne = 0;
+
+        if($reservations->isEmpty()) {
+            return ['moyenne'=> $moyenne, 'nbAvis'=> $nbAvis, 'sommeNotes'=>$sommeNotes];
+        }
         foreach($reservations as $resa) {
             if($resa->avis && isset($resa->avis->note)) {
                 $sommeNotes += $resa->avis->note;

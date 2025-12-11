@@ -8,8 +8,12 @@ use App\Models\Annonce;
 use App\Models\TypeHebergement;
 use App\Models\Date;
 use App\Models\Calendrier;
+use App\Models\Critere;
+use App\Models\recherche;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
+
 
 class RechercheController extends Controller {
 	function index() {
@@ -80,7 +84,61 @@ class RechercheController extends Controller {
 
 		return view ("resultats-recherche", [
 			'annonces' => $filteredAnnonces,
-			'types' => $types
+			'types' => $types,
+			'search' => $request->get('search'),
+			'nbVoyageurs' => $request->get('nbVoyageurs'),
+			'prixMin' => $request->get('prixMin'),
+			'prixMax' => $request->get('prixMax'),
+			'datedebut' => $request->get('datedebut'),
+			'datefin' => $request->get('datefin'),
+			'filtreTypeHebergement' => $request->get('filtreTypeHebergement'),
 		]);
 	}
+
+	public function sauvegarderRecherche(Request $request) {
+
+		if (Auth::check()) {
+    		$iduser = auth()->user()->idutilisateur;
+		  
+		  	$dataToInsert = [
+			  'date_recherche'       => now(),
+			  'nb_voyageurs'         => $request->input('nbVoyageurs'),
+			  'prix_min'             => $request->input('prixMin'),
+			  'prix_max'             => $request->input('prixMax'),
+			  'mot_clef'             => $request->input('search'),
+			  'date_debut_recherche' => $request->input('datedebut'),
+			  'date_fin_recherche'   => $request->input('datefin'),
+			  'type_hebergement'    => $request->input('filtreTypeHebergement'),
+			];
+			
+			$critere = Critere::create($dataToInsert);
+			
+			$idcritere = $critere->idcritere;
+
+			$rechercheData = [
+			  'idutilisateur' => $iduser,
+			  'idcritere'     => $idcritere,
+			  'titre_recherche' => $request->input('nom_sauvegarde'),
+			];
+
+			Recherche::create($rechercheData);
+		}
+		
+
+		return redirect()->back();
+
+	}
+
+	public function destroy($idcritere) {
+        if (Auth::check()) {
+            $iduser = auth()->user()->idutilisateur;
+            $deleted = Recherche::where('idutilisateur', $iduser)
+                                ->where('idcritere', $idcritere)
+                                ->delete();
+            if ($deleted) {
+                Critere::where('idcritere', $idcritere)->delete();
+            }
+        }
+        return redirect()->back();
+    }
 }

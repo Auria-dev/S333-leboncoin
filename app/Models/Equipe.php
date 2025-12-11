@@ -12,6 +12,11 @@ class Equipe extends Pivot
     // protected $primaryKey = ["idannonce", "idequipement"];
     public $timestamps = false;
 
+    protected $fillable = [
+        'idannonce',
+        'idequipement',
+    ];
+
     public function annonce()
     {
         return $this->belongsTo(Annonce::class, 'idannonce');
