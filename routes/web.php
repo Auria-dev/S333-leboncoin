@@ -67,6 +67,10 @@ Route::post('/reservation/refuse/{id}', [ReservationController::class, 'refuser_
 // pour yoyo&ninie
 Route::get('/creer_annonce', [AnnonceController::class, 'afficher_form'])->middleware('auth');
 Route::post('/ajouter_annonce', [AnnonceController::class, 'ajouter_annonce'])->middleware('auth');
+
+Route::get('/reservation/{id}/avis', [AvisController::class, 'create'])->name('avis.create');
+Route::post('/reservation/{id}/avis', [AvisController::class, 'store'])->name('avis.store');
+
 Route::post('/verifier_profil', [VerifierProfilController::class, 'verifier_profil'])->middleware('auth');
 
 Route::get('/ajouter_paiement', [CompteController::class, 'afficher_ajout_paiement'])->middleware('auth');
