@@ -13,7 +13,7 @@
         <img src="{{ $utilisateur->photo_profil }}" class="profile-img">
     @endif   
     <div class="flex-col-gap-sm">
-        <h1>Bonjour {{ $utilisateur->prenom_utilisateur . ' ' . $utilisateur->nom_utilisateur }} </h1>
+        <h1>Bonjour {!! $utilisateur->displayName() !!} </h1>
         <p>Bienvenue dans le tableau de bord de votre compte {{ strtolower($utilisateur->getTypeParticulier()) }}.</p>
         <a href="{{ url('/modifier_compte') }}" class="other-btn w-fit" wire:navigate>Modifier mon compte</a>
     </div>
@@ -72,15 +72,28 @@
 
         <div class="res-scroller">
             @forelse($utilisateur->reservation as $res)
-                <a class="res-card" href="{{ url('annonce/'.strval($res->idannonce)) }}" >
+                <a class="res-card" href="{{ url('reservation/'.strval($res->idreservation)) }}" >
                     <div class="res-header">
                         <div>
                             <h3 class="res-id">Annonce #{{ $res->idannonce }}</h3>
                             <span class="res-dates">
-                                {{ \Carbon\Carbon::parse($res->date_debut_resa)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($res->date_fin_resa)->format('d/m/Y') }}
+                                {{ \Carbon\Carbon::parse($res->date_debut_resa)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($res->date_fin_resa)->format('d/m/Y') }}<br>
+                                Annonce #{{ $res->idreservation }}
                             </span>
                         </div>
-                        <span class="res-badge">
+                        @php
+                            $s = strtolower($res->statut_reservation);
+                            $st_class = 'st-default';
+                            
+                            if(Str::contains($s, ['valid', 'accept'])) {
+                                $st_class = 'st-accepted';
+                            } elseif(Str::contains($s, ['refus', 'annul'])) {
+                                $st_class = 'st-rejected';
+                            } elseif(Str::contains($s, ['attent'])) {
+                                $st_class = 'st-pending';
+                            }
+                        @endphp
+                        <span class="status-dot {{ $st_class }}">
                             {{ $res->statut_reservation }}
                         </span>
                     </div>
@@ -153,6 +166,66 @@
         </div>
     </div>
     <div class="res-section">
+        <h2 class="section-title">Mes demandes</h2>
+        <div class="res-grid">
+            @forelse($utilisateur->demandesReservations as $demande)
+                @php
+                    $start = \Carbon\Carbon::parse($demande->date_debut_resa);
+                    $end = \Carbon\Carbon::parse($demande->date_fin_resa);
+                    $nights = $start->diffInDays($end);
+                    $total_price = $nights * $demande->annonce->prix_nuit;
+
+                    $s = strtolower($demande->statut_reservation);
+                    $st_class = 'st-default';
+                    
+                    if(Str::contains($s, ['valid', 'accept'])) {
+                        $st_class = 'st-accepted';
+                    } elseif(Str::contains($s, ['refus', 'annul'])) {
+                        $st_class = 'st-rejected';
+                    } elseif(Str::contains($s, ['attent'])) {
+                        $st_class = 'st-pending';
+                    }
+                @endphp
+
+                <a href="{{ url('reservation/'.strval($demande->idreservation)) }}" class="compact-card">
+                    
+                    <div class="card-top">
+                        <h3 class="card-title">{{ $demande->annonce->titre_annonce }}</h3>
+                        <span class="status-dot {{ $st_class }}">
+                            {{ $demande->statut_reservation }}
+                        </span>
+                    </div>
+
+                    <div class="card-dates">
+                        <svg class="card-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        <span>{{ $start->format('d M') }} - {{ $end->format('d M') }} ({{ $nights }} nuits)</span>
+                    </div>
+
+                    <div class="card-footer">
+                        <div class="user-info">
+                            @if($demande->particulier->utilisateur->photo_profil)
+                                <img src="{{ $demande->particulier->utilisateur->photo_profil }}" class="user-pfp" alt="User">
+                            @else
+                                <img src="/images/photo-profil.jpg" class="user-pfp" alt="User">
+                            @endif
+                            <div class="user-text-col">
+                                <span class="user-label">Voyageur</span>
+                                <span class="user-name">{{ $demande->particulier->utilisateur->prenom_utilisateur }}</span>
+                            </div>
+                        </div>
+                        
+                        <span class="card-price">{{ $total_price }}€</span>
+                    </div>
+                </a>
+            @empty
+                <div style="grid-column: 1 / -1; padding: 60px; text-align: center; background: var(--bg-card); border-radius: var(--radius-card); border: 1px dashed var(--border-default);">
+                    <p style="color: var(--text-muted); margin: 0;">Aucune demande de réservation pour le moment.</p>
+                </div>
+            @endforelse
+        </div>
+    </div>
+
+    <div class="res-section">
         <p class="section-title">Mes favoris</p>
     
         <div class="res-scroller">
@@ -195,6 +268,9 @@
             @endforelse
             </div>
         </div>
+
+
+
         <div class="res-section">
         <p class="section-title">Mes recherches sauvegardées</p>
 

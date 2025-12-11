@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Providers\RouteServiceProvider;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\Encoders\JpegEncoder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -52,10 +55,12 @@ class CompteController extends Controller {
             'telephone' => 'required|digits:10|unique:utilisateur,telephone', // TODO (auria): better phone number handling (remove spaces before checking, so on)
             'adresse' => 'required|string',
             'password' => 'required|string|min:8|confirmed',
+            'file' => 'nullable|file|mimes:pdf|max:2048',
         ]);
 
         $codeville = Ville::where('nom_ville', $req->ville)->first();
         
+
         $user = Utilisateur::create([
             'idville' => $codeville->idville,
             'nom_utilisateur' => $req->nom,
@@ -65,18 +70,27 @@ class CompteController extends Controller {
             'mail' => $req->email,
             'adresse_utilisateur' => $req->adresse,
             'date_creation' => now(),
-            'photo_profil' => "/images/photo-profil.jpg"
+            'photo_profil' => "/images/photo-profil.jpg",
         ]);
 
         Auth::login($user);
 
         $user = auth()->user();
         
+        $fileName = null;
+        if($req->hasFile('file')) {  
+            $file = $req->file('file');  
+            $fileName = '/CNI/cni_utilisateur_' . $user->idutilisateur . '.pdf';
+            $file->move(public_path('CNI'), $fileName);
+            $url = asset('CNI/'. $fileName);
+        }
+        
         if ($req->typeCompte == 'particulier') {
             DB::table('particulier')->insert(
                 array(
                     'idparticulier'    => $user->idutilisateur, 
-                    'code_particulier' => 0 // 0 by default, user is a locataire until they upload something      
+                    'code_particulier' => 0, // 0 by default, user is a locataire until they upload something 
+                    'piece_identite' => $fileName,   
                 )
             );
         } else {
@@ -135,8 +149,10 @@ class CompteController extends Controller {
             'password' => 'nullable|string|min:8|confirmed', 
             'ville' => 'required|string',
             'code_postal' => 'required|string',
+            'file' => 'nullable|file|mimes:pdf|max:2048',
         ];
 
+        $isParticulier = DB::table('particulier')->where('idparticulier', $id)->exists();
         $isEntreprise = DB::table('entreprise')->where('identreprise', $id)->exists();
         if ($isEntreprise) {
             $rules['siret'] = 'required|string|max:14';
@@ -178,25 +194,71 @@ class CompteController extends Controller {
             }
         }
 
+        if($isParticulier) {
+            if($req->hasFile('file')) { 
+                $manager = new ImageManager(new Driver); 
+                $file = $req->file('file');  
+                $fileName = '/CNI/cni_utilisateur_' . $user->idutilisateur . '.pdf';
+                $file->move(public_path('CNI'), $fileName);
+                $url = asset('CNI/'. $fileName);
+
+                DB::table('particulier')
+                    ->where('idparticulier', $id)
+                    ->update(['piece_identite' => $fileName]);
+            }
+        }
+
         return back()->with('success', 'Compte mis à jour avec succès.');
     }
 
-    function upload(Request $request) {
+    function upload(Request $req) {
         $user = Auth::user();
+        $req->validate(['file' => 'image|mimes:jpg,png,jpeg|max:2048']);
 
-        if($request->hasFile('file')) {  
-            $file = $request->file('file');  
+        if($req->hasFile('file')) { 
+            $manager = new ImageManager(new Driver()); 
+            $file = $req->file('file');  
 	    
-            $fileName = '/images/photo_utilisateur_' . $user->idutilisateur . '.jpg';
-            // TODO: convert all images to jpg and resize them to be smaller..?
-            $file->move(public_path('images'), $fileName);
+            $fileName = 'photo_utilisateur_' . $user->idutilisateur . '.jpg';
+            $fileNameDB = '/images/photo_utilisateur_' . $user->idutilisateur . '.jpg';
             $url = asset('images/'. $fileName);
+            $imgDestination = public_path('images');
+
+            $img = $manager->read($file);
+            $img->scaleDown(width: 500, height: 500);
+            $img->toJpeg(90)->save($imgDestination . '/' . $fileName);
+            $img->save($imgDestination . '/' . $fileName);
 
             DB::table('utilisateur')->where('idutilisateur', $user->idutilisateur)->update([
-                'photo_profil' => $fileName
+                'photo_profil' => $fileNameDB
             ]);
         } 
 
         return back()->with('success', 'Mis à jour de la photo de profil avec succès.');
+    }
+
+    public function afficher_ajout_paiement() {
+        return view('ajouter-paiement');
+    }
+
+    public function ajouter_paiement() {
+
+    }
+
+    public function modifier_paiement() {
+
+    }
+
+    public function afficher_paiement($idreservation) {
+        $reservation = Reservation::findOrFail($idreservation);
+        if (auth()->user()->idutilisateur != $reservation->idlocataire) {
+            return redirect()->route('profile')->with('error', "Vous n'avez pas accès à cette page.");
+        }
+
+        return view('gerer-paiement',
+         [
+            'reservation'=> $reservation
+         ]
+        );
     }
 }

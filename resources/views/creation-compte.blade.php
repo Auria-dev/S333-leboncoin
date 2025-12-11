@@ -10,7 +10,7 @@
 
     <form action="{{ url('register') }}" method="POST" class="register-form"
           x-data="registerForm()"
-          @submit.prevent="submitForm">
+          @submit.prevent="submitForm" enctype="multipart/form-data">
             
             @csrf
             <p class="subtitle">Les champs obligatoires sont marqués d'un astérisque (*) </p>
@@ -26,11 +26,13 @@
                 <div class="radio-group-container">
                     <div class="radio-option">
                         <input type="radio" id="compteParticulier" name="typeCompte" value="particulier" 
+                        onclick="toggleEntreprise(false)" {{ old('typeCompte') == 'entreprise' ? 'checked' : '' }}
                                x-model="accountType">
                         <label for="compteParticulier">Particulier</label>
                     </div>
                     <div class="radio-option">
                         <input type="radio" id="compteEntreprise" name="typeCompte" value="entreprise" 
+                        onclick="toggleEntreprise(true)" {{ old('typeCompte') == 'entreprise' ? 'checked' : '' }}
                                x-model="accountType">
                         <label for="compteEntreprise">Entreprise</label>
                     </div>
@@ -107,11 +109,13 @@
             <div x-show="accountType === 'entreprise'" x-transition class="entreprise-fields">
                 <div class="separator"></div>
                 
-                <div class="input-groupe" x-data="inputField()">
+                <div class="input-groupe" x-data="siretField()">
                     <label for="siret">Numéro SIRET</label>
+                    <div class="text-error" x-show="error" x-text="error"></div>
                     <input type="text" id="siret" name="siret" value="{{ old('siret') }}" placeholder="14 chiffres"
                            :required="accountType === 'entreprise'"
-                           class="@error('siret') is-invalid @enderror">
+                            @input="validateSiret($el.value)"
+                           :class="{ 'is-invalid': error, '@error('siret') is-invalid @enderror': !error }">
                     @error('siret') <div class="text-error">{{ $message }}</div> @enderror
                 </div>
                 
@@ -159,6 +163,13 @@
                 </div>
             </div>
 
+            <div x-show="accountType === 'particulier'">
+                <div class="input-groupe">
+                    <label>Afin de publier des annonces, la vérification de votre identité est requise. Vous pouvez transmettre votre pièce d'identité <u>dès maintenant</u> ou <u>ultérieurement</u> sous forme de PDF.</label>
+                    <input type="file" name="file" id="fileInput" accept=".pdf">
+                </div>
+            </div>
+
             <div class="mt-md">
                 <input type="submit" value="S'inscrire" class="submit-btn"
                        :disabled="globalErrors"
@@ -173,15 +184,37 @@
     </div>
 
     <script>
+        function toggleEntreprise(isEntreprise) {
+            const container = document.querySelector('.entreprise-fields');
+            const siretInput = document.getElementById('siret');
+            const secteurInput = document.getElementById('secteur');
+            if (isEntreprise) {
+                container.style.display = 'flex';
+
+                setTimeout(() => {
+                    container.classList.add('visible');
+                }, 10);
+
+                siretInput.setAttribute('required', 'required');
+                secteurInput.setAttribute('required', 'required');
+            } else {
+                container.classList.remove('visible');
+                setTimeout(() => {
+                    container.style.display = 'none';
+                }, 300);
+                siretInput.removeAttribute('required');
+                secteurInput.removeAttribute('required');
+                siretInput.value = '';
+                secteurInput.selectedIndex = 0;
+            }
+        }
+
         document.addEventListener('alpine:init', () => {
-            
-            // Main Form Controller
             Alpine.data('registerForm', () => ({
                 accountType: '{{ old('typeCompte', 'particulier') }}',
                 globalErrors: false,
 
                 init() {
-                    // Listen for errors from child components
                     this.$el.addEventListener('field-error', (e) => { 
                         this.globalErrors = e.detail; 
                     });
@@ -193,7 +226,6 @@
                 }
             }));
 
-            // Generic Input Field with Validation
             Alpine.data('inputField', () => ({
                 error: null,
 
@@ -204,14 +236,42 @@
                 },
 
                 validatePhone(val) {
-                    // Checks for 10 digits starting with 0
                     const valid = /^0[0-9]{9}$/.test(val);
                     this.error = valid ? null : 'Doit comporter 10 caractères et commencer par un 0';
                     this.$dispatch('field-error', !valid);
                 }
             }));
 
-            // Address Autocomplete Logic
+            Alpine.data('siretField', () => ({
+                error: null,
+
+                validateSiret(val) {
+                    const cleanVal = val.replace(/\s/g, '');
+                    const validLength = /^[0-9]{14}$/.test(cleanVal);
+                    
+                    if (!validLength) {
+                         this.error = 'Le SIRET doit comporter exactement 14 chiffres.';
+                         this.$dispatch('field-error', true);
+                         return;
+                    }
+
+                    let sum = 0;
+                    for (let i = 0; i < cleanVal.length; i++) {
+                        let digit = parseInt(cleanVal.charAt(i));
+                        if (i % 2 === 0) { 
+                            digit *= 2;
+                            if (digit > 9) digit -= 9;
+                        }
+                        sum += digit;
+                    }
+                    
+                    const luhnValid = (sum % 10 === 0);
+                    
+                    this.error = luhnValid ? null : 'Numéro SIRET invalide.';
+                    this.$dispatch('field-error', !luhnValid);
+                }
+            }));
+
             Alpine.data('addressField', (initAddr, initCity, initZip) => ({
                 display: initAddr || '',
                 city: initCity || '',
