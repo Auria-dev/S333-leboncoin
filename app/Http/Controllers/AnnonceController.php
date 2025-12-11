@@ -20,6 +20,7 @@ use App\Models\Equipement;
 use App\Models\Service;
 use App\Models\AnnonceSimilaire;
 use Carbon\Carbon;
+use App\Services\GeocodingService;
 
 use Vonage\Client;
 use Vonage\Client\Credentials\Basic;
@@ -126,23 +127,70 @@ class AnnonceController extends Controller
         
         try {
 
-            $req->validate([
-                'titre' => 'required|string|max:128',
-                'depot_adresse' => 'required|string',
-                'ville' => 'required|string',
-                'DepotTypeHebergement' => 'required',
-                'prix_nuit' => 'required|numeric|min:0.01',
-                'nb_nuits' => 'required|integer|min:1',
-                'nb_pers' => 'required|integer|min:1',
-                'nb_bebes' => 'nullable|integer|min:0',
-                'nb_animaux' => 'nullable|integer|min:0',
-                'nb_chambres' => 'required|integer|min:1',
-                'heure_arr' => 'required|date_format:H:i',
-                'heure_dep' => 'required|date_format:H:i',
-                'desc' => 'required|string|max:2000',
-                'file' => 'required|array',
-                'file*' => 'image|mimes:jpg, png, jpeg|max:2048',
-            ]);
+<<<<<<< HEAD
+        $req->validate([
+            'titre' => 'required|string|max:128',
+            'depot_adresse' => 'required|string',
+            'ville' => 'required|string',
+            'DepotTypeHebergement' => 'required',
+            'prix_nuit' => 'required|numeric|min:0.01',
+            'nb_nuits' => 'required|integer|min:1',
+            'nb_pers' => 'required|integer|min:1',
+            'nb_bebes' => 'nullable|integer|min:0',
+            'nb_animaux' => 'nullable|integer|min:0',
+            'nb_chambres' => 'required|integer|min:1',
+            'heure_arr' => 'required|date_format:H:i',
+            'heure_dep' => 'required|date_format:H:i',
+            'desc' => 'required|string|max:2000',
+            'file' => 'required|array',
+            'file*' => 'image|mimes:jpg, png, jpeg|max:2048',
+        ]);
+
+        $codeville = Ville::where('nom_ville', $req->ville)->first();
+        $type_heb = TypeHebergement::where('nom_type_hebergement', $req->DepotTypeHebergement)->first();
+
+
+        $adresseComplete = $req->depot_adresse . ', France'; 
+        
+        $coordonnees = $this->geoService->geocode($adresseComplete);
+
+        $latitude = $coordonnees ? $coordonnees['lat'] : null;
+        $longitude = $coordonnees ? $coordonnees['lon'] : null;
+
+        $annonce = Annonce::create([
+            'idtypehebergement' => $type_heb->idtypehebergement,
+            'idproprietaire' => $iduser,
+            'idville' => $codeville->idville,
+            'titre_annonce' => $req->titre,
+            'prix_nuit' => $req->prix_nuit,
+            'nb_nuit_min' => $req->nb_nuits,
+            'nb_bebe_max' => $req->nb_bebes,
+            'nb_personnes_max' => $req->nb_pers,
+            'nb_animaux_max' => $req->nb_animaux,
+            'adresse_annonce' => $req->depot_adresse,
+            'description_annonce' => $req->desc,
+            'date_publication' => now(),
+            'heure_arrivee' => $req->heure_arr,
+            'heure_depart' => $req->heure_dep,
+            'nombre_chambre' => $req->nb_chambres,
+            'longitude' => $longitude,
+            'latitude' => $latitude,
+        ]);
+
+        $num_photo = Photo::where('idannonce', $annonce->idannonce)->count() + 1;
+        if ($req->hasFile('file')) {
+            $manager = new ImageManager(new Driver());
+            foreach ($req->file('file') as $file) {
+                $fileName = 'photo_annonce_' . $annonce->idannonce . '_' . $num_photo . '.jpg';
+                $fileNameDB = '/images/photo_annonce_' . $annonce->idannonce . '_' . $num_photo . '.jpg';
+                $imgDestination = public_path('images');
+                $url = asset('images/' . $fileName);
+
+                $img = $manager->read($file);
+                $img->scaleDown(width: 1000, height: 1000);
+                $img->toJpeg(90)->save($imgDestination . '/' . $fileName);
+                //$imgResized->move(public_path('images'), $fileName);
+
 
             $codeville = Ville::where('nom_ville', $req->ville)->first();
             $type_heb = TypeHebergement::where('nom_type_hebergement', $req->DepotTypeHebergement)->first();
