@@ -72,3 +72,6 @@ Route::get('/ajouter_paiement', [CompteController::class, 'afficher_ajout_paieme
 Route::post('/ajouter_paiement', [CompteController::class, 'ajouter_paiement'])->middleware('auth');
 Route::post('/modifier_paiement', [CompteController::class, 'modifier_paiement'])->middleware('auth');
 Route::get('/payer/{id}', [CompteController::class, 'afficher_paiement'])->middleware('auth');
+
+Route::get('/reservation/{id}/avis', [AvisController::class, 'create'])->name('avis.create');
+Route::post('/reservation/{id}/avis', [AvisController::class, 'store'])->name('avis.store');
