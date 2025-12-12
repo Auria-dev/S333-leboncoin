@@ -58,12 +58,6 @@ Route::post('/modifier_compte/upload', [CompteController::class, 'upload'])->mid
 Route::get('/demander_reservation/{id}', [AnnonceController::class, 'view_reserver'])->middleware('auth');
 Route::post('/confirmer_reservation', [AnnonceController::class, 'reserver'])->middleware('auth');
 
-Route::get('/reservation/{id}', [ReservationController::class, 'view_modifier'])->middleware('auth');
-Route::put('/reservation/update/{id}', [ReservationController::class, 'modifier_reservation'])->middleware('auth');
-Route::post('/reservation/cancel/{id}', [ReservationController::class, 'annuler_reservation'])->middleware('auth');
-Route::post('/reservation/accept/{id}', [ReservationController::class, 'accepter_reservation'])->middleware('auth');
-Route::post('/reservation/refuse/{id}', [ReservationController::class, 'refuser_reservation'])->middleware('auth');
-
 // pour yoyo&ninie
 Route::get('/creer_annonce', [AnnonceController::class, 'afficher_form'])->middleware('auth');
 Route::post('/ajouter_annonce', [AnnonceController::class, 'ajouter_annonce'])->middleware('auth');
