@@ -67,7 +67,7 @@
     @if ($utilisateur->getTypeParticulier() == 'Locataire' || $utilisateur->getTypeParticulier() == 'Locataire & Propriétaire')
     
     <div class="res-section">
-        <p class="section-title">Réservation(s) de cette annonce</p>
+        <p class="section-title">Mes réservation(s)</p>
         <div class="res-scroller">
             @forelse($utilisateur->reservation as $res)
                 <a class="res-card" href="{{ url('reservation/'.strval($res->idreservation)) }}" >
@@ -166,7 +166,7 @@
 
 
     <div class="res-section">
-        <h2 class="section-title">Mes demandes</h2>
+        <h2 class="section-title">Mes annonces en demande</h2>
         <div class="res-grid">
             @forelse($utilisateur->demandesReservations as $demande)
                 @php

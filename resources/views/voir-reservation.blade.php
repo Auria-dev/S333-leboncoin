@@ -63,7 +63,7 @@
                     @method('PUT')
 
                     <div class="field-group" x-data="inputField()">
-                        <label class="font-bold">Dates du séjour</label>
+                        <h3 class="font-bold mb-sm">Dates du séjour</h3>
                         <div class="input-wrapper">
                             <input type="text" class="flatpickr-range"
                                 value="Du {{ $start->format('d/m/Y') }} au {{ $end->format('d/m/Y') }}" :disabled="!editing"
@@ -273,12 +273,29 @@
             </div>
             @if($isRequester && isset($reservation->incident))
                 <div class="reservation-summary-card mt-md">
-                    <h3 class="font-bold mb-sm">Incident</h3>
-                    <div style="margin-bottom: 15px;">
-                        <p>{{$reservation->incident->date_signalement}}</p>
-                        <p>{{$reservation->incident->description_incident}}</p>
-                        @if({{$reservation->incident->reponse_incident === null}})
-                            <p>Auncune réponse</p>
+                <div class="res-header">
+                        <div>
+                            <h3 class="font-bold mb-sm">Incident</h3>
+                            <span class="res-dates">
+                                <p class="card-meta" style="line-height: 0;">Incident signalé le {{\Carbon\Carbon::parse($reservation->incident->date_signalement)->format('d/m/Y')}}</p>
+                            </span>
+                        </div>
+                        @if($reservation->incident->statut_incident === "clos")
+                        <span class="status-dot st-accepted">
+                            {{ $reservation->incident->statut_incident }}
+                        </span>
+                        @else
+                        <span class="status-dot st-pending">
+                            {{ $reservation->incident->statut_incident }}
+                        </span>
+                        @endif
+                    </div>
+
+                    <div>
+                        <p style="margin-top: 2rem">{{$reservation->incident->description_incident}}</p>
+                        <div class="mt-md" style="border-top: 1px solid var(--border-default);"></div>
+                        @if($reservation->incident->reponse_incident === null)
+                            <p class="card-meta" style="margin-bottom: 2rem">Auncune réponse</p>
                         @else
                             <p>{{$reservation->incident->reponse_incident}}</p>
                         @endif
@@ -287,24 +304,11 @@
                                 <form action="{{ url('reservation/clore_incident') }}" method="POST"
                                     style="width:100%; display:inline;"
                                     class="mt-md"
-                                    onsubmit="return confirm('Êtes-vous sûr de vouloir clore l''incident ? Cette action est irréversible.');">
+                                    onsubmit="return confirm('Êtes-vous sûr de vouloir clore l\'incident ? Cette action est irréversible.');">
                                     @csrf
-
                                     <input type="hidden" name="idincident" value="{{  $reservation->incident->idincident }}">
-                                    <input type="submit" class="submit-btn" value="Clore l'incident "/>
+                                    <button type="submit" class="other-btn">Clore l'incident</button>
                                 </form>
-                            @else
-                                <div>
-                                    <label class="pill-label">
-                                        <input type="checkbox" name="clore" checked disabled>
-                                        <span class="pill-content">
-                                            <span class="icon-wrapper">
-                                                <span class="checkmark-draw"></span>
-                                            </span>
-                                            <span>Incident clos</span>
-                                        </span>
-                                    </label>
-                                </div>
                             @endif
                         </div>
                     </div>
