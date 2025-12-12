@@ -1,11 +1,11 @@
 <style>
     :root {
-        --lbc-orange: #ec5a13;
-        --lbc-orange-hover: #d34b0e;
-        --lbc-black: #1a1a1a;
-        --lbc-grey: #f4f6f7;
-        --lbc-dark-grey: #757575;
-        --lbc-border: #e0e0e0;
+        --lbc-orange: var(--primary);
+        --lbc-orange-hover: var(--primary-hover);
+        --lbc-black: var(--text-main);
+        --lbc-grey: var(--primary-light);
+        --lbc-dark-grey: var(--input-text-disabled);
+        --lbc-border: var(--input-border);
         --shadow-soft: 0 4px 20px rgba(0,0,0,0.15);
         --radius: 12px;
         --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;

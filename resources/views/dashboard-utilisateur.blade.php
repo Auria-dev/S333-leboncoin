@@ -64,21 +64,19 @@
     </div>
     @endif
 
-
     @if ($utilisateur->getTypeParticulier() == 'Locataire' || $utilisateur->getTypeParticulier() == 'Locataire & Propriétaire')
-
+    
     <div class="res-section">
-        <p class="section-title">Mes réservations</p>
-
+        <p class="section-title">Réservation(s) de cette annonce</p>
         <div class="res-scroller">
             @forelse($utilisateur->reservation as $res)
                 <a class="res-card" href="{{ url('reservation/'.strval($res->idreservation)) }}" >
                     <div class="res-header">
                         <div>
-                            <h3 class="res-id">Annonce #{{ $res->idannonce }}</h3>
+                            <h3 class="res-id">Réservation #{{ $res->idannonce }}</h3>
                             <span class="res-dates">
-                                {{ \Carbon\Carbon::parse($res->date_debut_resa)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($res->date_fin_resa)->format('d/m/Y') }}<br>
-                                Annonce #{{ $res->idreservation }}
+                                <p class="side-by-side center" style="gap: 0.25rem;">{!! $res->particulier->utilisateur->displayName() !!}</p>
+                                <p>{{ \Carbon\Carbon::parse($res->date_debut_resa)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($res->date_fin_resa)->format('d/m/Y') }}</p>
                             </span>
                         </div>
                         @php
@@ -165,6 +163,8 @@
             @endforelse
         </div>
     </div>
+
+
     <div class="res-section">
         <h2 class="section-title">Mes demandes</h2>
         <div class="res-grid">
