@@ -23,11 +23,11 @@ class Paiement extends Model
 
     function reservation()
     {
-        return $this->belongsTo(Reservation::class, 'idreservation', 'idreservation');
+        return $this->belongsTo(Reservation::class, 'idreservation');
     }
 
     function cartebancaire()
     {
-        return $this->belongsTo(CarteBancaire::class, 'idcartebancaire', 'idcartebancaire');
+        return $this->belongsTo(CarteBancaire::class, 'idcartebancaire');
     }
 }

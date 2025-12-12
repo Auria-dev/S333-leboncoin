@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Reservation;
 use App\Models\Incident;
+use App\Models\Paiement;
 use Illuminate\Support\Facades\DB;
 
 class ReservationController extends Controller
@@ -47,9 +48,9 @@ class ReservationController extends Controller
         if (auth()->user()->idutilisateur != $reservation->idlocataire) {
             return redirect()->route('profile')->with('error', "Vous n'avez pas accès à cette page.");
         }
-
+        
         $reservation->update(['statut_reservation' => 'annulée']);
-        $paiement = paiement::findOrFail($request->paiement);
+        $paiement = Paiement::where('idreservation', intval($idreservation))->firstOrFail();
         $paiement->update(['statut_paiement' => 'annulé']);
 
          $datesToUpdate = DB::table('date')
