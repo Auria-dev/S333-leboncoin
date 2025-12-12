@@ -284,7 +284,7 @@ input[type="submit"] {
     background-color: var(--primary);
     color: var(--text-inverse);
     padding: 0.85rem 1.5rem;
-    border: none;
+    border: 1px solid transparent;
     border-radius: var(--radius-input);
     font-size: 1rem;
     font-weight: 700;
@@ -610,11 +610,20 @@ input[type="submit"]:hover {
 }
 .filter-row {
     display: flex;
-    align-items: end;
     flex-wrap: wrap;
     gap: 1rem;
-    margin-top: 0.75rem;
+    margin-top: 0.75rem; 
 }
+
+.filters-supp {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+
+
 .filter-row select {
     flex: 1;
     background-color: var(--input-bg);
@@ -1402,13 +1411,22 @@ input.date-custom-input {
     padding: 10px;
     font-weight: bold;
 }
-#save-search-btn {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: auto;
-    margin: 10px;
+
+#filter-btn {
+    width: 120px;
 }
+
+.results-summary {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+}
+
+#save-search-btn {
+    position: relative;
+    width: auto;
+}
+
 .light-box-save-search {
     z-index: 2000;
     position: fixed;
