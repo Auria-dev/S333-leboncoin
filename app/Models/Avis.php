@@ -22,5 +22,4 @@ class Avis extends Model
     {
         return $this->belongsTo(User::class, 'IDUTILISATEUR', 'IDUTILISATEUR');
     }
-    
 }
