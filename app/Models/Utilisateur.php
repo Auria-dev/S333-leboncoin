@@ -140,7 +140,7 @@ class Utilisateur extends Authenticatable {
             return $nom . " " . $prenom;
         }
     }
-
+    
     public function cartesBancaires() {
         return $this->hasMany(CarteBancaire::class, 'idutilisateur')->where('est_sauvegardee', true);
     }
