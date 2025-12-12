@@ -117,4 +117,13 @@ class ReservationController extends Controller
         
         return redirect()->route('profile')->with('success','Incident déclaré, nous vous recontacterons.');
     }
+
+    public function clore_incident(Request $req) {
+        $id = $req->idincident;
+        $incident = Incident::findOrFail($id);
+        $incident->update(['statut_incident' => "clos"]);
+
+        
+        return redirect()->route('profile')->with('success','Incident clos.');
+    }
 }
