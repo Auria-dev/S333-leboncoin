@@ -1,209 +1,205 @@
 <style>
-    :root {
-        --lbc-orange: var(--primary);
-        --lbc-orange-hover: var(--primary-hover);
-        --lbc-black: var(--text-main);
-        --lbc-grey: var(--primary-light);
-        --lbc-dark-grey: var(--input-text-disabled);
-        --lbc-border: var(--input-border);
-        --shadow-soft: 0 4px 20px rgba(0,0,0,0.15);
-        --radius: 12px;
-        --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    }
+#cookie-container {
+    font-family: var(--font-family);
+    color: var(--text-main);
+    line-height: 1.5;
+}
 
-    #cookie-container {
-        font-family: var(--font-family);
-        color: var(--lbc-black);
-        line-height: 1.5;
-    }
+#cookie-banner {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 1000px;
+    background-color: var(--bg-card);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+    padding: 24px;
+    z-index: 9999;
+}
 
-    #cookie-banner {
-        display: none;
-        position: fixed;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 90%;
-        max-width: 1000px;
-        background-color: white;
-        border-radius: var(--radius);
-        box-shadow: var(--shadow-soft);
-        padding: 24px;
-        z-index: 9999;
-        border-left: 6px solid var(--lbc-orange);
-    }
+.banner-header {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
 
-    .banner-header {
-        font-size: 1.2rem;
-        font-weight: 700;
-        margin-bottom: 8px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-    
-    .banner-text {
-        font-size: 0.95rem;
-        color: #4a4a4a;
-        margin-bottom: 20px;
-    }
+.banner-text {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+}
 
-    .banner-actions {
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-        justify-content: flex-end;
-    }
+.banner-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
 
-    .btn-cookie {
-        padding: 10px 20px;
-        border-radius: 8px;
-        font-weight: 600;
-        font-size: 0.95rem;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        border: none;
-    }
+.btn-cookie {
+    padding: 10px 20px;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+}
 
-    .btn-primary {
-        background-color: var(--lbc-orange);
-        color: white;
-    }
-    .btn-primary:hover { background-color: var(--lbc-orange-hover); }
+.btn-primary {
+    background-color: var(--primary);
+    color: var(--text-inverse);
+}
+.btn-primary:hover { background-color: var(--primary-hover); }
 
-    .btn-secondary {
-        background-color: white;
-        color: var(--lbc-black);
-        border: 1px solid var(--lbc-border);
-    }
-    .btn-secondary:hover { background-color: var(--lbc-grey); border-color: #ccc; }
+.btn-secondary {
+    background-color: var(--white-rgb);
+    color: var(--text-main);
+    border: 1px solid var(--border-default);
+}
+.btn-secondary:hover { background-color: var(--bg-subtle); border-color: var(--border-hover); }
 
-    .btn-link {
-        background: none;
-        color: var(--lbc-dark-grey);
-        text-decoration: underline;
-        padding: 10px;
-    }
-    .btn-link:hover { color: var(--lbc-black); }
+.btn-link {
+    background: none;
+    color: var(--text-muted);
+    text-decoration: underline;
+    padding: 10px;
+}
+.btn-link:hover { color: var(--text-main); }
 
-    #cookie-modal {
-        display: none;
-        position: fixed;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
-        background: rgba(0,0,0,0.5);
-        backdrop-filter: blur(2px);
-        z-index: 10000;
-        align-items: center;
-        justify-content: center;
-    }
+#cookie-modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: var(--overlay-bg);
+    backdrop-filter: var(--backdrop-blur);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+}
 
-    .modal-content {
-        background: white;
-        width: 95%;
-        max-width: 650px;
-        border-radius: var(--radius);
-        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-        display: flex;
-        flex-direction: column;
-        max-height: 90vh;
-        overflow: hidden;
-    }
+.modal-content {
+    background: var(--bg-card);
+    width: 95%;
+    max-width: 650px;
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+    display: flex;
+    flex-direction: column;
+    max-height: 90vh;
+    overflow: hidden;
+}
 
-    .modal-header {
-        padding: 20px 25px;
-        border-bottom: 1px solid var(--lbc-border);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background: #fff;
-    }
-    .modal-header h3 { margin: 0; font-size: 1.3rem; }
-    .close-icon { cursor: pointer; font-size: 1.5rem; color: var(--lbc-dark-grey); }
+.modal-header {
+    padding: 20px 25px;
+    border-bottom: 1px solid var(--border-default);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--white-rgb);
+}
+.modal-header h3 { margin: 0; font-size: 1.3rem; }
+.close-icon { 
+    position: absolute;
+    top: 1rem;
+    right: 1.5rem;
+    cursor: pointer;
+    width: 1rem;
+    height: 1rem;
+    color: var(--text-muted);
+}
 
-    .modal-body {
-        padding: 25px;
-        overflow-y: auto;
-        background-color: #fafafa;
-    }
+.modal-body {
+    padding: 25px;
+    overflow-y: auto;
+    background-color: var(--bg-card);
+}
 
-    .cookie-card {
-        background: white;
-        border: 1px solid var(--lbc-border);
-        border-radius: 8px;
-        padding: 20px;
-        margin-bottom: 15px;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
+.cookie-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    padding: 20px;
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
 
-    .card-top {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
+.card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
-    .card-title { font-weight: 700; font-size: 1rem; color: var(--lbc-black); }
-    .card-desc { font-size: 0.85rem; color: var(--lbc-dark-grey); margin: 0; }
-    
-    .badge-required {
-        font-size: 0.75rem;
-        background: #eee;
-        color: #666;
-        padding: 4px 8px;
-        border-radius: 4px;
-        font-weight: bold;
-        text-transform: uppercase;
-    }
+.card-title { font-weight: 700; font-size: 1rem; color: var(--text-main); }
+.card-desc { font-size: 0.85rem; color: var(--text-muted); margin: 0; }
 
+.badge-required {
+    font-size: 0.75rem;
+    background: var(--bg-subtle);
+    color: var(--text-muted);
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    font-weight: bold;
+    text-transform: uppercase;
+}
 
-    .switch {
-        position: relative;
-        display: inline-block;
-        width: 46px;
-        height: 26px;
-    }
-    .switch input { opacity: 0; width: 0; height: 0; }
-    
-    .slider {
-        position: absolute;
-        cursor: pointer;
-        top: 0; left: 0; right: 0; bottom: 0;
-        background-color: #ccc;
-        transition: .4s;
-        border-radius: 34px;
-    }
-    .slider:before {
-        position: absolute;
-        content: "";
-        height: 20px;
-        width: 20px;
-        left: 3px;
-        bottom: 3px;
-        background-color: white;
-        transition: .4s;
-        border-radius: 50%;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    }
-    
-    input:checked + .slider { background-color: var(--lbc-orange); }
-    input:checked + .slider:before { transform: translateX(20px); }
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 46px;
+    height: 26px;
+}
+.switch input { opacity: 0; width: 0; height: 0; }
 
-    .modal-footer {
-        padding: 20px 25px;
-        border-top: 1px solid var(--lbc-border);
-        background: white;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    
-    @media (max-width: 600px) {
-        .banner-actions { flex-direction: column; }
-        .modal-footer { flex-direction: column; gap: 10px; }
-        .btn-cookie { width: 100%; }
-    }
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: var(--border-default);
+    transition: .4s;
+    border-radius: 34px;
+}
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: var(--primary);
+    transition: .4s;
+    border-radius: 50%;
+    box-shadow: var(--shadow-sm);
+}
+
+input:checked + .slider { background-color: var(--primary-light); }
+input:checked + .slider:before { transform: translateX(20px); }
+
+.modal-footer {
+    padding: 20px 25px;
+    border-top: 1px solid var(--border-default);
+    background: var(--white-rgb);
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
+}
+
+@media (max-width: 600px) {
+    .banner-actions { flex-direction: column; }
+    .modal-footer { flex-direction: column; gap: 10px; }
+    .btn-cookie { width: 100%; }
+}
+
 </style>
 
 <div id="cookie-container">
@@ -228,7 +224,9 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3>Paramètres de confidentialité</h3>
-                <span class="close-icon" onclick="CookieManager.closeModal()">&times;</span>
+                <span class="close-icon" onclick="CookieManager.closeModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </span>
             </div>
 
             <div class="modal-body">
@@ -348,16 +346,5 @@
 
     document.addEventListener('DOMContentLoaded', () => CookieManager.init());
 
-    init: function() {
-
-    localStorage.removeItem('sae_cookie_consent'); 
-
-    const stored = localStorage.getItem('sae_cookie_consent');
-    if (!stored) {
-        document.getElementById('cookie-banner').style.display = 'block';
-    } else {
-        this.consent = JSON.parse(stored);
-        this.applyConsent();
-    }
-},
+    
 </script>

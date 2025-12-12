@@ -198,7 +198,7 @@ nav a {
     border-radius: 50px;
     transition: all 0.2s ease;
 }
-nav a:hover {
+nav a:hover:not(.logo) {
     background-color: var(--primary-light);
     color: var(--primary-hover);
 }
