@@ -86,7 +86,10 @@ Route::post('/reservation/accept/{id}', [ReservationController::class, 'accepter
 Route::post('/reservation/refuse/{id}', [ReservationController::class, 'refuser_reservation'])->middleware('auth');
 Route::get('/reservation/declare/{id}', [ReservationController::class, 'declarer_incident'])->middleware('auth');
 Route::post('/reservation/save_incident', [ReservationController::class, 'save_incident'])->middleware('auth');
+Route::post('/reservation/clore_incident', [ReservationController::class, 'clore_incident'])->middleware('auth');
+
 Route::get('/reservation/{id}/avis', [AvisController::class, 'create'])->name('avis.create');
 Route::post('/reservation/{id}/avis', [AvisController::class, 'store'])->name('avis.store');
 Route::get('/verification/telephone', [AnnonceController::class, 'afficherFormVerification']) ->middleware('auth')->name('form.verification.telephone');
 Route::post('/verification/telephone', [AnnonceController::class, 'traiterVerification'])->middleware('auth')->name('traiter.verification.telephone');
+

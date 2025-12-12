@@ -78,7 +78,7 @@
                             <h3 class="res-id">Annonce #{{ $res->idannonce }}</h3>
                             <span class="res-dates">
                                 {{ \Carbon\Carbon::parse($res->date_debut_resa)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($res->date_fin_resa)->format('d/m/Y') }}<br>
-                                Annonce #{{ $res->idreservation }}
+                                Reservation #{{ $res->idreservation }}
                             </span>
                         </div>
                         @php
