@@ -69,7 +69,9 @@
                         <button type="button" id="btn-today" class="cal-btn" style="flex: 0 0 auto;">Auj.</button>
                         <div>
                             <button type="button" id="btn-clear" class="cal-btn cal-btn-effacer">Désélectionner</button>
+                            @if (auth()->check() && auth()->user()->idutilisateur !== $annonce->idproprietaire)
                             <input type="submit" id="btn-validate" class="cal-btn cal-btn-valider" value="Réserver" disabled style="opacity: 0.5; cursor: not-allowed;">
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -458,7 +460,7 @@
         <p class="section-title">Annonce(s) similaire(s)</p>
 
         <div class="res-scroller">
-        @foreach($annonce->similaires as $similaire)
+        @forelse($annonce->similaires as $similaire)
         <a class="similaire-card" href="{{ url('annonce/'.strval($similaire->idannonce)) }}">
             <div class="similaire-card-img">
                 @if(isset($similaire->photo) && count($similaire->photo) > 0)
@@ -490,7 +492,11 @@
                     </div>
             </div>
         </a>
-        @endforeach
+        @empty
+            <div class="res-empty">
+                <p>Aucune réservation trouvée.</p>
+            </div>
+        @endforelse
     </div>
 </div>
 
@@ -505,9 +511,9 @@
             <a class="res-card" href="{{ url('reservation/'.strval($res->idreservation)) }}" >
                 <div class="res-header">
                     <div>
-                        <h3 class="res-id">Réservation #{{ $res->idannonce }}</h3>
+                        <h3 class="res-id">Réservation #{{ $res->idreservation }}</h3>
                         <span class="res-dates">
-                            <p class="side-by-side center" style="gap: 0.25rem;">{!! $res->particulier->utilisateur->displayName() !!}</p>
+                            <p class="side-by-side" style="align-items: center; gap: 0.25rem;">{!! $res->particulier->utilisateur->displayName() !!}</p>
                             <p>{{ \Carbon\Carbon::parse($res->date_debut_resa)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($res->date_fin_resa)->format('d/m/Y') }}</p>
                         </span>
                     </div>
