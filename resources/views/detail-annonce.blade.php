@@ -76,33 +76,7 @@
                     </div>
                 </div>
             </form>
-
-            <style>
-                /* .cal-cellule.selected {
-                    background-color: var(--primary);
-                    color: white;
-                }
-                
-                .cal-cellule.in-range {
-                    background-color: var(--primary);
-                    background-color: color-mix(in srgb, var(--primary), white 80%);
-                    color: black;
-                    border-radius: 0;
-                }
-
-                .cal-cellule.selected:hover {
-                    background-color: var(--primary-hover);
-                    color: white;
-                }
-                
-
-                .cal-cellule.disabled {
-                    opacity: 0.3;
-                    pointer-events: none;
-                    text-decoration: line-through;
-                } */
-            </style>
-            <script>
+            <script defer>
                 document.addEventListener('DOMContentLoaded', function() {
                     const dispoData = JSON.parse({!! isset($dispoJson) ? json_encode($dispoJson) : '{}' !!});
                     const prixParNuit = parseFloat("{{ $annonce->prix_nuit }}");
@@ -348,11 +322,19 @@
                 <span style="font-weight: bold;">
                     {{ number_format($annonce->moyenneAvisParAnnonce()['moyenne'], 1) }}
                 </span>
-
-            <a href="{{ route('annonce.avis', $annonce->idannonce) }}" style="text-decoration: underline; color: inherit; cursor: pointer; margin-left: 5px;">
-                ({{ $annonce->moyenneAvisParAnnonce()['nbAvis'] }} avis)
+                
+                <a href="{{ route('annonce.avis', $annonce->idannonce) }}" style="text-decoration: underline; color: inherit; cursor: pointer; margin-left: 5px;">
+                    ({{ $annonce->moyenneAvisParAnnonce()['nbAvis'] }} avis)
                 </a>
             </p>
+
+                <p style="margin-top: 0.5rem;">
+                    Annonce postée par 
+                    <a class="hyperlink" href="{{ url('/proprio/' . $annonce->idproprietaire ) }}" >
+                        <span style="text-transform: uppercase;">{{ $annonce->utilisateur->nom_utilisateur }} </span> {{ $annonce->utilisateur->prenom_utilisateur }}
+                    </a>
+                </p>
+
         </header>
         
         <div class="prix-block">
@@ -605,13 +587,59 @@
 </div>
 @endif
 
+    <div id="section-avis" class="container" style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd;">
+    
+    <h3>Commentaires des voyageurs</h3>
+
+    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+        <span style="font-size: 2rem; font-weight: bold;">
+            ★ {{ number_format($annonce->avisValides->avg('NOTE'), 1) }}
+        </span>
+        <span style="color: #666;">
+            ({{ $annonce->avisValides->count() }} avis)
+        </span>
+    </div>
+
+    <div class="avis-list">
+        @forelse($annonce->avisValides as $avis)
+            <div class="avis-card" style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #eee;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <div style="font-weight: bold;">
+                        {{ $avis->utilisateur->PRENOM_UTILISATEUR ?? 'Voyageur' }}
+                        <span style="font-weight: normal; color: #888; font-size: 0.9em;">
+                            - le {{ \Carbon\Carbon::parse($avis->DATE_DEPOT)->format('d/m/Y') }}
+                        </span>
+                    </div>
+                    <div style="color: #ffb400;">
+                        @for($i = 0; $i < 5; $i++)
+                            @if($i < $avis->NOTE) ★ @else ☆ @endif
+                        @endfor
+                    </div>
+                </div>
+                
+                <p style="margin: 0; line-height: 1.5; color: #333;">
+                    {{ $avis->COMMENTAIRE }}
+                </p>
+
+                @if($avis->REPONSE_AVIS)
+                    <div style="margin-top: 10px; padding: 10px; background-color: #f9f9f9; border-left: 3px solid #ccc; font-size: 0.9em;">
+                        <strong>Réponse du propriétaire :</strong><br>
+                        {{ $avis->REPONSE_AVIS }}
+                    </div>
+                @endif
+            </div>
+        @empty
+            <p style="color: #666; font-style: italic;">Aucun commentaire pour le moment.</p>
+        @endforelse
+    </div>
+</div>
 
 @endsection
 @push('scripts')
-<script>
+<script defer>
+    console.log('Detail annonce script loaded');
     function openModal() {
         document.getElementById('modal-overlay').style.display = 'flex';
-
     }
     
     const croix = document.getElementById("croix");
@@ -702,51 +730,5 @@
         }
     })
 
-    <div id="section-avis" class="container" style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd;">
-    
-    <h3>Commentaires des voyageurs</h3>
-
-    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
-        <span style="font-size: 2rem; font-weight: bold;">
-            ★ {{ number_format($annonce->avisValides->avg('NOTE'), 1) }}
-        </span>
-        <span style="color: #666;">
-            ({{ $annonce->avisValides->count() }} avis)
-        </span>
-    </div>
-
-    <div class="avis-list">
-        @forelse($annonce->avisValides as $avis)
-            <div class="avis-card" style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #eee;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                    <div style="font-weight: bold;">
-                        {{ $avis->utilisateur->PRENOM_UTILISATEUR ?? 'Voyageur' }}
-                        <span style="font-weight: normal; color: #888; font-size: 0.9em;">
-                            - le {{ \Carbon\Carbon::parse($avis->DATE_DEPOT)->format('d/m/Y') }}
-                        </span>
-                    </div>
-                    <div style="color: #ffb400;">
-                        @for($i = 0; $i < 5; $i++)
-                            @if($i < $avis->NOTE) ★ @else ☆ @endif
-                        @endfor
-                    </div>
-                </div>
-                
-                <p style="margin: 0; line-height: 1.5; color: #333;">
-                    {{ $avis->COMMENTAIRE }}
-                </p>
-
-                @if($avis->REPONSE_AVIS)
-                    <div style="margin-top: 10px; padding: 10px; background-color: #f9f9f9; border-left: 3px solid #ccc; font-size: 0.9em;">
-                        <strong>Réponse du propriétaire :</strong><br>
-                        {{ $avis->REPONSE_AVIS }}
-                    </div>
-                @endif
-            </div>
-        @empty
-            <p style="color: #666; font-style: italic;">Aucun commentaire pour le moment.</p>
-        @endforelse
-    </div>
-</div>
 </script>
 @endpush

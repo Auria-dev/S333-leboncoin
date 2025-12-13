@@ -6,7 +6,6 @@
 
 <div class="container" style="min-width: 800px; margin: 0 auto; padding: 40px 20px;">
     
-    {{-- 1. Bouton retour vers l'annonce --}}
     <div style="margin-bottom: 20px;">
         <a href="{{ url('/annonce/' . $annonce->idannonce) }}" style="text-decoration: none; color: #333; display: flex; align-items: center; gap: 5px; font-weight: 500;">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
