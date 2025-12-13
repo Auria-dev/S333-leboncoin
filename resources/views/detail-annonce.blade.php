@@ -69,7 +69,9 @@
                         <button type="button" id="btn-today" class="cal-btn" style="flex: 0 0 auto;">Auj.</button>
                         <div>
                             <button type="button" id="btn-clear" class="cal-btn cal-btn-effacer">Désélectionner</button>
+                            @if (auth()->check() && auth()->user()->idutilisateur !== $annonce->idproprietaire)
                             <input type="submit" id="btn-validate" class="cal-btn cal-btn-valider" value="Réserver" disabled style="opacity: 0.5; cursor: not-allowed;">
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -461,7 +463,7 @@
         <p class="section-title">Annonce(s) similaire(s)</p>
 
         <div class="res-scroller">
-        @foreach($annonce->similaires as $similaire)
+        @forelse($annonce->similaires as $similaire)
         <a class="similaire-card" href="{{ url('annonce/'.strval($similaire->idannonce)) }}">
             <div class="similaire-card-img">
                 @if(isset($similaire->photo) && count($similaire->photo) > 0)
@@ -493,15 +495,21 @@
                     </div>
             </div>
         </a>
-        @endforeach
+        @empty
+            <div class="res-empty">
+                <p>Aucune réservation trouvée.</p>
+            </div>
+        @endforelse
     </div>
 </div>
 
 
 @if (auth()->check() && auth()->user()->idutilisateur === $annonce->idproprietaire)
+
 <div class="res-section">
-    <p class="section-title">Réservation(s)</p>
+    <p class="section-title">Réservation(s) de cette annonce</p>
     <div class="res-scroller">
+<<<<<<< HEAD
         @forelse($annonce->reservation as $r)
         <a href="{{ url('/proprio/' . $annonce->idproprietaire ) }}" >
             <div class="reviews">
@@ -509,11 +517,103 @@
                 <p style="margin-bottom: 1rem;"class='subtitle'>Du {{ \Carbon\Carbon::parse($annonce->date_debut_resa)->format('d/m/Y') }} au {{ \Carbon\Carbon::parse($annonce->date_fin_resa)->format('d/m/Y') }} </p>
             </div>
         </a>
+=======
+        @forelse($annonce->reservation as $res)
+            <a class="res-card" href="{{ url('reservation/'.strval($res->idreservation)) }}" >
+                <div class="res-header">
+                    <div>
+                        <h3 class="res-id">Réservation #{{ $res->idreservation }}</h3>
+                        <span class="res-dates">
+                            <p class="side-by-side" style="align-items: center; gap: 0.25rem;">{!! $res->particulier->utilisateur->displayName() !!}</p>
+                            <p>{{ \Carbon\Carbon::parse($res->date_debut_resa)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($res->date_fin_resa)->format('d/m/Y') }}</p>
+                        </span>
+                    </div>
+                    @php
+                        $s = strtolower($res->statut_reservation);
+                        $st_class = 'st-default';
+                        
+                        if(Str::contains($s, ['valid', 'accept'])) {
+                            $st_class = 'st-accepted';
+                        } elseif(Str::contains($s, ['refus', 'annul'])) {
+                            $st_class = 'st-rejected';
+                        } elseif(Str::contains($s, ['attent'])) {
+                            $st_class = 'st-pending';
+                        }
+                    @endphp
+                    <span class="status-dot {{ $st_class }}">
+                        {{ $res->statut_reservation }}
+                    </span>
+                </div>
+
+                <hr class="res-divider">
+
+                <div class="res-grid">
+                    <div>
+                        <div class="res-label">Voyageurs</div>
+                        
+                        <div class="res-info-row">
+                            <svg class="res-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-icon lucide-user"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            <span>{{ $res->nb_adultes }} Adulte(s)</span>
+                        </div>
+
+                        @if($res->nb_enfants > 0)
+                            <div class="res-info-row">
+                                <svg class="res-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-person-standing-icon lucide-person-standing"><circle cx="12" cy="5" r="1"/><path d="m9 20 3-6 3 6"/><path d="m6 8 6 2 6-2"/><path d="M12 10v4"/></svg>
+                                <span>{{ $res->nb_enfants }} Enfant(s)</span>
+                            </div>
+                        @endif
+
+                        @if($res->nb_bebes > 0)
+                            <div class="res-info-row">
+                                <svg class="res-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-baby-icon lucide-baby"><path d="M10 16c.5.3 1.2.5 2 .5s1.5-.2 2-.5"/><path d="M15 12h.01"/><path d="M19.38 6.813A9 9 0 0 1 20.8 10.2a2 2 0 0 1 0 3.6 9 9 0 0 1-17.6 0 2 2 0 0 1 0-3.6A9 9 0 0 1 12 3c2 0 3.5 1.1 3.5 2.5s-.9 2.5-2 2.5c-.8 0-1.5-.4-1.5-1"/><path d="M9 12h.01"/></svg>
+                                <span>{{ $res->nb_bebes }} Bébé(s)</span>
+                            </div>
+                        @endif
+
+                        @if($res->nb_animaux > 0)
+                            <div class="res-info-row">
+                                <svg class="res-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-paw-print-icon lucide-paw-print"><circle cx="11" cy="4" r="2"/><circle cx="18" cy="8" r="2"/><circle cx="20" cy="16" r="2"/><path d="M9 10a5 5 0 0 1 5 5v3.5a3.5 3.5 0 0 1-6.84 1.045Q6.52 17.48 4.46 16.84A3.5 3.5 0 0 1 5.5 10Z"/></svg>
+                                <span>{{ $res->nb_animaux }} Animaux</span>
+                            </div>
+                        @endif
+                    </div>
+
+                    <div>
+                        <div class="res-label">Séjour</div>
+                        <div class="res-info-row">
+                            <svg class="res-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-moon-icon lucide-moon"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+                            <span>{{ $res->nb_nuits }} Nuit(s)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="res-price-box">
+                    <div class="res-price-row">
+                        <span>Frais de service</span>
+                        <span>{{ number_format($res->frais_services, 2, ',', ' ') }} €</span>
+                    </div>
+                    <div class="res-price-row">
+                        <span>Taxe de séjour</span>
+                        <span>{{ number_format($res->taxe_sejour, 2, ',', ' ') }} €</span>
+                    </div>
+                    
+                    <div class="res-price-divider"></div>
+
+                    <div class="res-total">
+                        <span>Total</span>
+                        <span>{{ number_format($res->montant_total, 2, ',', ' ') }} €</span>
+                    </div>
+                </div>
+            </a>
+>>>>>>> cd7df05083f071a7a60bea4fd6a5671ceb7aaec5
         @empty
-            <p>Pas de réservations</p>
+            <div class="res-empty">
+                <p>Aucune réservation trouvée.</p>
+            </div>
         @endforelse
     </div>
 </div>
+
 @endif
 
 
