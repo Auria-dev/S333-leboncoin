@@ -70,11 +70,7 @@
         <p class="section-title">Mes réservation(s)</p>
         <div class="res-scroller">
             @forelse($utilisateur->reservation as $res)
-<<<<<<< HEAD
-                {{-- 1. Changement de <a> en <div> pour la structure principale --}}
                 <div class="res-card" style="display: flex; flex-direction: column; text-decoration: none; color: inherit; cursor: default;">
-                    
-                    {{-- 2. Lien cliquable uniquement sur la partie "Détails" --}}
                     <a href="{{ url('reservation/'.strval($res->idreservation)) }}" style="text-decoration: none; color: inherit; display: block; flex-grow: 1;">
                         <div class="res-header">
                             <div>
@@ -98,15 +94,7 @@
                             @endphp
                             <span class="status-dot {{ $st_class }}">
                                 {{ $res->statut_reservation }}
-=======
-                <a class="res-card" href="{{ url('reservation/'.strval($res->idreservation)) }}" >
-                    <div class="res-header">
-                        <div>
-                            <h3 class="res-id">Réservation #{{ $res->idreservation }}</h3>
-                            <span class="res-dates">
-                                <p class="side-by-side center" style="gap: 0.25rem;">{!! $res->particulier->utilisateur->displayName() !!}</p>
-                                <p>{{ \Carbon\Carbon::parse($res->date_debut_resa)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($res->date_fin_resa)->format('d/m/Y') }}</p>
->>>>>>> cd7df05083f071a7a60bea4fd6a5671ceb7aaec5
+
                             </span>
                         </div>
 
