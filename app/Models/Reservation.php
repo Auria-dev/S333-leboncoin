@@ -30,6 +30,10 @@ class Reservation extends Model
         return $this->belongsTo(Avis::class, "idavis");
     }
 
+    public function incident() {
+        return $this->hasOne(Incident::class, "idreservation");
+    }
+
     public function particulier() {
         return $this->belongsTo(Particulier::class, "idlocataire");
     }

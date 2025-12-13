@@ -5,9 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>@yield('title', 'Lumina')</title>
+    <title>@yield('title', 'LeMauvaisCoin')</title>
     
-    <!-- link icon (favicon.ico) -->
     <link rel="icon" href="{{ asset('assets/favicon.ico') }}" type="image/x-icon">
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/inter-ui/3.19.3/inter.css" rel="stylesheet">
@@ -19,7 +18,6 @@
     <!--map -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
-    <script src="{{ asset('js/calendrier.js') }}" defer></script>
 </head>
 
 <body class="container">
@@ -59,7 +57,6 @@
         &copy; {{ date('Y') }} Leboncoin (ScoobyFoo)
     </footer>
 
-
     @stack('scripts')
     @include('cookie-banniere')
 
@@ -75,8 +72,6 @@
                 <button type="submit" class="submit-btn">Transmettre et Continuer</button>
             </div>
         </div>
-
-        
     </form>
     </div>
 
@@ -111,19 +106,13 @@
         });
     </script>
 
-<style>
-
-</style>
 
 <div id="toast-container"></div>
-
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-
+    document.addEventListener('DOMContentLoaded', () => {
     const Toast = {
         container: document.getElementById('toast-container'),
         
-        // French titles and Icon SVGs
         config: {
             success: { title: 'Succès', icon: '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline>' },
             error:   { title: 'Erreur', icon: '<circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line>' },
@@ -135,7 +124,6 @@ document.addEventListener('DOMContentLoaded', () => {
             let title = this.config[type]?.title || 'Notification';
             let message = '';
 
-            // Handle string vs array input
             if (typeof data === 'object' && data !== null) {
                 title = data.title || title;
                 message = data.message || '';
@@ -146,9 +134,8 @@ document.addEventListener('DOMContentLoaded', () => {
         },
 
         create(type, title, message) {
-            // 1. Create Element
             const el = document.createElement('div');
-            el.className = `toast-card toast-${type} toast-entering`; // Start entering
+            el.className = `toast-card toast-${type} toast-entering`;
             
             const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${this.config[type]?.icon || this.config.info.icon}</svg>`;
 
@@ -171,7 +158,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             this.container.appendChild(el);
 
-            // 2. Timer Logic
             const duration = 5000;
             const progressBar = el.querySelector('.toast-progress-bar');
             let remaining = duration;
@@ -179,15 +165,12 @@ document.addEventListener('DOMContentLoaded', () => {
             let startTime;
             let isPaused = false;
 
-            // Cleanup / Close function
             const close = () => {
-                if(isPaused) return; // Don't close if currently hovered/paused
+                if(isPaused) return;
                 
-                // Add leaving class for animation
                 el.classList.remove('toast-entering');
                 el.classList.add('toast-leaving');
                 
-                // Remove from DOM after animation finishes
                 el.addEventListener('animationend', () => {
                     if(el.parentElement) el.remove();
                 });
@@ -197,13 +180,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 isPaused = false;
                 startTime = Date.now();
                 
-                // CSS Transition for the bar
                 progressBar.style.transition = `width ${remaining}ms linear`;
-                // Force Reflow so CSS updates
                 void progressBar.offsetWidth;
                 progressBar.style.width = '0%';
 
-                // Set timeout for auto-close
                 timerId = setTimeout(() => {
                     close(); 
                 }, remaining);
@@ -214,30 +194,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 clearTimeout(timerId);
                 remaining -= Date.now() - startTime;
                 
-                // Freeze the progress bar visually
                 const computedWidth = getComputedStyle(progressBar).width;
                 progressBar.style.transition = 'none';
                 progressBar.style.width = computedWidth;
             };
 
-            // Event Listeners
             el.addEventListener('mouseenter', pauseTimer);
             el.addEventListener('mouseleave', startTimer);
             
-            // X Button click
             el.querySelector('.toast-close').addEventListener('click', (e) => {
-                e.stopPropagation(); // prevent triggering other events
+                e.stopPropagation();
                 clearTimeout(timerId);
-                isPaused = false; // Force close even if hovered
+                isPaused = false;
                 close();
             });
 
-            // Start logic (small delay to ensure DOM is ready)
             requestAnimationFrame(() => startTimer());
         }
     };
 
-    // --- Laravel Session Injector ---
     @if(session('success'))
         Toast.fire('success', @json(session('success')));
     @endif
@@ -255,6 +230,6 @@ document.addEventListener('DOMContentLoaded', () => {
     @endif
 });
 </script>
-
+<script src="{{ asset('js/calendrier.js') }}" defer></script>
 </body>
 </html>

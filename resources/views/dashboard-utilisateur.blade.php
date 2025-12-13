@@ -64,14 +64,13 @@
     </div>
     @endif
 
-
     @if ($utilisateur->getTypeParticulier() == 'Locataire' || $utilisateur->getTypeParticulier() == 'Locataire & Propriétaire')
-
+    
     <div class="res-section">
-        <p class="section-title">Mes réservations</p>
-
+        <p class="section-title">Mes réservation(s)</p>
         <div class="res-scroller">
             @forelse($utilisateur->reservation as $res)
+<<<<<<< HEAD
                 {{-- 1. Changement de <a> en <div> pour la structure principale --}}
                 <div class="res-card" style="display: flex; flex-direction: column; text-decoration: none; color: inherit; cursor: default;">
                     
@@ -99,6 +98,15 @@
                             @endphp
                             <span class="status-dot {{ $st_class }}">
                                 {{ $res->statut_reservation }}
+=======
+                <a class="res-card" href="{{ url('reservation/'.strval($res->idreservation)) }}" >
+                    <div class="res-header">
+                        <div>
+                            <h3 class="res-id">Réservation #{{ $res->idreservation }}</h3>
+                            <span class="res-dates">
+                                <p class="side-by-side center" style="gap: 0.25rem;">{!! $res->particulier->utilisateur->displayName() !!}</p>
+                                <p>{{ \Carbon\Carbon::parse($res->date_debut_resa)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($res->date_fin_resa)->format('d/m/Y') }}</p>
+>>>>>>> cd7df05083f071a7a60bea4fd6a5671ceb7aaec5
                             </span>
                         </div>
 
@@ -182,8 +190,10 @@
             @endforelse
         </div>
     </div>
+
+
     <div class="res-section">
-        <h2 class="section-title">Mes demandes</h2>
+        <h2 class="section-title">Mes annonces en demande</h2>
         <div class="res-grid">
             @forelse($utilisateur->demandesReservations as $demande)
                 @php
@@ -235,7 +245,7 @@
                     </div>
                 </a>
             @empty
-                <div style="grid-column: 1 / -1; padding: 60px; text-align: center; background: var(--bg-card); border-radius: var(--radius-card); border: 1px dashed var(--border-default);">
+                <div style="grid-column: 1 / -1;" class="res-empty">
                     <p style="color: var(--text-muted); margin: 0;">Aucune demande de réservation pour le moment.</p>
                 </div>
             @endforelse

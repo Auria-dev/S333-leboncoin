@@ -302,17 +302,19 @@ class AnnonceController extends Controller
                     'numcarte' => 'required|numeric|digits_between:15,16',
                     'dateexpiration' => 'required|string|size:5',
                     'titulairecarte' => 'required|string',
+                    'cvv' => 'required|numeric'
+
                 ]);
         
                 $cleanNum = $req->numcarte;
                 $parts = explode('/', $req->dateexpiration);
-                $expireDate = Carbon::createFromDate('20' . $parts[1], $parts[0], 1)->toDateString();
+                $expireDate = Carbon::createFromDate(date("Y")[0] . date("Y")[1] . $parts[1], $parts[0], 1)->toDateString();
                 $isSaved = $req->has('est_sauvegardee') ? true : false;
 
                 $idCarteUtilisee = DB::table('carte_bancaire')->insertGetId([
                     'idutilisateur' => $user->idutilisateur,
                     'titulairecarte' => $req->titulairecarte,
-                    'numcarte' => $cleanNum, 
+                    'numcarte' => encrypt($cleanNum),
                     'dateexpiration' => $expireDate,
                     'est_sauvegardee' => $isSaved
                 ], 'idcartebancaire');
