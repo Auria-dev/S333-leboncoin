@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -36,6 +37,12 @@ class Reservation extends Model
     public function annonce() {
         return $this->belongsTo(Annonce::class, "idannonce");
     }
+
+    public function estTerminee(){
+        return Carbon::parse($this->DATE_FIN_RESA)->isPast();
+    }
+
+    
 
     // Statut reservation values:
     // 'en attente' => paid for, waiting for approval

@@ -110,4 +110,17 @@ class Annonce extends Model
         
         return ['moyenne'=>$moyenne, 'nbAvis'=>$nbAvis, 'sommeNotes'=>$sommeNotes];
     }
+    public function avisValides()
+    {
+        return $this->hasManyThrough(
+            Avis::class, 
+            Reservation::class,
+            'idannonce',      
+            'idreservation',  
+            'idannonce',      
+            'idreservation'   
+        )
+        ->where('statut_avis', 'valide') 
+        ->orderBy('date_depot', 'desc');
+    }
 }

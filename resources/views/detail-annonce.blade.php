@@ -338,14 +338,17 @@
         
         <header style="border:none; padding:0; text-align:left; margin:0;">
             <h1 class="titre-annonce">{{ $annonce->titre_annonce }}</h1>
-            <p style="margin-top: 0.5rem; color: var(--text-muted); font-size: 0.9rem;">
-                {{ $annonce->adresse_annonce . ', ' . $annonce->ville->nomville . ' ' . $annonce->ville->code_postal }} &bull; <span class="stars" style="--rating: {{ $annonce->moyenneAvisParAnnonce()['moyenne'] }}; margin-right: 5px;"></span> {{$annonce->moyenneAvisParAnnonce()['moyenne'] . ' (' . $annonce->moyenneAvisParAnnonce()['nbAvis'] . ' avis) '}}
-            </p>
-            
-            <p style="margin-top: 0.5rem;">
-                Annonce postée par 
-                <a class="hyperlink" href="{{ url('/proprio/' . $annonce->idproprietaire ) }}" >
-                    <span style="text-transform: uppercase;">{{ $annonce->utilisateur->nom_utilisateur }} </span> {{ $annonce->utilisateur->prenom_utilisateur }}
+                <p style="margin-top: 0.5rem; color: var(--text-muted); font-size: 0.9rem;">
+                    {{ $annonce->adresse_annonce . ', ' . $annonce->ville->nomville . ' ' . $annonce->ville->code_postal }} &bull; 
+    
+                <span class="stars" style="--rating: {{ $annonce->moyenneAvisParAnnonce()['moyenne'] }}; margin-right: 5px;"></span> 
+    
+                <span style="font-weight: bold;">
+                    {{ number_format($annonce->moyenneAvisParAnnonce()['moyenne'], 1) }}
+                </span>
+
+            <a href="{{ route('annonce.avis', $annonce->idannonce) }}" style="text-decoration: underline; color: inherit; cursor: pointer; margin-left: 5px;">
+                ({{ $annonce->moyenneAvisParAnnonce()['nbAvis'] }} avis)
                 </a>
             </p>
         </header>
@@ -495,7 +498,6 @@
 </div>
 
 
-<!-- only show to owner -->
 @if (auth()->check() && auth()->user()->idutilisateur === $annonce->idproprietaire)
 <div class="res-section">
     <p class="section-title">Réservation(s)</p>
@@ -505,9 +507,6 @@
             <div class="reviews">
                 <p>{{ $r->particulier->utilisateur->prenom_utilisateur }} {{ $r->particulier->utilisateur->nom_utilisateur }} a passé <b>{{ $r->nb_nuits }} nuits</b> ici</p>
                 <p style="margin-bottom: 1rem;"class='subtitle'>Du {{ \Carbon\Carbon::parse($annonce->date_debut_resa)->format('d/m/Y') }} au {{ \Carbon\Carbon::parse($annonce->date_fin_resa)->format('d/m/Y') }} </p>
-                
-
-
             </div>
         </a>
         @empty
@@ -517,7 +516,6 @@
 </div>
 @endif
 
-<!-- TODO: avis -->
 
 @endsection
 @push('scripts')
@@ -614,5 +612,52 @@
             btnfavoris.classList.remove('liked')
         }
     })
+
+    <div id="section-avis" class="container" style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd;">
+    
+    <h3>Commentaires des voyageurs</h3>
+
+    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+        <span style="font-size: 2rem; font-weight: bold;">
+            {{ number_format($annonce->avisValides->avg('NOTE'), 1) }}
+        </span>
+        <span style="color: #666;">
+            ({{ $annonce->avisValides->count() }} avis)
+        </span>
+    </div>
+
+    <div class="avis-list">
+        @forelse($annonce->avisValides as $avis)
+            <div class="avis-card" style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #eee;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <div style="font-weight: bold;">
+                        {{ $avis->utilisateur->PRENOM_UTILISATEUR ?? 'Voyageur' }}
+                        <span style="font-weight: normal; color: #888; font-size: 0.9em;">
+                            - le {{ \Carbon\Carbon::parse($avis->DATE_DEPOT)->format('d/m/Y') }}
+                        </span>
+                    </div>
+                    <div style="color: #ffb400;">
+                        @for($i = 0; $i < 5; $i++)
+                            @if($i < $avis->NOTE) ★ @else ☆ @endif
+                        @endfor
+                    </div>
+                </div>
+                
+                <p style="margin: 0; line-height: 1.5; color: #333;">
+                    {{ $avis->COMMENTAIRE }}
+                </p>
+
+                @if($avis->REPONSE_AVIS)
+                    <div style="margin-top: 10px; padding: 10px; background-color: #f9f9f9; border-left: 3px solid #ccc; font-size: 0.9em;">
+                        <strong>Réponse du propriétaire :</strong><br>
+                        {{ $avis->REPONSE_AVIS }}
+                    </div>
+                @endif
+            </div>
+        @empty
+            <p style="color: #666; font-style: italic;">Aucun commentaire pour le moment.</p>
+        @endforelse
+    </div>
+</div>
 </script>
 @endpush
