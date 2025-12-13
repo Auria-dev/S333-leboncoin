@@ -71,7 +71,7 @@
                             <button type="button" id="btn-clear" class="cal-btn cal-btn-effacer">Désélectionner</button>
                             @if (auth()->check() && auth()->user()->idutilisateur !== $annonce->idproprietaire)
                             <input type="submit" id="btn-validate" class="cal-btn cal-btn-valider" value="Réserver" disabled style="opacity: 0.5; cursor: not-allowed;">
-                            @endif
+                             @endif
                         </div>
                     </div>
                 </div>
@@ -505,20 +505,11 @@
 
 
 @if (auth()->check() && auth()->user()->idutilisateur === $annonce->idproprietaire)
-
 <div class="res-section">
     <p class="section-title">Réservation(s) de cette annonce</p>
     <div class="res-scroller">
-<<<<<<< HEAD
-        @forelse($annonce->reservation as $r)
-        <a href="{{ url('/proprio/' . $annonce->idproprietaire ) }}" >
-            <div class="reviews">
-                <p>{{ $r->particulier->utilisateur->prenom_utilisateur }} {{ $r->particulier->utilisateur->nom_utilisateur }} a passé <b>{{ $r->nb_nuits }} nuits</b> ici</p>
-                <p style="margin-bottom: 1rem;"class='subtitle'>Du {{ \Carbon\Carbon::parse($annonce->date_debut_resa)->format('d/m/Y') }} au {{ \Carbon\Carbon::parse($annonce->date_fin_resa)->format('d/m/Y') }} </p>
-            </div>
-        </a>
-=======
-        @forelse($annonce->reservation as $res)
+
+                        @forelse($annonce->reservation as $res)
             <a class="res-card" href="{{ url('reservation/'.strval($res->idreservation)) }}" >
                 <div class="res-header">
                     <div>
@@ -605,15 +596,13 @@
                     </div>
                 </div>
             </a>
->>>>>>> cd7df05083f071a7a60bea4fd6a5671ceb7aaec5
-        @empty
-            <div class="res-empty">
+                    @empty
+        <div class="res-empty">
                 <p>Aucune réservation trouvée.</p>
             </div>
-        @endforelse
+            @endforelse
     </div>
 </div>
-
 @endif
 
 
@@ -719,7 +708,7 @@
 
     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
         <span style="font-size: 2rem; font-weight: bold;">
-            {{ number_format($annonce->avisValides->avg('NOTE'), 1) }}
+            ★ {{ number_format($annonce->avisValides->avg('NOTE'), 1) }}
         </span>
         <span style="color: #666;">
             ({{ $annonce->avisValides->count() }} avis)
