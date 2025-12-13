@@ -7,7 +7,7 @@
     <h2>Votre avis nous intéresse</h2>
     <p>Comment s'est passé votre séjour ?</p>
 
-    <form action="{{ route('avis.store', $reservation->IDRESERVATION) }}" method="POST">
+    <form action="{{ route('avis.store', $reservation->idreservation) }}" method="POST">
         @csrf
         
         <div style="margin-bottom: 1rem;">
