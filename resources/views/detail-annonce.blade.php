@@ -76,7 +76,7 @@
                     </div>
                 </div>
             </form>
-<<<<<<< HEAD
+
             <div class="map-pane-annonce" style="width: 100%; height: 400px; margin-top: 1rem; border: 1px solid var(--border-default); border-radius: 8px; overflow: hidden;">
                 <div id="maCarte"></div> 
             </div>
@@ -107,9 +107,9 @@
                 } */
             </style>
             <script>
-=======
+
             <script defer>
->>>>>>> 37118175ca7422eac0a8a3e66f9e8140e7f803cb
+
                 document.addEventListener('DOMContentLoaded', function() {
                     const dispoData = JSON.parse({!! isset($dispoJson) ? json_encode($dispoJson) : '{}' !!});
                     const prixParNuit = parseFloat("{{ $annonce->prix_nuit }}");
@@ -619,8 +619,7 @@
     </div>
 </div>
 @endif
-<<<<<<< HEAD
-=======
+
 
     <div id="section-avis" class="container" style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd;">
     
@@ -669,10 +668,8 @@
     </div>
 </div>
 
->>>>>>> 37118175ca7422eac0a8a3e66f9e8140e7f803cb
 @endsection
 @push('scripts')
-<<<<<<< HEAD
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet-providers@latest/leaflet-providers.js"></script>
 <script src="{{ asset('js/map.js') }}"></script>
@@ -687,10 +684,9 @@
         initMapAnnonce('maCarte', annoncesData);
     });
 
-=======
 <script defer>
     console.log('Detail annonce script loaded');
->>>>>>> 37118175ca7422eac0a8a3e66f9e8140e7f803cb
+    
     function openModal() {
         document.getElementById('modal-overlay').style.display = 'flex';
     }
