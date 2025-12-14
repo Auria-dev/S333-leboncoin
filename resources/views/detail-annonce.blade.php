@@ -106,10 +106,7 @@
                     text-decoration: line-through;
                 } */
             </style>
-            <script>
-
             <script defer>
-
                 document.addEventListener('DOMContentLoaded', function() {
                     const dispoData = JSON.parse({!! isset($dispoJson) ? json_encode($dispoJson) : '{}' !!});
                     const prixParNuit = parseFloat("{{ $annonce->prix_nuit }}");
@@ -685,10 +682,10 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet-providers@latest/leaflet-providers.js"></script>
 <script src="{{ asset('js/map.js') }}"></script>
-<script>
 
+<script defer>
 
-
+    
     document.addEventListener('DOMContentLoaded', function() {
         const annoncesData = @json($annonceAsArray);
         console.log(@json($annonceAsArray));
@@ -696,7 +693,7 @@
         initMapAnnonce('maCarte', annoncesData);
     });
 
-<script defer>
+    
     console.log('Detail annonce script loaded');
     
     function openModal() {
