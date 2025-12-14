@@ -258,8 +258,18 @@
 
 @push('scripts')
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-providers@latest/leaflet-providers.js"></script>
+    <script src="{{ asset('js/map.js') }}"></script>
 
     <script>
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const annoncesData = @json($annonces);
+            console.log(@json($annonces));
+            
+            initMapAnnonce('maCarte', annoncesData);
+
+        });
         
         const lightBox = document.querySelector('.light-box-save-search');
         const btnSaveSearch = document.getElementById('save-search-btn');
@@ -309,54 +319,5 @@
             lightBox.style.display = 'none';
         });
 
-
-
-
-
-
-        var map = L.map('maCarte', {
-            zoomControl: false
-        }).setView([48.8566, 2.3522], 10);
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap contributors'
-        }).addTo(map);
-
-        L.control.zoom({
-            position: 'topright'
-        }).addTo(map);
-
-
-
-        const annonces = @json($annonces);
-        const annoncesListe = Object.values(annonces);
-        console.log(annonces);
-
-        var markersGroup = new L.featureGroup();
-        
-        annoncesListe.forEach(annonce => {
-            if (annonce.latitude && annonce.longitude) {
-                console.log('Ajout du marqueur pour l\'annonce ID:', annonce.idannonce);
-                const marker = L.marker([annonce.latitude, annonce.longitude]).addTo(map);
-                const popupContent = `
-                    <strong>${annonce.titre_annonce}</strong><br>
-                    Prix: ${annonce.prix_nuit}€ / nuit<br>
-                    <a href="/annonce/${annonce.idannonce}">Voir l'annonce</a>
-                `;
-                marker.bindPopup(popupContent);
-                marker.addTo(markersGroup);
-            }
-        });
-
-        if (annoncesListe.length > 0 && markersGroup.getLayers().length > 0) {
-            map.fitBounds(markersGroup.getBounds(), { padding: [50, 50] 
-        });
-
-
-
-        
-
-    }
-            
     </script>
 @endpush

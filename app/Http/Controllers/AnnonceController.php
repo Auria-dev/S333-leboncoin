@@ -71,6 +71,7 @@ class AnnonceController extends Controller
 
         return view("detail-annonce", [
             'annonce' => Annonce::findOrFail($id),
+            'annonceAsArray' => collect([Annonce::findOrFail($id)]),
             'isFav' => $exists,
             'dispoJson' => json_encode($dispoMap)
         ]);
