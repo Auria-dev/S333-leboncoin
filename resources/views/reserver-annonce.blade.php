@@ -11,7 +11,7 @@
     $nb_nuits = $start->diffInDays($end);
     $montant_location = $nb_nuits * $annonce->prix_nuit;
     $frais_service = ceil($montant_location * 0.1);
-    $taxe_sejour = 5.3;
+    $taxe_sejour = $annonce->ville->taxe_sejour;
     $total = $montant_location + $frais_service + $taxe_sejour;
     
     // Limits
@@ -138,7 +138,7 @@
                 </div>
             </div>
 
-            <h2 class="reservation-subtitle mt-large">Vos informations</h2>
+            <h2 class="reservation-subtitle mt-large">Informations du locataire</h2>
 
             <div class="reservation-input-group">
                 <label class="reservation-label">Prénom*</label>
@@ -475,8 +475,24 @@
                     if (rawNum.length < 16) { this.errors.newNumber = true; allValid = false; }
                     
                     let dateRegex = /^(0[1-9]|1[0-2])\/([0-9]{2})$/;
-                    if (!dateRegex.test(this.newCard.expiry)) { this.errors.newExpiry = true; allValid = false; }
-                    
+                    if (!dateRegex.test(this.newCard.expiry)) { 
+                        this.errors.newExpiry = true; 
+                        allValid = false; 
+                    } else {
+                        const [inputMonthStr, inputYearStr] = this.newCard.expiry.split('/');
+                        const inputMonth = parseInt(inputMonthStr, 10);
+                        const inputYear = parseInt(inputYearStr, 10);
+
+                        const now = new Date();
+                        const currentYear = now.getFullYear() % 100; 
+                        const currentMonth = now.getMonth() + 1; 
+
+                        if (inputYear < currentYear || (inputYear === currentYear && inputMonth < currentMonth)) {
+                            this.errors.newExpiry = true;
+                            allValid = false;
+                        }
+                    }    
+
                     if (this.newCard.cvv.length < 3) { this.errors.newCvv = true; allValid = false; }
                     if (this.newCard.name.trim().length < 2) { this.errors.newName = true; allValid = false; }
                 }
