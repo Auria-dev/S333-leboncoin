@@ -604,8 +604,6 @@
     </div>
 </div>
 @endif
-
-
 @endsection
 @push('scripts')
 <script>
