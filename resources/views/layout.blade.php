@@ -83,7 +83,7 @@
             const btnCancel = document.getElementById('btn-cancel-first-ad');
 
             const hasAnnonces = @json(Auth::check() && Auth::user()->annonce()->exists());
-            const hasCNI = @json(Auth::check() && optional(Auth::user()->particulier)->piece_identite);
+            const hasCNI = @json(Auth::check() && optional(Auth::user()->particulier)?->piece_identite);
             const isParticulier = @json(Auth::check() && DB::table('particulier')->where('idparticulier', Auth::id())->exists());
 
             if (btnDepot) {
