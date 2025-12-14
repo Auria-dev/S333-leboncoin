@@ -82,21 +82,23 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            
+    
         const btnDepot = document.getElementById('btn-deposer-annonce');
         const modal = document.getElementById('modal-premiere-annonce');
         const btnCancel = document.getElementById('btn-cancel-first-ad');
         const isLogged = @json(Auth::check());
         const isParticulier = @json(Auth::check() && DB::table('particulier')->where('idparticulier', Auth::id())->exists());
+        
         const rawCNI = @json(Auth::check() ? optional(Auth::user()->particulier)->piece_identite : null);
         const hasCNI = (rawCNI !== null && rawCNI !== "");
 
         if (btnDepot) {
             btnDepot.addEventListener('click', function(e) {
-                
                 if (!isLogged) return;
+
                 if (isParticulier && !hasCNI) {
                     e.preventDefault();
+                    console.log("Modal ouvert : CNI manquante");
                     if(modal) modal.style.display = 'flex';
                 } 
                 else {
@@ -123,7 +125,7 @@
             });
             realInput.addEventListener('change', function() {
                 if (realInput.files.length > 0) {
-                    fileText.textContent = realInput.files[0].name;
+                    fileText.textContent = realInput.files[0].name;;
                 } else {
                     fileText.textContent = "Aucun fichier sélectionné";
                 }
