@@ -619,6 +619,8 @@
     </div>
 </div>
 @endif
+<<<<<<< HEAD
+=======
 
     <div id="section-avis" class="container" style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd;">
     
@@ -667,6 +669,7 @@
     </div>
 </div>
 
+>>>>>>> 37118175ca7422eac0a8a3e66f9e8140e7f803cb
 @endsection
 @push('scripts')
 <<<<<<< HEAD
