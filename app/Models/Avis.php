@@ -12,7 +12,19 @@ class Avis extends Model
     protected $table = "avis";
     protected $primaryKey = "idavis";
     public $timestamps = false;
-    
+
+    protected $fillable = [
+        'idutilisateur',
+        'idreservation',
+        'note',
+        'commentaire',
+        'date_depot',
+        'reponse_avis',
+        'statut_avis'
+        
+        
+    ];
+
     public function reservation()
     {
         return $this->belongsTo(Reservation::class, 'IDRESERVATION', 'IDRESERVATION');
@@ -20,6 +32,9 @@ class Avis extends Model
     
     public function utilisateur()
     {
-        return $this->belongsTo(User::class, 'IDUTILISATEUR', 'IDUTILISATEUR');
+        return $this->belongsTo(Utilisateur::class, 'idutilisateur', 'idutilisateur');
     }
+
 }
+
+

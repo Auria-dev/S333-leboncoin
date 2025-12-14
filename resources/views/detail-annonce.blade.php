@@ -69,11 +69,14 @@
                         <button type="button" id="btn-today" class="cal-btn" style="flex: 0 0 auto;">Auj.</button>
                         <div>
                             <button type="button" id="btn-clear" class="cal-btn cal-btn-effacer">Désélectionner</button>
+                            @if (auth()->check() && auth()->user()->idutilisateur !== $annonce->idproprietaire)
                             <input type="submit" id="btn-validate" class="cal-btn cal-btn-valider" value="Réserver" disabled style="opacity: 0.5; cursor: not-allowed;">
+                             @endif
                         </div>
                     </div>
                 </div>
             </form>
+<<<<<<< HEAD
             <div class="map-pane-annonce" style="width: 100%; height: 400px; margin-top: 1rem; border: 1px solid var(--border-default); border-radius: 8px; overflow: hidden;">
                 <div id="maCarte"></div> 
             </div>
@@ -104,6 +107,9 @@
                 } */
             </style>
             <script>
+=======
+            <script defer>
+>>>>>>> 37118175ca7422eac0a8a3e66f9e8140e7f803cb
                 document.addEventListener('DOMContentLoaded', function() {
                     const dispoData = JSON.parse({!! isset($dispoJson) ? json_encode($dispoJson) : '{}' !!});
                     const prixParNuit = parseFloat("{{ $annonce->prix_nuit }}");
@@ -341,16 +347,27 @@
         
         <header style="border:none; padding:0; text-align:left; margin:0;">
             <h1 class="titre-annonce">{{ $annonce->titre_annonce }}</h1>
-            <p style="margin-top: 0.5rem; color: var(--text-muted); font-size: 0.9rem;">
-                {{ $annonce->adresse_annonce . ', ' . $annonce->ville->nomville . ' ' . $annonce->ville->code_postal }} &bull; <span class="stars" style="--rating: {{ $annonce->moyenneAvisParAnnonce()['moyenne'] }}; margin-right: 5px;"></span> {{$annonce->moyenneAvisParAnnonce()['moyenne'] . ' (' . $annonce->moyenneAvisParAnnonce()['nbAvis'] . ' avis) '}}
-            </p>
-            
-            <p style="margin-top: 0.5rem;">
-                Annonce postée par 
-                <a class="hyperlink" href="{{ url('/proprio/' . $annonce->idproprietaire ) }}" >
-                    <span style="text-transform: uppercase;">{{ $annonce->utilisateur->nom_utilisateur }} </span> {{ $annonce->utilisateur->prenom_utilisateur }}
+                <p style="margin-top: 0.5rem; color: var(--text-muted); font-size: 0.9rem;">
+                    {{ $annonce->adresse_annonce . ', ' . $annonce->ville->nomville . ' ' . $annonce->ville->code_postal }} &bull; 
+    
+                <span class="stars" style="--rating: {{ $annonce->moyenneAvisParAnnonce()['moyenne'] }}; margin-right: 5px;"></span> 
+    
+                <span style="font-weight: bold;">
+                    {{ number_format($annonce->moyenneAvisParAnnonce()['moyenne'], 1) }}
+                </span>
+                
+                <a href="{{ route('annonce.avis', $annonce->idannonce) }}" style="text-decoration: underline; color: inherit; cursor: pointer; margin-left: 5px;">
+                    ({{ $annonce->moyenneAvisParAnnonce()['nbAvis'] }} avis)
                 </a>
             </p>
+
+                <p style="margin-top: 0.5rem;">
+                    Annonce postée par 
+                    <a class="hyperlink" href="{{ url('/proprio/' . $annonce->idproprietaire ) }}" >
+                        <span style="text-transform: uppercase;">{{ $annonce->utilisateur->nom_utilisateur }} </span> {{ $annonce->utilisateur->prenom_utilisateur }}
+                    </a>
+                </p>
+
         </header>
         
         <div class="prix-block">
@@ -461,7 +478,7 @@
         <p class="section-title">Annonce(s) similaire(s)</p>
 
         <div class="res-scroller">
-        @foreach($annonce->similaires as $similaire)
+        @forelse($annonce->similaires as $similaire)
         <a class="similaire-card" href="{{ url('annonce/'.strval($similaire->idannonce)) }}">
             <div class="similaire-card-img">
                 @if(isset($similaire->photo) && count($similaire->photo) > 0)
@@ -493,37 +510,166 @@
                     </div>
             </div>
         </a>
-        @endforeach
+        @empty
+            <div class="res-empty">
+                <p>Aucune réservation trouvée.</p>
+            </div>
+        @endforelse
     </div>
 </div>
 
 
-<!-- only show to owner -->
 @if (auth()->check() && auth()->user()->idutilisateur === $annonce->idproprietaire)
 <div class="res-section">
-    <p class="section-title">Réservation(s)</p>
+    <p class="section-title">Réservation(s) de cette annonce</p>
     <div class="res-scroller">
-        @forelse($annonce->reservation as $r)
-        <a href="{{ url('/proprio/' . $annonce->idproprietaire ) }}" >
-            <div class="reviews">
-                <p>{{ $r->particulier->utilisateur->prenom_utilisateur }} {{ $r->particulier->utilisateur->nom_utilisateur }} a passé <b>{{ $r->nb_nuits }} nuits</b> ici</p>
-                <p style="margin-bottom: 1rem;"class='subtitle'>Du {{ \Carbon\Carbon::parse($annonce->date_debut_resa)->format('d/m/Y') }} au {{ \Carbon\Carbon::parse($annonce->date_fin_resa)->format('d/m/Y') }} </p>
-                
 
+                        @forelse($annonce->reservation as $res)
+            <a class="res-card" href="{{ url('reservation/'.strval($res->idreservation)) }}" >
+                <div class="res-header">
+                    <div>
+                        <h3 class="res-id">Réservation #{{ $res->idreservation }}</h3>
+                        <span class="res-dates">
+                            <p class="side-by-side" style="align-items: center; gap: 0.25rem;">{!! $res->particulier->utilisateur->displayName() !!}</p>
+                            <p>{{ \Carbon\Carbon::parse($res->date_debut_resa)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($res->date_fin_resa)->format('d/m/Y') }}</p>
+                        </span>
+                    </div>
+                    @php
+                        $s = strtolower($res->statut_reservation);
+                        $st_class = 'st-default';
+                        
+                        if(Str::contains($s, ['valid', 'accept'])) {
+                            $st_class = 'st-accepted';
+                        } elseif(Str::contains($s, ['refus', 'annul'])) {
+                            $st_class = 'st-rejected';
+                        } elseif(Str::contains($s, ['attent'])) {
+                            $st_class = 'st-pending';
+                        }
+                    @endphp
+                    <span class="status-dot {{ $st_class }}">
+                        {{ $res->statut_reservation }}
+                    </span>
+                </div>
 
+                <hr class="res-divider">
+
+                <div class="res-grid">
+                    <div>
+                        <div class="res-label">Voyageurs</div>
+                        
+                        <div class="res-info-row">
+                            <svg class="res-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-icon lucide-user"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            <span>{{ $res->nb_adultes }} Adulte(s)</span>
+                        </div>
+
+                        @if($res->nb_enfants > 0)
+                            <div class="res-info-row">
+                                <svg class="res-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-person-standing-icon lucide-person-standing"><circle cx="12" cy="5" r="1"/><path d="m9 20 3-6 3 6"/><path d="m6 8 6 2 6-2"/><path d="M12 10v4"/></svg>
+                                <span>{{ $res->nb_enfants }} Enfant(s)</span>
+                            </div>
+                        @endif
+
+                        @if($res->nb_bebes > 0)
+                            <div class="res-info-row">
+                                <svg class="res-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-baby-icon lucide-baby"><path d="M10 16c.5.3 1.2.5 2 .5s1.5-.2 2-.5"/><path d="M15 12h.01"/><path d="M19.38 6.813A9 9 0 0 1 20.8 10.2a2 2 0 0 1 0 3.6 9 9 0 0 1-17.6 0 2 2 0 0 1 0-3.6A9 9 0 0 1 12 3c2 0 3.5 1.1 3.5 2.5s-.9 2.5-2 2.5c-.8 0-1.5-.4-1.5-1"/><path d="M9 12h.01"/></svg>
+                                <span>{{ $res->nb_bebes }} Bébé(s)</span>
+                            </div>
+                        @endif
+
+                        @if($res->nb_animaux > 0)
+                            <div class="res-info-row">
+                                <svg class="res-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-paw-print-icon lucide-paw-print"><circle cx="11" cy="4" r="2"/><circle cx="18" cy="8" r="2"/><circle cx="20" cy="16" r="2"/><path d="M9 10a5 5 0 0 1 5 5v3.5a3.5 3.5 0 0 1-6.84 1.045Q6.52 17.48 4.46 16.84A3.5 3.5 0 0 1 5.5 10Z"/></svg>
+                                <span>{{ $res->nb_animaux }} Animaux</span>
+                            </div>
+                        @endif
+                    </div>
+
+                    <div>
+                        <div class="res-label">Séjour</div>
+                        <div class="res-info-row">
+                            <svg class="res-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-moon-icon lucide-moon"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+                            <span>{{ $res->nb_nuits }} Nuit(s)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="res-price-box">
+                    <div class="res-price-row">
+                        <span>Frais de service</span>
+                        <span>{{ number_format($res->frais_services, 2, ',', ' ') }} €</span>
+                    </div>
+                    <div class="res-price-row">
+                        <span>Taxe de séjour</span>
+                        <span>{{ number_format($res->taxe_sejour, 2, ',', ' ') }} €</span>
+                    </div>
+                    
+                    <div class="res-price-divider"></div>
+
+                    <div class="res-total">
+                        <span>Total</span>
+                        <span>{{ number_format($res->montant_total, 2, ',', ' ') }} €</span>
+                    </div>
+                </div>
+            </a>
+                    @empty
+        <div class="res-empty">
+                <p>Aucune réservation trouvée.</p>
             </div>
-        </a>
-        @empty
-            <p>Pas de réservations</p>
-        @endforelse
+            @endforelse
     </div>
 </div>
 @endif
 
-<!-- TODO: avis -->
+    <div id="section-avis" class="container" style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd;">
+    
+    <h3>Commentaires des voyageurs</h3>
+
+    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+        <span style="font-size: 2rem; font-weight: bold;">
+            ★ {{ number_format($annonce->avisValides->avg('NOTE'), 1) }}
+        </span>
+        <span style="color: #666;">
+            ({{ $annonce->avisValides->count() }} avis)
+        </span>
+    </div>
+
+    <div class="avis-list">
+        @forelse($annonce->avisValides as $avis)
+            <div class="avis-card" style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #eee;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <div style="font-weight: bold;">
+                        {{ $avis->utilisateur->PRENOM_UTILISATEUR ?? 'Voyageur' }}
+                        <span style="font-weight: normal; color: #888; font-size: 0.9em;">
+                            - le {{ \Carbon\Carbon::parse($avis->DATE_DEPOT)->format('d/m/Y') }}
+                        </span>
+                    </div>
+                    <div style="color: #ffb400;">
+                        @for($i = 0; $i < 5; $i++)
+                            @if($i < $avis->NOTE) ★ @else ☆ @endif
+                        @endfor
+                    </div>
+                </div>
+                
+                <p style="margin: 0; line-height: 1.5; color: #333;">
+                    {{ $avis->COMMENTAIRE }}
+                </p>
+
+                @if($avis->REPONSE_AVIS)
+                    <div style="margin-top: 10px; padding: 10px; background-color: #f9f9f9; border-left: 3px solid #ccc; font-size: 0.9em;">
+                        <strong>Réponse du propriétaire :</strong><br>
+                        {{ $avis->REPONSE_AVIS }}
+                    </div>
+                @endif
+            </div>
+        @empty
+            <p style="color: #666; font-style: italic;">Aucun commentaire pour le moment.</p>
+        @endforelse
+    </div>
+</div>
 
 @endsection
 @push('scripts')
+<<<<<<< HEAD
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet-providers@latest/leaflet-providers.js"></script>
 <script src="{{ asset('js/map.js') }}"></script>
@@ -538,9 +684,12 @@
         initMapAnnonce('maCarte', annoncesData);
     });
 
+=======
+<script defer>
+    console.log('Detail annonce script loaded');
+>>>>>>> 37118175ca7422eac0a8a3e66f9e8140e7f803cb
     function openModal() {
         document.getElementById('modal-overlay').style.display = 'flex';
-
     }
     
     const croix = document.getElementById("croix");
@@ -630,5 +779,6 @@
             btnfavoris.classList.remove('liked')
         }
     })
+
 </script>
 @endpush
