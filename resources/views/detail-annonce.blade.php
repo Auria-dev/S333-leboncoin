@@ -76,6 +76,36 @@
                     </div>
                 </div>
             </form>
+
+            <div class="map-pane-annonce" style="width: 100%; height: 400px; margin-top: 1rem; border: 1px solid var(--border-default); border-radius: 8px; overflow: hidden;">
+                <div id="maCarte"></div> 
+            </div>
+
+            <style>
+                /* .cal-cellule.selected {
+                    background-color: var(--primary);
+                    color: white;
+                }
+                
+                .cal-cellule.in-range {
+                    background-color: var(--primary);
+                    background-color: color-mix(in srgb, var(--primary), white 80%);
+                    color: black;
+                    border-radius: 0;
+                }
+
+                .cal-cellule.selected:hover {
+                    background-color: var(--primary-hover);
+                    color: white;
+                }
+                
+
+                .cal-cellule.disabled {
+                    opacity: 0.3;
+                    pointer-events: none;
+                    text-decoration: line-through;
+                } */
+            </style>
             <script defer>
                 document.addEventListener('DOMContentLoaded', function() {
                     const dispoData = JSON.parse({!! isset($dispoJson) ? json_encode($dispoJson) : '{}' !!});
@@ -98,7 +128,7 @@
                     const todayBtn = document.getElementById('btn-today');
                     const clearBtn = document.getElementById('btn-clear');
                     const validateBtn = document.getElementById('btn-validate');
-                    const errorEl = document.getElementById('cal-error'); // Select the error div
+                    const errorEl = document.getElementById('cal-error');
                     
                     const startInput = document.getElementById('booking_start_date');
                     const endInput = document.getElementById('booking_end_date');
@@ -125,15 +155,29 @@
 
                     function updateTotalPrice() {
                         const priceEl = document.getElementById('display-price');
+                        const prixParNuit = {{ $annonce->prix_nuit }};
+                        const taxeSejour = {{ $annonce->ville->taxe_sejour ?? 0 }};
 
                         if (startDate && endDate) {
                             const diffTime = Math.abs(endDate - startDate);
                             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-                            const total = diffDays * prixParNuit;
-                            priceEl.textContent = total.toFixed(2);
-                            validateBtn.disabled = false;
-                            validateBtn.style.opacity = '1';
-                            validateBtn.style.cursor = 'pointer';
+
+                            if (diffDays > 0) {
+                                const montantLocation = diffDays * prixParNuit;
+                                const fraisService = Math.ceil(montantLocation * 0.1);
+                                const taxe = parseFloat(taxeSejour); 
+                                const total = montantLocation + fraisService + taxe;
+                                priceEl.textContent = total.toFixed(2);
+                                
+                                validateBtn.disabled = false;
+                                validateBtn.style.opacity = '1';
+                                validateBtn.style.cursor = 'pointer';
+                            } else {
+                                priceEl.textContent = '0';
+                                validateBtn.disabled = true;
+                                validateBtn.style.opacity = '0.5';
+                                validateBtn.style.cursor = 'not-allowed';
+                            }
                         } else {
                             priceEl.textContent = '0';
                             validateBtn.disabled = true;
@@ -320,11 +364,11 @@
                 <span class="stars" style="--rating: {{ $annonce->moyenneAvisParAnnonce()['moyenne'] }}; margin-right: 5px;"></span> 
     
                 <span style="font-weight: bold;">
-                    {{ number_format($annonce->moyenneAvisParAnnonce()['moyenne'], 1) }}
+                    {{ number_format($annonce->avisValides->avg('note'), 1) }}
                 </span>
                 
                 <a href="{{ route('annonce.avis', $annonce->idannonce) }}" style="text-decoration: underline; color: inherit; cursor: pointer; margin-left: 5px;">
-                    ({{ $annonce->moyenneAvisParAnnonce()['nbAvis'] }} avis)
+                    ({{ $annonce->avisValides->count() }} avis)
                 </a>
             </p>
 
@@ -587,13 +631,13 @@
 </div>
 @endif
 
-    <div id="section-avis" class="container" style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd;">
+    <div id="section-avis" class="container" style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; max-width: 800px;">
     
     <h3>Commentaires des voyageurs</h3>
 
     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
         <span style="font-size: 2rem; font-weight: bold;">
-            ★ {{ number_format($annonce->avisValides->avg('NOTE'), 1) }}
+            ★ {{ number_format($annonce->avisValides->avg('note'), 1) }}
         </span>
         <span style="color: #666;">
             ({{ $annonce->avisValides->count() }} avis)
@@ -605,26 +649,26 @@
             <div class="avis-card" style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #eee;">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
                     <div style="font-weight: bold;">
-                        {{ $avis->utilisateur->PRENOM_UTILISATEUR ?? 'Voyageur' }}
+                        {{ $avis->utilisateur->prenom_utilisateur ?? 'Voyageur' }}
                         <span style="font-weight: normal; color: #888; font-size: 0.9em;">
-                            - le {{ \Carbon\Carbon::parse($avis->DATE_DEPOT)->format('d/m/Y') }}
+                            - le {{ \Carbon\Carbon::parse($avis->date_depot)->format('d/m/Y') }}
                         </span>
                     </div>
                     <div style="color: #ffb400;">
                         @for($i = 0; $i < 5; $i++)
-                            @if($i < $avis->NOTE) ★ @else ☆ @endif
+                            @if($i < $avis->note) ★ @else ☆ @endif
                         @endfor
                     </div>
                 </div>
                 
                 <p style="margin: 0; line-height: 1.5; color: #333;">
-                    {{ $avis->COMMENTAIRE }}
+                    {{ $avis->commentaire }}
                 </p>
 
-                @if($avis->REPONSE_AVIS)
+                @if($avis->reponse_avis)
                     <div style="margin-top: 10px; padding: 10px; background-color: #f9f9f9; border-left: 3px solid #ccc; font-size: 0.9em;">
                         <strong>Réponse du propriétaire :</strong><br>
-                        {{ $avis->REPONSE_AVIS }}
+                        {{ $avis->reponse_avis }}
                     </div>
                 @endif
             </div>
@@ -633,11 +677,25 @@
         @endforelse
     </div>
 </div>
-
 @endsection
 @push('scripts')
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-providers@latest/leaflet-providers.js"></script>
+<script src="{{ asset('js/map.js') }}"></script>
+
 <script defer>
+
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        const annoncesData = @json($annonceAsArray);
+        console.log(@json($annonceAsArray));
+        
+        initMapAnnonce('maCarte', annoncesData);
+    });
+
+    
     console.log('Detail annonce script loaded');
+    
     function openModal() {
         document.getElementById('modal-overlay').style.display = 'flex';
     }
