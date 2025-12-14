@@ -48,7 +48,7 @@
     --spacing: 2.5rem;
     --star-size: 20px;
 }
-
+/* 
 @media (prefers-color-scheme: dark) {
     :root {
         --primary-rgb: 226, 232, 240;
@@ -99,7 +99,7 @@
         --spacing: 2.5rem;
         --star-size: 20px;
     }
-}
+} */
 
 * {
     box-sizing: border-box;
@@ -219,6 +219,7 @@ footer {
     font-size: 0.9rem;
     border-top: 1px solid var(--border-default);
     padding-top: 2rem;
+    padding-bottom: 1rem;
 }
 label {
     display: block;
@@ -385,7 +386,7 @@ input[type="submit"]:hover {
     top: 20px;
     right: 20px;
     background-color: var(--overlay-bg);
-    color: var(--text-inverse);
+    color: white;
     border: none;
     padding: 0.4rem;
     cursor: pointer;
@@ -471,7 +472,7 @@ input[type="submit"]:hover {
     top: 50%;
     transform: translateY(-50%);
     background-color: var(--overlay-bg);
-    color: var(--text-inverse);
+    color: white;
     border: none;
     padding: 0.4rem;
     cursor: pointer;
