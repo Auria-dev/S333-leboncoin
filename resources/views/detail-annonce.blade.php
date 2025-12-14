@@ -76,7 +76,40 @@
                     </div>
                 </div>
             </form>
+
+            <div class="map-pane-annonce" style="width: 100%; height: 400px; margin-top: 1rem; border: 1px solid var(--border-default); border-radius: 8px; overflow: hidden;">
+                <div id="maCarte"></div> 
+            </div>
+
+            <style>
+                /* .cal-cellule.selected {
+                    background-color: var(--primary);
+                    color: white;
+                }
+                
+                .cal-cellule.in-range {
+                    background-color: var(--primary);
+                    background-color: color-mix(in srgb, var(--primary), white 80%);
+                    color: black;
+                    border-radius: 0;
+                }
+
+                .cal-cellule.selected:hover {
+                    background-color: var(--primary-hover);
+                    color: white;
+                }
+                
+
+                .cal-cellule.disabled {
+                    opacity: 0.3;
+                    pointer-events: none;
+                    text-decoration: line-through;
+                } */
+            </style>
+            <script>
+
             <script defer>
+
                 document.addEventListener('DOMContentLoaded', function() {
                     const dispoData = JSON.parse({!! isset($dispoJson) ? json_encode($dispoJson) : '{}' !!});
                     const prixParNuit = parseFloat("{{ $annonce->prix_nuit }}");
@@ -649,8 +682,23 @@
 </div>
 @endsection
 @push('scripts')
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-providers@latest/leaflet-providers.js"></script>
+<script src="{{ asset('js/map.js') }}"></script>
+<script>
+
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const annoncesData = @json($annonceAsArray);
+        console.log(@json($annonceAsArray));
+        
+        initMapAnnonce('maCarte', annoncesData);
+    });
+
 <script defer>
     console.log('Detail annonce script loaded');
+    
     function openModal() {
         document.getElementById('modal-overlay').style.display = 'flex';
     }
