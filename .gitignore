@@ -20,6 +20,13 @@ yarn-error.log
 
 *~
 
+# this should be uncommented at the end.
+# then do `git rm -r --cached .` and `git add .`
+
+# images/photo_annonce_*
+# images/photo_utilisateur_*
+
+
 /vendor/
 node_modules/
 npm-debug.log

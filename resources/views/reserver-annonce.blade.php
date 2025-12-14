@@ -193,7 +193,7 @@
 
                             <div class="card-text-group">
                                 <span class="card-text-main">
-                                    **** **** **** {{ substr($carte->numcarte, -4) }}
+                                    **** **** **** {{ substr(decrypt($carte->numcarte), -4) }}
                                 </span>
                                 <span class="card-text-sub">
                                     Expire le {{ $carte->dateexpiration }}

@@ -10,6 +10,8 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\VerifierProfilController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\DeposerAvisController;
+use App\Http\Controllers\ServiceImmoController;
+
 
 
 /*
@@ -58,18 +60,14 @@ Route::post('/modifier_compte/upload', [CompteController::class, 'upload'])->mid
 Route::get('/demander_reservation/{id}', [AnnonceController::class, 'view_reserver'])->middleware('auth');
 Route::post('/confirmer_reservation', [AnnonceController::class, 'reserver'])->middleware('auth');
 
-Route::get('/reservation/{id}', [ReservationController::class, 'view_modifier'])->middleware('auth');
-Route::put('/reservation/update/{id}', [ReservationController::class, 'modifier_reservation'])->middleware('auth');
-Route::post('/reservation/cancel/{id}', [ReservationController::class, 'annuler_reservation'])->middleware('auth');
-Route::post('/reservation/accept/{id}', [ReservationController::class, 'accepter_reservation'])->middleware('auth');
-Route::post('/reservation/refuse/{id}', [ReservationController::class, 'refuser_reservation'])->middleware('auth');
-
 // pour yoyo&ninie
 Route::get('/creer_annonce', [AnnonceController::class, 'afficher_form'])->middleware('auth');
 Route::post('/ajouter_annonce', [AnnonceController::class, 'ajouter_annonce'])->middleware('auth');
 
-Route::get('/reservation/{id}/avis', [AvisController::class, 'create'])->name('avis.create');
-Route::post('/reservation/{id}/avis', [AvisController::class, 'store'])->name('avis.store');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/reservation/{id}/avis', [DeposerAvisController::class, 'create'])->name('avis.create');
+    Route::post('/reservation/{id}/avis', [DeposerAvisController::class, 'store'])->name('avis.store');
+});
 
 Route::post('/verifier_profil', [VerifierProfilController::class, 'verifier_profil'])->middleware('auth');
 
@@ -86,7 +84,37 @@ Route::post('/reservation/accept/{id}', [ReservationController::class, 'accepter
 Route::post('/reservation/refuse/{id}', [ReservationController::class, 'refuser_reservation'])->middleware('auth');
 Route::get('/reservation/declare/{id}', [ReservationController::class, 'declarer_incident'])->middleware('auth');
 Route::post('/reservation/save_incident', [ReservationController::class, 'save_incident'])->middleware('auth');
-Route::get('/reservation/{id}/avis', [AvisController::class, 'create'])->name('avis.create');
-Route::post('/reservation/{id}/avis', [AvisController::class, 'store'])->name('avis.store');
 Route::get('/verification/telephone', [AnnonceController::class, 'afficherFormVerification']) ->middleware('auth')->name('form.verification.telephone');
 Route::post('/verification/telephone', [AnnonceController::class, 'traiterVerification'])->middleware('auth')->name('traiter.verification.telephone');
+
+Route::get('/verification/telephone', [AnnonceController::class, 'afficherFormVerification'])
+    ->middleware('auth')
+    ->name('form.verification.telephone');
+
+
+Route::post('/verification/telephone', [AnnonceController::class, 'traiterVerification'])
+    ->middleware('auth')
+    ->name('traiter.verification.telephone');
+
+Route::get('/annonce/{id}/avis', [App\Http\Controllers\AnnonceController::class, 'showReviews'])->name('annonce.avis');
+
+
+Route::middleware(['auth'])->group(function () {
+
+    Route::get('/admin/avis', function () {
+        if (auth()->user()->idutilisateur != 52) {
+            abort(403, 'Accès réservé au Service Immobilier.');
+        }
+        return app(ServiceImmoController::class)->indexAvis();
+    })->name('admin.avis.index');
+
+
+    Route::post('/admin/avis/{id}', function ($id) {
+        if (auth()->user()->idutilisateur != 52) {
+            abort(403, 'Accès réservé au Service Immobilier.');
+        }
+        return app()->call([app(ServiceImmoController::class), 'updateStatutAvis'], ['id' => $id]);
+    })->name('admin.avis.update');
+
+});
+
