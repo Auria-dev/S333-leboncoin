@@ -67,7 +67,7 @@
     @if ($utilisateur->getTypeParticulier() == 'Locataire' || $utilisateur->getTypeParticulier() == 'Locataire & Propriétaire')
     
     <div class="res-section">
-        <p class="section-title">Mes réservation(s)</p>
+        <p class="section-title">Mes réservations</p>
         <div class="res-scroller">
             @forelse($utilisateur->reservation as $res)
                 <div class="res-card" style="display: flex; flex-direction: column; text-decoration: none; color: inherit; cursor: default;">

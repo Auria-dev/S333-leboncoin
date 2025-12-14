@@ -14,7 +14,6 @@
     $taxe_sejour = $annonce->ville->taxe_sejour;
     $total = $montant_location + $frais_service + $taxe_sejour;
     
-    // Limits
     $max_capacity = $annonce->nb_personnes_max;
     $max_bebe = $annonce->nb_bebe_max;
     $max_animaux = $annonce->nb_animaux_max;
