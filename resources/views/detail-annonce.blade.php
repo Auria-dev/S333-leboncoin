@@ -74,6 +74,9 @@
                     </div>
                 </div>
             </form>
+            <div class="map-pane-annonce" style="width: 100%; height: 400px; margin-top: 1rem; border: 1px solid var(--border-default); border-radius: 8px; overflow: hidden;">
+                <div id="maCarte"></div> 
+            </div>
 
             <style>
                 /* .cal-cellule.selected {
@@ -521,7 +524,20 @@
 
 @endsection
 @push('scripts')
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-providers@latest/leaflet-providers.js"></script>
+<script src="{{ asset('js/map.js') }}"></script>
 <script>
+
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const annoncesData = @json($annonceAsArray);
+        console.log(@json($annonceAsArray));
+        
+        initMapAnnonce('maCarte', annoncesData);
+    });
+
     function openModal() {
         document.getElementById('modal-overlay').style.display = 'flex';
 
