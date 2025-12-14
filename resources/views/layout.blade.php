@@ -65,8 +65,13 @@
         @csrf
         
         <div class="light-box-content">
-            <h4 class="text-center" style="margin-bottom: 5rem; font-size: 22px;">Pour déposer une annonce veuillez transmettre votre pièce d'identité</h4>         
-            <input type="file" name="file" id="fileInput" accept=".pdf" required>
+            <h4 class="text-center" style="margin-bottom: 1rem; font-size: 22px;">Pour déposer une annonce veuillez transmettre votre pièce d'identité</h4>         
+            <button type="button" id="customSelectBtn" class="btn btn-select">
+                Sélectionner un fichier
+            </button>
+            <span id="fileChosen">Aucun fichier sélectionné</span>
+            <input type="file" name="file" id="realFileInput" accept=".pdf" hidden>
+
             <div class="lightbox-actions">
                 <button type="button" class="other-btn" id="btn-cancel-first-ad">Annuler</button>               
                 <button type="submit" class="submit-btn">Transmettre et Continuer</button>
@@ -78,32 +83,53 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             
-            const btnDepot = document.getElementById('btn-deposer-annonce');
-            const modal = document.getElementById('modal-premiere-annonce');
-            const btnCancel = document.getElementById('btn-cancel-first-ad');
+        const btnDepot = document.getElementById('btn-deposer-annonce');
+        const modal = document.getElementById('modal-premiere-annonce');
+        const btnCancel = document.getElementById('btn-cancel-first-ad');
+        const isLogged = @json(Auth::check());
+        const isParticulier = @json(Auth::check() && DB::table('particulier')->where('idparticulier', Auth::id())->exists());
+        const rawCNI = @json(Auth::check() ? optional(Auth::user()->particulier)->piece_identite : null);
+        const hasCNI = (rawCNI !== null && rawCNI !== "");
 
-            const hasAnnonces = @json(Auth::check() && Auth::user()->annonce()->exists());
-            const hasCNI = @json(Auth::check() && optional(Auth::user()->particulier)->piece_identite);
-            const isParticulier = @json(Auth::check() && DB::table('particulier')->where('idparticulier', Auth::id())->exists());
-
-            if (btnDepot) {
-                btnDepot.addEventListener('click', function(e) {
-                    if ((hasAnnonces &&  hasCNI != null) || !isParticulier) {
-                        return; 
-                    }
-
+        if (btnDepot) {
+            btnDepot.addEventListener('click', function(e) {
+                
+                if (!isLogged) return;
+                if (isParticulier && !hasCNI) {
                     e.preventDefault();
-                    modal.style.display = 'flex';
-                });
-            }
+                    if(modal) modal.style.display = 'flex';
+                } 
+                else {
+                    console.log("Accès autorisé sans modal");
+                }
+            });
+        }
 
-            if (btnCancel) {
-                btnCancel.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    modal.style.display = 'none';
-                });
-            }
-        });
+        if (btnCancel && modal) {
+            btnCancel.addEventListener('click', function(e) {
+                e.preventDefault();
+                modal.style.display = 'none';
+            });
+        }
+        
+        const customBtn = document.getElementById('customSelectBtn');
+        const fileText = document.getElementById('fileChosen');
+        const realInput = document.getElementById('realFileInput');
+
+        if (customBtn && realInput && fileText) {
+            customBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                realInput.click();
+            });
+            realInput.addEventListener('change', function() {
+                if (realInput.files.length > 0) {
+                    fileText.textContent = realInput.files[0].name;
+                } else {
+                    fileText.textContent = "Aucun fichier sélectionné";
+                }
+            });
+        }
+    });
     </script>
 
 

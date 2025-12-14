@@ -164,11 +164,29 @@
             </div>
 
             <div x-show="accountType === 'particulier'">
-                <div class="input-groupe">
-                    <label>Afin de publier des annonces, la vérification de votre identité est requise. Vous pouvez transmettre votre pièce d'identité <u>dès maintenant</u> ou <u>ultérieurement</u> sous forme de PDF.</label>
-                    <input type="file" name="file" id="fileInput" accept=".pdf">
+                <div class="upload-container">
+                    <label>
+                        Afin de publier des annonces, la vérification de votre identité est requise. 
+                        Vous pouvez transmettre votre pièce d'identité <u>dès maintenant</u> ou <u>ultérieurement</u> sous forme de PDF.
+                    </label>
+
+                    <div class="button-group">
+                        <button type="button" id="customSelectBtn" class="btn btn-select">
+                            Sélectionner un fichier
+                        </button>
+                        
+                        <button type="submit" id="uploadBtn" class="btn btn-upload">
+                        Télécharger
+                        </button>
+                    </div>
+    
+                    <span id="fileChosen">Aucun fichier sélectionné</span>
+    
+                    <input type="file" name="file" id="realFileInput" accept=".pdf" hidden>
                 </div>
             </div>
+
+            
 
             <div class="mt-md">
                 <input type="submit" value="S'inscrire" class="submit-btn"
@@ -326,6 +344,24 @@
                     }
                 }
             }));
+        });
+
+
+        const realFileBtn = document.getElementById("realFileInput");
+        const customBtn = document.getElementById("customSelectBtn");
+        const customTxt = document.getElementById("fileChosen");
+
+        customBtn.addEventListener("click", function(e) {
+            e.preventDefault(); 
+            realFileBtn.click();
+        });
+
+        realFileBtn.addEventListener("change", function() {
+            if (realFileBtn.files.length > 0) {
+                customTxt.textContent = realFileBtn.files[0].name;
+            } else {
+                customTxt.textContent = "Aucun fichier sélectionné";
+            }
         });
     </script>
 
