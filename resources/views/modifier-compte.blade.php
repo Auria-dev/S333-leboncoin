@@ -243,7 +243,7 @@
                     </button>
                 </div>
     
-                <span id="fileChosenPDF">Aucun fichier sélectionné</span>
+                <span id="fileChosenPDF" class="fileChosen">Aucun fichier sélectionné</span>
 
                 <input type="file" name="file" id="realFileInputPDF" accept=".pdf" hidden>
             </div>

@@ -174,10 +174,6 @@
                         <button type="button" id="customSelectBtn" class="btn btn-select">
                             Sélectionner un fichier
                         </button>
-                        
-                        <button type="submit" id="uploadBtn" class="btn btn-upload">
-                        Télécharger
-                        </button>
                     </div>
     
                     <span id="fileChosen">Aucun fichier sélectionné</span>
