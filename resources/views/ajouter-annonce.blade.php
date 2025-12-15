@@ -194,7 +194,6 @@
                     @if(isset($services))
                         @foreach($services as $sv)
                             <label class="pill-label">
-                                {{-- ON GARDE TES NOMS, MAIS ON ENVOIE L'ID --}}
                                 <input type="checkbox" 
                                     name="DepotService[]" 
                                     value="{{ $sv->idservice }}" 

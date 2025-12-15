@@ -18,7 +18,7 @@
         <a href="{{ url('/modifier_compte') }}" class="other-btn w-fit" wire:navigate>Modifier mon compte</a>
     </div>
 </div>
-    @if ($utilisateur->getTypeParticulier() == 'Propriétaire' || $utilisateur->getTypeParticulier() == 'Locataire & Propriétaire')
+    @if ($utilisateur->getTypeParticulier() == 'Propriétaire' || $utilisateur->getTypeParticulier() == 'Locataire & Propriétaire' || $utilisateur->getTypeParticulier() == 'Entreprise')
     <div class="res-section">
         <p class="section-title">Mes annonces</p>
     
@@ -64,7 +64,7 @@
     </div>
     @endif
 
-    @if ($utilisateur->getTypeParticulier() == 'Locataire' || $utilisateur->getTypeParticulier() == 'Locataire & Propriétaire')
+    @if ($utilisateur->getTypeParticulier() == 'Locataire' || $utilisateur->getTypeParticulier() == 'Locataire & Propriétaire' || $utilisateur->getTypeParticulier() == 'Entreprise')
     
     <div class="res-section">
         <p class="section-title">Mes réservations</p>
@@ -364,7 +364,7 @@
 </div>
 </div>
 
-@if($utilisateur->administrateur->typeAdmin->nom_type_admin === 'Service Immobilier')
+@if($utilisateur->administrateur && $utilisateur->administrateur->typeAdmin->nom_type_admin === 'Service Immobilier')
     <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
         <h3 style="margin-bottom: 15px;">Espace Service Immo</h3>
         
@@ -384,7 +384,7 @@
 @endif
 
 
-@if($utilisateur->administrateur->typeAdmin->nom_type_admin === 'Service Petites Annonces')
+@if($utilisateur->administrateur && $utilisateur->administrateur->typeAdmin->nom_type_admin === 'Service Petites Annonces')
     <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
         <h3 style="margin-bottom: 15px;">Espace Service Petites Annonces</h3>
         

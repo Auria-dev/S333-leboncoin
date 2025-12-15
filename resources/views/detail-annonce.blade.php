@@ -78,16 +78,19 @@
                     </div>
                 </div>
             </form>
+
+            <div class="map-pane-annonce" style="width: 100%; height: 400px; margin-top: 1rem; border: 1px solid var(--border-default); border-radius: 8px; overflow: hidden;">
+                <div id="maCarte"></div> 
+            </div>
         </div>
     </div>
 
-    {{-- COLONNE DROITE : INFOS ANNONCE --}}
+    
     <div class="info-column">
         
         <header style="border:none; padding:0; text-align:left; margin:0;">
             <h1 class="titre-annonce">{{ $annonce->titre_annonce }}</h1>
 
-            {{-- >>> LE BADGE GARANTIE EST ICI <<< --}}
             @if($annonce->est_garantie)
                 <div style="background-color: #d1e7dd; color: #0f5132; padding: 10px; border-radius: 5px; margin: 10px 0; border: 1px solid #badbcc; display: inline-block;">
                     <strong>🌟 PAIEMENT GARANTI</strong>
@@ -95,29 +98,27 @@
                     <small>Propriétaire vérifié par téléphone</small>
                 </div>
             @endif
-            {{-- >>> FIN DU BADGE <<< --}}
 
                 <p style="margin-top: 0.5rem; color: var(--text-muted); font-size: 0.9rem;">
-                    {{ $annonce->adresse_annonce . ', ' . $annonce->ville->nomville . ' ' . $annonce->ville->code_postal }} &bull; 
-    
-                <span class="stars" style="--rating: {{ $annonce->moyenneAvisParAnnonce()['moyenne'] }}; margin-right: 5px;"></span> 
-    
-                <span style="font-weight: bold;">
-                    {{ number_format($annonce->moyenneAvisParAnnonce()['moyenne'], 1) }}
-                </span>
-                
-                <a href="#section-avis" style="text-decoration: underline; color: inherit; cursor: pointer; margin-left: 5px;">
-                    ({{ $annonce->moyenneAvisParAnnonce()['nbAvis'] }} avis)
-                </a>
-            </p>
-
-                <p style="margin-top: 0.5rem;">
-                    Annonce postée par 
-                    <a class="hyperlink" href="{{ url('/proprio/' . $annonce->idproprietaire ) }}" >
-                        <span style="text-transform: uppercase;">{{ $annonce->utilisateur->nom_utilisateur }} </span> {{ $annonce->utilisateur->prenom_utilisateur }}
+                        {{ $annonce->adresse_annonce . ', ' . $annonce->ville->nomville . ' ' . $annonce->ville->code_postal }} &bull; 
+        
+                    <span class="stars" style="--rating: {{ $annonce->moyenneAvisParAnnonce()['moyenne'] }}; margin-right: 5px;"></span> 
+        
+                    <span style="font-weight: bold;">
+                        {{ number_format($annonce->avisValides->avg('note'), 1) }}
+                    </span>
+                    
+                    <a href="{{ route('annonce.avis', $annonce->idannonce) }}" style="text-decoration: underline; color: inherit; cursor: pointer; margin-left: 5px;">
+                        ({{ $annonce->avisValides->count() }} avis)
                     </a>
                 </p>
 
+            <p style="margin-top: 0.5rem;">
+                Annonce postée par 
+                <a class="hyperlink" href="{{ url('/proprio/' . $annonce->idproprietaire ) }}" >
+                    <span style="text-transform: uppercase;">{{ $annonce->utilisateur->nom_utilisateur }} </span> {{ $annonce->utilisateur->prenom_utilisateur }}
+                </a>
+            </p>
         </header>
         
         <div class="prix-block">
@@ -339,16 +340,17 @@
 </div>
 @endif
 
-{{-- SECTION AVIS (FUSIONNÉE CORRECTEMENT) --}}
-<div id="section-avis" class="container" style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd;">
+
+<div id="section-avis" class="container" style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; max-width: 800px;">
+    
     <h3>Commentaires des voyageurs</h3>
 
     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
         <span style="font-size: 2rem; font-weight: bold;">
-            ★ {{ number_format($annonce->moyenneAvisParAnnonce()['moyenne'], 1) }}
+            ★ {{ number_format($annonce->avisValides->avg('note'), 1) }}
         </span>
         <span style="color: #666;">
-            ({{ $annonce->moyenneAvisParAnnonce()['nbAvis'] }} avis)
+            ({{ $annonce->avisValides->count() }} avis)
         </span>
     </div>
 
@@ -357,26 +359,26 @@
             <div class="avis-card" style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #eee;">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
                     <div style="font-weight: bold;">
-                        {{ $avis->utilisateur->PRENOM_UTILISATEUR ?? 'Voyageur' }}
+                        {{ $avis->utilisateur->prenom_utilisateur ?? 'Voyageur' }}
                         <span style="font-weight: normal; color: #888; font-size: 0.9em;">
-                            - le {{ \Carbon\Carbon::parse($avis->DATE_DEPOT)->format('d/m/Y') }}
+                            - le {{ \Carbon\Carbon::parse($avis->date_depot)->format('d/m/Y') }}
                         </span>
                     </div>
                     <div style="color: #ffb400;">
                         @for($i = 0; $i < 5; $i++)
-                            @if($i < $avis->NOTE) ★ @else ☆ @endif
+                            @if($i < $avis->note) ★ @else ☆ @endif
                         @endfor
                     </div>
                 </div>
                 
                 <p style="margin: 0; line-height: 1.5; color: #333;">
-                    {{ $avis->COMMENTAIRE }}
+                    {{ $avis->commentaire }}
                 </p>
 
-                @if($avis->REPONSE_AVIS)
+                @if($avis->reponse_avis)
                     <div style="margin-top: 10px; padding: 10px; background-color: #f9f9f9; border-left: 3px solid #ccc; font-size: 0.9em;">
                         <strong>Réponse du propriétaire :</strong><br>
-                        {{ $avis->REPONSE_AVIS }}
+                        {{ $avis->reponse_avis }}
                     </div>
                 @endif
             </div>
@@ -385,7 +387,6 @@
         @endforelse
     </div>
 </div>
-
 @endsection
 
 @push('scripts')
@@ -637,4 +638,20 @@
         });
     }
 </script>
+
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-providers@latest/leaflet-providers.js"></script>
+<script src="{{ asset('js/map.js') }}"></script>
+
+<script defer>
+    document.addEventListener('DOMContentLoaded', function() {
+        const annoncesData = @json($annonceAsArray);
+        console.log(@json($annonceAsArray));
+        
+        initMapAnnonce('maCarte', annoncesData);
+    });
+
+</script>
+
 @endpush

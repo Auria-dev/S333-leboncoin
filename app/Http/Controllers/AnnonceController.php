@@ -7,13 +7,17 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\Ville;
 use App\Models\Annonce;
+use App\Models\Favoris;
+use App\Models\Calendrier;
 use App\Models\TypeHebergement;
 use App\Models\Photo;
 use App\Models\Equipement;
+use App\Models\AnnonceSimilaire;
 use App\Models\Service;
 use App\Services\GeoapifyService;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
+use Carbon\Carbon;
 
 // Imports Vonage
 use Vonage\Client;
@@ -35,7 +39,7 @@ class AnnonceController extends Controller
         $user = Auth::user();
         if (!$user->administrateur) 
             return redirect()->back()->with('error', 'Vous n\'avez pas accès à cette page.');
-        
+
         $annonces = Annonce::with('utilisateur')->orderBy('date_publication', 'desc')->get();
         return view('admin.dashboard', ['annonces' => $annonces]);
     }
@@ -55,7 +59,6 @@ class AnnonceController extends Controller
         return redirect()->back()->with('success', "Annonce $status");
     }
 
-    // --- AJOUT ANNONCE ---
     public function afficher_form()
     {
         $types = TypeHebergement::all();
@@ -66,67 +69,151 @@ class AnnonceController extends Controller
 
     public function ajouter_annonce(Request $req)
     {
-        $user = Auth::user();
-        
-        $req->validate(['titre' => 'required', 'ville' => 'required', 'prix_nuit' => 'required']);
+        if (Auth::check()) {
+            $user = \App\Models\Utilisateur::find(auth()->id());
+            $iduser = $user->idutilisateur;
+        } else {
+            return redirect('login');
+        }
+
+        $typeCompte = $user->getTypeParticulier();
+        if ($typeCompte == 'Locataire') {
+            Particulier::where('idparticulier', $iduser)->update(['code_particulier' => 2]);
+        }
+
+        $req->validate([
+            'titre' => 'required|string|max:128',
+            'depot_adresse' => 'required|string',
+            'ville' => 'required|string',
+            'DepotTypeHebergement' => 'required',
+            'prix_nuit' => 'required|numeric|min:0.01',
+            'nb_nuits' => 'required|integer|min:1',
+            'nb_pers' => 'required|integer|min:1',
+            'nb_bebes' => 'nullable|integer|min:0',
+            'nb_animaux' => 'nullable|integer|min:0',
+            'nb_chambres' => 'required|integer|min:1',
+            'heure_arr' => 'required|date_format:H:i',
+            'heure_dep' => 'required|date_format:H:i',
+            'desc' => 'required|string|max:2000',
+            'file' => 'required|array',
+            'file*' => 'image|mimes:jpg,png,jpeg|max:2048',
+        ]);
 
         $codeville = Ville::where('nom_ville', $req->ville)->first();
         $type_heb = TypeHebergement::where('nom_type_hebergement', $req->DepotTypeHebergement)->first();
-        
+
         $adresseComplete = $req->depot_adresse . ', ' . $req->ville . ', France';
         $coordonnees = $this->geoService->geocode($adresseComplete);
+        $latitude = $coordonnees ? $coordonnees['lat'] : null;
+        $longitude = $coordonnees ? $coordonnees['lon'] : null;
 
         $annonce = Annonce::create([
-            'idtypehebergement' => $type_heb->idtypehebergement ?? 1,
-            'idproprietaire' => $user->idutilisateur,
-            'idville' => $codeville->idville ?? 1,
+            'idtypehebergement' => $type_heb->idtypehebergement,
+            'idproprietaire' => $iduser,
+            'idville' => $codeville->idville,
             'titre_annonce' => $req->titre,
             'prix_nuit' => $req->prix_nuit,
-            'nb_nuit_min' => $req->nb_nuits ?? 1,
-            'nb_bebe_max' => $req->nb_bebes ?? 0,
-            'nb_personnes_max' => $req->nb_pers ?? 1,
-            'nb_animaux_max' => $req->nb_animaux ?? 0,
-            'adresse_annonce' => $req->depot_adresse ?? '',
-            'description_annonce' => $req->desc ?? '',
+            'nb_nuit_min' => $req->nb_nuits,
+            'nb_bebe_max' => $req->nb_bebes,
+            'nb_personnes_max' => $req->nb_pers,
+            'nb_animaux_max' => $req->nb_animaux,
+            'adresse_annonce' => $req->depot_adresse,
+            'description_annonce' => $req->desc,
             'date_publication' => now(),
-            'heure_arrivee' => $req->heure_arr ?? '14:00', 
-            'heure_depart' => $req->heure_dep ?? '10:00',
-            'nombre_chambre' => $req->nb_chambres ?? 1,
-            'longitude' => $coordonnees['lon'] ?? null,
-            'latitude' => $coordonnees['lat'] ?? null,
-            'est_garantie' => false
+            'heure_arrivee' => $req->heure_arr,
+            'heure_depart' => $req->heure_dep,
+            'nombre_chambre' => $req->nb_chambres,
+            'longitude' => $longitude,
+            'latitude' => $latitude,
         ]);
 
-        if ($req->has('DepotEquipement')) {
-            $annonce->equipement()->attach($req->DepotEquipement);
-        }
-
-        if ($req->has('DepotService')) {
-            $annonce->service()->attach($req->DepotService);
-        }
-        
+        $num_photo = Photo::where('idannonce', $annonce->idannonce)->count() + 1;
         if ($req->hasFile('file')) {
+            $manager = new ImageManager(new Driver());
             foreach ($req->file('file') as $file) {
-                Photo::create(['idannonce' => $annonce->idannonce, 'nomphoto' => "/images/photo-annonce.jpg"]); 
+                $fileName = 'photo_annonce_' . $annonce->idannonce . '_' . $num_photo . '.jpg';
+                $fileNameDB = '/images/photo_annonce_' . $annonce->idannonce . '_' . $num_photo . '.jpg';
+                $imgDestination = public_path('images');
+
+                $img = $manager->read($file);
+                $img->scaleDown(width: 1000, height: 1000);
+                $img->toJpeg(90)->save($imgDestination . '/' . $fileName);
+
+                Photo::create([
+                    'idannonce' => $annonce->idannonce,
+                    'nomphoto' => $fileNameDB,
+                    'legende' => null,
+                ]);
+                $num_photo++;
             }
         } else {
-            Photo::create(['idannonce' => $annonce->idannonce, 'nomphoto' => "/images/photo-annonce.jpg"]);
+            Photo::create([
+                'idannonce' => $annonce->idannonce,
+                'nomphoto' => "/images/photo-annonce.jpg",
+                'legende' => null,
+            ]);
         }
-        
+
         DB::table('calendrier')->insertUsing(
             ['iddate', 'idannonce', 'idutilisateur', 'code_dispo'],
-            DB::table('date as d')->crossJoin('annonce as a')->where('a.idannonce', $annonce->idannonce)
-                ->select('d.iddate', 'a.idannonce', DB::raw('NULL'), DB::raw('TRUE'))
+            DB::table('date as d')
+                ->crossJoin('annonce as a')
+                ->where('a.idannonce', $annonce->idannonce)
+                ->select(
+                    'd.iddate',
+                    'a.idannonce',
+                    DB::raw('NULL as idutilisateur'),
+                    DB::raw('TRUE as code_dispo')
+                )
         );
 
-        if (!$user->telephone_verifie) {
-            if (empty($user->telephone)) {
-                return redirect('/telephone')->with('warning', 'Annonce créée ! Vérifiez votre téléphone.');
-            }
-            return $this->lancerProcessusVerification($user->telephone);
+        $nomsEquipements = $req->DepotEquipement;
+        if (!empty($nomsEquipements) && is_array($nomsEquipements)) {
+            $idsEquipements = Equipement::whereIn('nom_equipement', $nomsEquipements)->pluck('idequipement')->toArray();
+            $annonce->equipement()->sync($idsEquipements);
         }
 
-        return redirect('/profile')->with('success', 'Annonce publiée avec succès !');
+        $nomsServices = $req->DepotService;
+        if (!empty($nomsServices) && is_array($nomsServices)) {
+            $idsServices = Service::whereIn('nom_service', $nomsServices)->pluck('idservice')->toArray();
+            $annonce->service()->sync($idsServices);
+        }
+
+        $similaires = Annonce::whereHas('ville.departement', function ($query) use ($annonce) {
+            $query->where('iddepartement', $annonce->ville->departement->iddepartement);
+        })
+        ->where('idtypehebergement', $annonce->idtypehebergement)
+        ->where('nb_personnes_max', '>=', $annonce->nb_personnes_max)
+        ->where('idannonce', '!=', $annonce->idannonce)
+        ->get();
+
+        foreach ($similaires as $s) {
+            AnnonceSimilaire::create([
+                'idannonce' => $annonce->idannonce,
+                'idsimilaire' => $s->idannonce,
+            ]);
+        }
+
+        if (!$user->telephoneverifie) {
+            
+            $code = rand(1000, 9999);
+            session(['code_sms_temporaire' => $code]);
+
+            $numero = $user->telephone;
+            if (substr($numero, 0, 1) == '0') {
+                $numero = '33' . substr($numero, 1);
+            }
+
+                
+            if (!$user->telephone_verifie) {
+                if (empty($user->telephone)) {
+                    return redirect('/telephone')->with('warning', 'Annonce créée ! Vérifiez votre téléphone.');
+                }
+                return $this->lancerProcessusVerification($user->telephone);
+            }
+
+            return redirect('/profile')->with('success', 'Annonce publiée avec succès !');
+        }
     }
 
     private function lancerProcessusVerification($numero) {
@@ -178,41 +265,189 @@ class AnnonceController extends Controller
 
     public function view($id)
     {
-        $annonce = Annonce::with([
-            'photo', 'ville', 'utilisateur', 'type_Hebergement', 'avisValides.utilisateur', 
-            'equipement', 'service' 
-        ])->findOrFail($id);
+        $iduser = -1;
 
-        $iduser = Auth::check() ? Auth::user()->idutilisateur : -1;
-        $exists = \App\Models\Favoris::where('idutilisateur', $iduser)->where('idannonce', $id)->exists();
+        if (Auth::check()) {
+            $iduser = auth()->user()->idutilisateur;
+        }
 
-        $disponibilites = \App\Models\Calendrier::where('idannonce', $id)
-            ->whereHas('date', function ($q) { $q->where('date', '>=', now()->toDateString()); })
-            ->with('date')->get();
+        $exists = Favoris::where('idutilisateur', '=', $iduser)
+            ->where('idannonce', '=', $id)
+            ->exists();
+
+        $disponibilites = Calendrier::where('idannonce', $id)
+            ->whereHas('date', function ($q) {
+                $q->where('date', '>=', now()->toDateString());
+            })
+            ->with('date')
+            ->get();
 
         $dispoMap = [];
+
         foreach ($disponibilites as $cal) {
             if ($cal->date) {
                 $dateString = \Carbon\Carbon::parse($cal->date->date)->format('Y-m-d');
-                $dispoMap[$dateString] = ['dispo' => (bool) $cal->code_dispo];
+
+                $dispoMap[$dateString] = [
+                    'dispo' => (bool) $cal->code_dispo,
+                ];
             }
         }
 
+        
+        $annonce = Annonce::with([
+            'photo',           
+            'ville',           
+            'utilisateur',    
+            'type_Hebergement',  
+            'avisValides.utilisateur' 
+        ])->findOrFail($id);
+
         return view("detail-annonce", [
+            'annonce' => Annonce::findOrFail($id),
+            'annonceAsArray' => collect([Annonce::findOrFail($id)]),
             'annonce' => $annonce,
             'isFav' => $exists,
             'dispoJson' => json_encode($dispoMap)
         ]);
     }
 
-    public function addFav($idannonce) {
+    public function addFav($idannonce)
+    {
         $user = auth()->user();
-        $exists = \App\Models\Favoris::where('idutilisateur', $user->idutilisateur)->where('idannonce', $idannonce)->exists();
-        if (!$exists) \App\Models\Favoris::create(['idutilisateur' => $user->idutilisateur, 'idannonce' => $idannonce]);
-        else \App\Models\Favoris::where('idutilisateur', $user->idutilisateur)->where('idannonce', $idannonce)->delete();
-        return redirect()->back();
+        $iduser = $user->idutilisateur;
+
+        $exists = Favoris::where('idutilisateur', '=', $iduser)
+            ->where('idannonce', '=', $idannonce)
+            ->exists();
+
+        if (!$exists) {
+            Favoris::create(['idutilisateur' => $iduser, 'idannonce' => $idannonce]);
+        } else {
+            Favoris::where('idutilisateur', '=', $iduser)
+                ->where('idannonce', '=', $idannonce)
+                ->delete();
+        }
+
+        return redirect()->route('annonce', ['id' => $idannonce, 'isFav' => !$exists]);
     }
-    public function view_reserver(Request $req, $idannonce) { return view("reserver-annonce"); }
-    public function reserver(Request $req) { return redirect()->back(); }
-    public function showReviews($id) { return view('tous-les-avis'); }
+    
+    public function view_reserver(Request $req, $idannonce) {
+        $annonce = Annonce::findOrFail($idannonce);
+        if (!$annonce || !$req->start_date || !$req->end_date) {
+            return redirect()->back()->withErrors(['error' => 'Annonce or dates not found.']);
+        }
+        return view("reserver-annonce", [
+            'annonce' => $annonce,
+            'idannonce' => $idannonce,
+            'date_debut_resa' => $req->start_date,
+            'date_fin_resa' => $req->end_date
+        ]);
+    }
+
+    public function reserver(Request $req) {
+        $req->validate([
+            'idannonce' => 'required|integer|exists:annonce,idannonce',
+            'date_debut_resa' => 'required|date',
+            'date_fin_resa' => 'required|date|after:date_debut_resa',
+            'idutilisateur' => 'required|integer|exists:utilisateur,idutilisateur',
+            'telephone' => 'required|digits:10',
+            'carte_id' => 'required',
+        ]);
+
+        $user = auth()->user();
+        $idCarteUtilisee = null;
+
+        try {
+            DB::beginTransaction();
+
+            if ($req->carte_id === 'new') {
+                $req->merge(['numcarte' => str_replace(' ', '', $req->input('numcarte'))]);
+                $req->validate([
+                    'numcarte' => 'required|numeric|digits_between:15,16',
+                    'dateexpiration' => 'required|string|size:5',
+                    'titulairecarte' => 'required|string',
+                    'cvv' => 'required|numeric'
+
+                ]);
+        
+                $cleanNum = $req->numcarte;
+                $parts = explode('/', $req->dateexpiration);
+                $expireDate = Carbon::createFromDate(date("Y")[0] . date("Y")[1] . $parts[1], $parts[0], 1)->toDateString();
+                $isSaved = $req->has('est_sauvegardee') ? true : false;
+
+                $idCarteUtilisee = DB::table('carte_bancaire')->insertGetId([
+                    'idutilisateur' => $user->idutilisateur,
+                    'titulairecarte' => $req->titulairecarte,
+                    'numcarte' => encrypt($cleanNum),
+                    'dateexpiration' => $expireDate,
+                    'est_sauvegardee' => $isSaved
+                ], 'idcartebancaire');
+
+            } else {
+                $card = DB::table('carte_bancaire')
+                    ->where('idcartebancaire', $req->carte_id)
+                    ->where('idutilisateur', $user->idutilisateur)
+                    ->first();
+
+                if (!$card) {
+                    return back()->withErrors(['carte_id' => 'Carte invalide.']);
+                }
+                $idCarteUtilisee = $card->idcartebancaire;
+            }
+
+            $start = Carbon::parse($req->date_debut_resa);
+            $end = Carbon::parse($req->date_fin_resa);
+            $nb_nuits = $start->diffInDays($end);
+
+            $idReservation = DB::table('reservation')->insertGetId([
+                'idannonce' => $req->idannonce,
+                'idlocataire' => $user->idutilisateur,
+                'idtypepaiement' => $req->typepaiement,
+                'statut_reservation' => 'en attente',
+                'date_debut_resa' => $req->date_debut_resa,
+                'date_fin_resa' => $req->date_fin_resa,
+                'date_demande' => now(),
+                'nb_nuits' => $nb_nuits,
+                'montant_total' => $req->total,
+                'frais_services' => $req->frais_service,
+                'taxe_sejour' => $req->taxe_sejour,
+                'nb_adultes' => $req->nb_adultes,
+                'nb_enfants' => $req->nb_enfants,
+                'nb_bebes' => $req->nb_bebes,
+                'nb_animaux' => $req->nb_animaux,
+            ], 'idreservation');
+
+            DB::table('paiement')->insert([
+                'idreservation' => $idReservation,
+                'idcartebancaire' => $idCarteUtilisee,
+                'montant_paiement' => $req->total,
+                'date_paiement' => now(),
+                'statut_paiement' => 'Succès',
+                'ref_transaction' => 'TXN-' . strtoupper(uniqid())
+            ]);
+
+            if (empty($user->telephone)) {
+                DB::table('utilisateur')
+                    ->where('idutilisateur', $user->idutilisateur)
+                    ->update(['telephone' => $req->telephone]);
+            }
+
+            DB::commit();
+
+            return redirect()->route('profile')
+                ->with('success', 'Réservation envoyée !');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withErrors(['error' => "Erreur paiement: " . $e->getMessage()]);
+        }
+    }
+
+    public function showReviews($id)
+    {
+        $annonce = Annonce::with(['avisValides.utilisateur', 'ville'])->findOrFail($id);
+
+        return view('tous-les-avis', compact('annonce'));
+    }
 }
