@@ -158,8 +158,25 @@ class CompteController extends Controller {
             $rules['siret'] = 'required|string|max:14';
             $rules['secteur'] = 'required|string';
         }
+        
+        $messages = [
+            'required' => 'Le champ :attribute est obligatoire.',
+            'email' => "L'adresse email n'est pas valide.",
+            'unique' => "Ce :attribute est déjà utilisé par un autre compte.",
+            'digits' => "Le :attribute doit contenir exactement :digits chiffres.",
+            'min' => "Le :attribute doit contenir au moins :min caractères.",
+            'confirmed' => "La confirmation du mot de passe ne correspond pas.",
+            'mimes' => "Le fichier doit être au format :values.",
+            'max' => "Le champ :attribute ne doit pas dépasser :max caractères/Ko.",
+        ];
+        $attributes = [
+            'email' => 'adresse email',
+            'telephone' => 'numéro de téléphone',
+            'password' => 'mot de passe',
+            'siret' => 'numéro SIRET',
+        ];
 
-        $req->validate($rules);
+        $req->validate($rules, $messages, $attributes);
 
         $ville = Ville::firstOrCreate([
                 'nom_ville' => $req->ville, 
