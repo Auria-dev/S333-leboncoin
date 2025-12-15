@@ -78,8 +78,8 @@
                     </div>
                 </div>
             </form>
-<<<<<<< HEAD
-=======
+
+
 
             <div class="map-pane-annonce" style="width: 100%; height: 400px; margin-top: 1rem; border: 1px solid var(--border-default); border-radius: 8px; overflow: hidden;">
                 <div id="maCarte"></div> 
@@ -356,7 +356,7 @@
                     renderCalendar();
                 });
             </script>
->>>>>>> 3cfb035beb7e0fdb41202f9c1d1442e0c2683355
+
         </div>
     </div>
 
@@ -385,13 +385,13 @@
                     {{ number_format($annonce->avisValides->avg('note'), 1) }}
                 </span>
                 
-<<<<<<< HEAD
+
                 <a href="#section-avis" style="text-decoration: underline; color: inherit; cursor: pointer; margin-left: 5px;">
                     ({{ $annonce->moyenneAvisParAnnonce()['nbAvis'] }} avis)
-=======
+
                 <a href="{{ route('annonce.avis', $annonce->idannonce) }}" style="text-decoration: underline; color: inherit; cursor: pointer; margin-left: 5px;">
                     ({{ $annonce->avisValides->count() }} avis)
->>>>>>> 3cfb035beb7e0fdb41202f9c1d1442e0c2683355
+
                 </a>
             </p>
 
@@ -623,22 +623,20 @@
 </div>
 @endif
 
-<<<<<<< HEAD
-{{-- SECTION AVIS (FUSIONNÉE CORRECTEMENT) --}}
-<div id="section-avis" class="container" style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd;">
-=======
+
+
     <div id="section-avis" class="container" style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; max-width: 800px;">
     
->>>>>>> 3cfb035beb7e0fdb41202f9c1d1442e0c2683355
+
     <h3>Commentaires des voyageurs</h3>
 
     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
         <span style="font-size: 2rem; font-weight: bold;">
-<<<<<<< HEAD
+
             ★ {{ number_format($annonce->moyenneAvisParAnnonce()['moyenne'], 1) }}
-=======
+
             ★ {{ number_format($annonce->avisValides->avg('note'), 1) }}
->>>>>>> 3cfb035beb7e0fdb41202f9c1d1442e0c2683355
+
         </span>
         <span style="color: #666;">
             ({{ $annonce->moyenneAvisParAnnonce()['nbAvis'] }} avis)
@@ -678,10 +676,10 @@
         @endforelse
     </div>
 </div>
-<<<<<<< HEAD
 
-=======
->>>>>>> 3cfb035beb7e0fdb41202f9c1d1442e0c2683355
+
+
+
 @endsection
 
 @push('scripts')
