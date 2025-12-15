@@ -685,15 +685,13 @@
 @endsection
 
 @push('scripts')
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://unpkg.com/leaflet-providers@latest/leaflet-providers.js"></script>
-<script src="{{ asset('js/map.js') }}"></script>
-
 <script defer>
-<<<<<<< HEAD
     // --- SCRIPT CALENDRIER ---
     document.addEventListener('DOMContentLoaded', function() {
-        const dispoData = JSON.parse({!! isset($dispoJson) ? json_encode($dispoJson) : '{}' !!});
+        // On vérifie que les données existent avant de parser
+        const rawJson = {!! isset($dispoJson) ? json_encode($dispoJson) : "'{}'" !!};
+        const dispoData = (typeof rawJson === 'string') ? JSON.parse(rawJson) : rawJson;
+        
         const prixParNuit = parseFloat("{{ $annonce->prix_nuit }}");
         const minNights = parseInt("{{ $annonce->nb_nuit_min ?? 1 }}"); 
 
@@ -726,18 +724,22 @@
         }
 
         function showError(msg) {
-            errorEl.textContent = msg;
-            errorEl.style.display = 'block';
-            setTimeout(() => { errorEl.style.display = 'none'; }, 3000);
+            if(errorEl) {
+                errorEl.textContent = msg;
+                errorEl.style.display = 'block';
+                setTimeout(() => { errorEl.style.display = 'none'; }, 3000);
+            }
         }
 
         function updateHiddenInputs() {
-            startInput.value = startDate ? formatDateKey(startDate) : '';
-            endInput.value = endDate ? formatDateKey(endDate) : '';
+            if(startInput) startInput.value = startDate ? formatDateKey(startDate) : '';
+            if(endInput) endInput.value = endDate ? formatDateKey(endDate) : '';
         }
 
         function updateTotalPrice() {
             const priceEl = document.getElementById('display-price');
+            if(!priceEl) return;
+
             if (startDate && endDate) {
                 const diffTime = Math.abs(endDate - startDate);
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
@@ -770,12 +772,15 @@
         }
 
         function renderCalendar() {
+            if(!gridEl) return;
             while (gridEl.children.length > 7) { gridEl.removeChild(gridEl.lastChild); }
 
             const year = currentViewDate.getFullYear();
             const month = currentViewDate.getMonth();
-            const monthName = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' }).format(currentViewDate);
-            titleEl.textContent = monthName.charAt(0).toUpperCase() + monthName.slice(1);
+            if(titleEl) {
+                const monthName = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' }).format(currentViewDate);
+                titleEl.textContent = monthName.charAt(0).toUpperCase() + monthName.slice(1);
+            }
 
             const firstDayOfMonth = new Date(year, month, 1);
             let startDayIndex = firstDayOfMonth.getDay();
@@ -819,7 +824,7 @@
         }
 
         function selectDate(date) {
-            errorEl.style.display = 'none';
+            if(errorEl) errorEl.style.display = 'none';
             if (!startDate || (startDate && date < startDate) || (startDate && endDate && date < startDate)) {
                 const proposedEnd = new Date(date);
                 proposedEnd.setDate(date.getDate() + minNights);
@@ -849,29 +854,15 @@
             updateTotalPrice();
         }
 
-        prevBtn.addEventListener('click', () => { currentViewDate.setMonth(currentViewDate.getMonth() - 1); renderCalendar(); });
-        nextBtn.addEventListener('click', () => { currentViewDate.setMonth(currentViewDate.getMonth() + 1); renderCalendar(); });
-        todayBtn.addEventListener('click', () => { currentViewDate = new Date(today); renderCalendar(); updateTotalPrice(); });
-        clearBtn.addEventListener('click', () => { startDate = null; endDate = null; updateHiddenInputs(); renderCalendar(); updateTotalPrice(); errorEl.style.display = 'none'; });
+        if(prevBtn) prevBtn.addEventListener('click', () => { currentViewDate.setMonth(currentViewDate.getMonth() - 1); renderCalendar(); });
+        if(nextBtn) nextBtn.addEventListener('click', () => { currentViewDate.setMonth(currentViewDate.getMonth() + 1); renderCalendar(); });
+        if(todayBtn) todayBtn.addEventListener('click', () => { currentViewDate = new Date(today); renderCalendar(); updateTotalPrice(); });
+        if(clearBtn) clearBtn.addEventListener('click', () => { startDate = null; endDate = null; updateHiddenInputs(); renderCalendar(); updateTotalPrice(); if(errorEl) errorEl.style.display = 'none'; });
 
         renderCalendar();
     });
 
     // --- SCRIPT CAROUSEL & MODAL ---
-=======
-
-    
-    document.addEventListener('DOMContentLoaded', function() {
-        const annoncesData = @json($annonceAsArray);
-        console.log(@json($annonceAsArray));
-        
-        initMapAnnonce('maCarte', annoncesData);
-    });
-
-    
-    console.log('Detail annonce script loaded');
-    
->>>>>>> 3cfb035beb7e0fdb41202f9c1d1442e0c2683355
     function openModal() {
         document.getElementById('modal-overlay').style.display = 'flex';
     }
@@ -892,18 +883,20 @@
     const photoItems = document.querySelectorAll('.photo-item');
     let currentIndex = 0;
 
-    photoItems.forEach(item => {
-        item.addEventListener('click', () => {
-            const index = item.getAttribute('data-index');
-            currentIndex = parseInt(index);
-            track.style.scrollBehavior = 'auto';
-            document.getElementById('modal-overlay').style.display = 'flex';
-            updateCarousel();
-            setTimeout(() => { track.style.scrollBehavior = 'smooth'; }, 50);
+    if(photoItems) {
+        photoItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const index = item.getAttribute('data-index');
+                currentIndex = parseInt(index);
+                if(track) track.style.scrollBehavior = 'auto';
+                document.getElementById('modal-overlay').style.display = 'flex';
+                updateCarousel();
+                if(track) setTimeout(() => { track.style.scrollBehavior = 'smooth'; }, 50);
+            });
         });
-    });
+    }
 
-    if(slides.length > 0) {
+    if(slides.length > 0 && dotsContainer) {
         slides.forEach((slide, index) => {
             const dot = document.createElement('div');
             dot.classList.add('dot');
@@ -919,7 +912,7 @@
     const dots = document.querySelectorAll('.dot');
 
     function updateCarousel() {
-        if(slides.length === 0) return;
+        if(slides.length === 0 || !track) return;
         const slideWidth = slides[0].clientWidth;
         track.scrollTo({ left: currentIndex * slideWidth, behavior: 'auto' });
         dots.forEach(dot => dot.classList.remove('active'));
