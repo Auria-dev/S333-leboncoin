@@ -66,8 +66,8 @@ Route::post('/envoyer-sms', [AnnonceController::class, 'envoyerCodeSms'])->name(
 Route::post('/verifier-code', [AnnonceController::class, 'traiterVerification'])->name('action.verifier.code');
 
 // --- ADMINISTRATION (GARANTIE) ---
-Route::get('/admin/dashboard', [AnnonceController::class, 'adminDashboard'])->name('admin.dashboard');
-Route::post('/admin/garantie/{id}', [AnnonceController::class, 'toggleGarantie'])->name('admin.toggle.garantie');
+Route::get('/admin/dashboard', [AnnonceController::class, 'adminDashboard'])->middleware('auth')->name('admin.dashboard');
+Route::post('/admin/garantie/{id}', [AnnonceController::class, 'toggleGarantie'])->middleware('auth')->name('admin.toggle.garantie');
 
 
 // pour yoyo&ninie
