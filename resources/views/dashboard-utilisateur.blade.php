@@ -364,24 +364,35 @@
 </div>
 </div>
 
-@if(Auth::check() && Auth::user()->idutilisateur == 52)
+@if($utilisateur->administrateur->typeAdmin->nom_type_admin === 'Service Immobilier')
+    <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
+        <h3 style="margin-bottom: 15px;">Espace Service Immo</h3>
         
-        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
-            <h3 style="margin-bottom: 15px;">Espace Service Immo</h3>
+        <a href="{{ route('admin.avis.index') }}" class="other-btn">
+            Modérer les Avis
+            @php
+                $nbEnAttente = \App\Models\Avis::where('statut_avis', 'en_attente')->count();
+            @endphp
             
-            <a href="{{ route('admin.avis.index') }}" style="display: inline-block; background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">
-                Modérer les Avis
-                @php
-                    $nbEnAttente = \App\Models\Avis::where('statut_avis', 'en_attente')->count();
-                @endphp
-                
-                @if($nbEnAttente > 0)
-                    <span style="background-color: red; color: white; padding: 2px 6px; border-radius: 50%; font-size: 0.8em; margin-left: 5px; vertical-align: middle;">
-                        {{ $nbEnAttente }}
-                    </span>
-                @endif
-            </a>
-        </div>
+            @if($nbEnAttente > 0)
+                <span style="background-color: red; color: white; padding: 2px 6px; border-radius: 50%; font-size: 0.8em; margin-left: 5px; vertical-align: middle;">
+                    {{ $nbEnAttente }}
+                </span>
+            @endif
+        </a>
+    </div>
+@endif
 
-    @endif
+
+@if($utilisateur->administrateur->typeAdmin->nom_type_admin === 'Service Petites Annonces')
+    <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
+        <h3 style="margin-bottom: 15px;">Espace Service Petites Annonces</h3>
+        
+        <a href="{{ route('admin.dashboard') }}" class="other-btn">
+            Vérifier les annonces
+        </a>
+    </div>
+@endif
+
 @endsection
+
