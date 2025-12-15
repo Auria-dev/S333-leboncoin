@@ -101,7 +101,15 @@ class Utilisateur extends Authenticatable {
         return null;
     }
 
+    public function administrateur() {
+        return $this->hasOne(Administrateur::class, 'idadmin');
+    }
+
     public function getTypeParticulier() {
+        if ($this->administrateur) {
+            return $this->administrateur->typeAdmin->nom_type_admin;
+        }
+        
         if ($this->entreprise) {
             return 'Entreprise';
         }

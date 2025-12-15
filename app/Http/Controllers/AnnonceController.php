@@ -30,9 +30,12 @@ class AnnonceController extends Controller
         $this->geoService = $geoService;
     }
 
-    // --- DASHBOARD ADMIN ---
     public function adminDashboard()
     {
+        $user = Auth::user();
+        if (!$user->administrateur) 
+            return redirect()->back()->with('error', 'Vous n\'avez pas accès à cette page.');
+        
         $annonces = Annonce::with('utilisateur')->orderBy('date_publication', 'desc')->get();
         return view('admin.dashboard', ['annonces' => $annonces]);
     }
@@ -73,7 +76,6 @@ class AnnonceController extends Controller
         $adresseComplete = $req->depot_adresse . ', ' . $req->ville . ', France';
         $coordonnees = $this->geoService->geocode($adresseComplete);
 
-        // 1. Création de l'annonce
         $annonce = Annonce::create([
             'idtypehebergement' => $type_heb->idtypehebergement ?? 1,
             'idproprietaire' => $user->idutilisateur,
@@ -95,7 +97,6 @@ class AnnonceController extends Controller
             'est_garantie' => false
         ]);
 
-        // 2. CORRECTION : On attache avec TES noms de variables
         if ($req->has('DepotEquipement')) {
             $annonce->equipement()->attach($req->DepotEquipement);
         }
@@ -104,7 +105,6 @@ class AnnonceController extends Controller
             $annonce->service()->attach($req->DepotService);
         }
         
-        // 3. Photos
         if ($req->hasFile('file')) {
             foreach ($req->file('file') as $file) {
                 Photo::create(['idannonce' => $annonce->idannonce, 'nomphoto' => "/images/photo-annonce.jpg"]); 
@@ -113,14 +113,12 @@ class AnnonceController extends Controller
             Photo::create(['idannonce' => $annonce->idannonce, 'nomphoto' => "/images/photo-annonce.jpg"]);
         }
         
-        // 4. Calendrier
         DB::table('calendrier')->insertUsing(
             ['iddate', 'idannonce', 'idutilisateur', 'code_dispo'],
             DB::table('date as d')->crossJoin('annonce as a')->where('a.idannonce', $annonce->idannonce)
                 ->select('d.iddate', 'a.idannonce', DB::raw('NULL'), DB::raw('TRUE'))
         );
 
-        // 5. Verification
         if (!$user->telephone_verifie) {
             if (empty($user->telephone)) {
                 return redirect('/telephone')->with('warning', 'Annonce créée ! Vérifiez votre téléphone.');
@@ -131,7 +129,6 @@ class AnnonceController extends Controller
         return redirect('/profile')->with('success', 'Annonce publiée avec succès !');
     }
 
-    // --- LOGIQUE SMS ---
     private function lancerProcessusVerification($numero) {
         $user = Auth::user();
         $numeroClean = str_replace([' ', '.', '-', '/'], '', $numero);
@@ -179,10 +176,8 @@ class AnnonceController extends Controller
         return redirect()->back()->with('error', 'Code incorrect.');
     }
 
-    // --- DETAIL ANNONCE ---
     public function view($id)
     {
-        // On charge toutes les relations nécessaires
         $annonce = Annonce::with([
             'photo', 'ville', 'utilisateur', 'type_Hebergement', 'avisValides.utilisateur', 
             'equipement', 'service' 
@@ -210,7 +205,6 @@ class AnnonceController extends Controller
         ]);
     }
 
-    // Utilitaires
     public function addFav($idannonce) {
         $user = auth()->user();
         $exists = \App\Models\Favoris::where('idutilisateur', $user->idutilisateur)->where('idannonce', $idannonce)->exists();
