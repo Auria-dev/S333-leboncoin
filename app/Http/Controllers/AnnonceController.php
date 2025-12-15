@@ -30,13 +30,9 @@ class AnnonceController extends Controller
         $this->geoService = $geoService;
     }
 
-    // =========================================================
-    // PARTIE 1 : DASHBOARD ADMIN
-    // =========================================================
-
+    // --- DASHBOARD ADMIN ---
     public function adminDashboard()
     {
-        // On récupère toutes les annonces triées par date de publication
         $annonces = Annonce::with('utilisateur')->orderBy('date_publication', 'desc')->get();
         return view('admin.dashboard', ['annonces' => $annonces]);
     }
@@ -45,9 +41,8 @@ class AnnonceController extends Controller
     {
         $annonce = Annonce::with('utilisateur')->findOrFail($idannonce);
 
-        // Règle métier : le téléphone doit être vérifié
         if (!$annonce->utilisateur->telephone_verifie) {
-            return redirect()->back()->with('error', 'Impossible de garantir : Téléphone non vérifié !');
+            return redirect()->back()->with('error', 'Impossible de garantir : L\'utilisateur n\'a pas vérifié son téléphone !');
         }
 
         $annonce->est_garantie = !$annonce->est_garantie;
@@ -57,10 +52,7 @@ class AnnonceController extends Controller
         return redirect()->back()->with('success', "Annonce $status");
     }
 
-    // =========================================================
-    // PARTIE 2 : AJOUT D'ANNONCE & VÉRIFICATION
-    // =========================================================
-
+    // --- AJOUT ANNONCE ---
     public function afficher_form()
     {
         $types = TypeHebergement::all();
@@ -77,9 +69,11 @@ class AnnonceController extends Controller
 
         $codeville = Ville::where('nom_ville', $req->ville)->first();
         $type_heb = TypeHebergement::where('nom_type_hebergement', $req->DepotTypeHebergement)->first();
+        
         $adresseComplete = $req->depot_adresse . ', ' . $req->ville . ', France';
         $coordonnees = $this->geoService->geocode($adresseComplete);
 
+        // 1. Création de l'annonce
         $annonce = Annonce::create([
             'idtypehebergement' => $type_heb->idtypehebergement ?? 1,
             'idproprietaire' => $user->idutilisateur,
@@ -100,25 +94,33 @@ class AnnonceController extends Controller
             'latitude' => $coordonnees['lat'] ?? null,
             'est_garantie' => false
         ]);
+
+        // 2. CORRECTION : On attache avec TES noms de variables
+        if ($req->has('DepotEquipement')) {
+            $annonce->equipement()->attach($req->DepotEquipement);
+        }
+
+        if ($req->has('DepotService')) {
+            $annonce->service()->attach($req->DepotService);
+        }
         
-        // Gestion Photo (simplifiée pour l'exemple)
+        // 3. Photos
         if ($req->hasFile('file')) {
-            $num_photo = 1;
             foreach ($req->file('file') as $file) {
-                // Logique de sauvegarde ici
                 Photo::create(['idannonce' => $annonce->idannonce, 'nomphoto' => "/images/photo-annonce.jpg"]); 
-                $num_photo++;
             }
         } else {
             Photo::create(['idannonce' => $annonce->idannonce, 'nomphoto' => "/images/photo-annonce.jpg"]);
         }
         
+        // 4. Calendrier
         DB::table('calendrier')->insertUsing(
             ['iddate', 'idannonce', 'idutilisateur', 'code_dispo'],
             DB::table('date as d')->crossJoin('annonce as a')->where('a.idannonce', $annonce->idannonce)
                 ->select('d.iddate', 'a.idannonce', DB::raw('NULL'), DB::raw('TRUE'))
         );
 
+        // 5. Verification
         if (!$user->telephone_verifie) {
             if (empty($user->telephone)) {
                 return redirect('/telephone')->with('warning', 'Annonce créée ! Vérifiez votre téléphone.');
@@ -126,16 +128,12 @@ class AnnonceController extends Controller
             return $this->lancerProcessusVerification($user->telephone);
         }
 
-        return redirect('/profile')->with('success', 'Annonce publiée !');
+        return redirect('/profile')->with('success', 'Annonce publiée avec succès !');
     }
 
-    // =========================================================
-    // PARTIE 3 : LOGIQUE VONAGE (SMS)
-    // =========================================================
-
+    // --- LOGIQUE SMS ---
     private function lancerProcessusVerification($numero) {
         $user = Auth::user();
-        
         $numeroClean = str_replace([' ', '.', '-', '/'], '', $numero);
         if (substr($numeroClean, 0, 1) == '0') $numeroClean = '+33' . substr($numeroClean, 1);
         elseif (substr($numeroClean, 0, 2) == '33') $numeroClean = '+' . $numeroClean;
@@ -151,7 +149,7 @@ class AnnonceController extends Controller
             $client->setHttpClient(new GuzzleClient(['verify' => storage_path('cacert.pem')]));
 
             $client->sms()->send(new SMS($numeroClean, "Vonage APIs", "Code : " . $code));
-            return redirect('/telephone')->with('success', 'Annonce créée ! Vérifiez vos SMS.');
+            return redirect('/telephone')->with('success', 'Annonce créée ! Un code SMS vous a été envoyé.');
 
         } catch (\Exception $e) {
             return redirect('/telephone')->with('error', 'Erreur SMS : ' . $e->getMessage());
@@ -176,39 +174,26 @@ class AnnonceController extends Controller
             $user->telephone_verifie = true;
             $user->phone_verification_code = null;
             $user->save();
-            return redirect('/profile')->with('success', 'Compte vérifié !');
+            return redirect('/profile')->with('success', 'Téléphone vérifié !');
         }
         return redirect()->back()->with('error', 'Code incorrect.');
     }
 
-    // =========================================================
-    // PARTIE 4 : AFFICHAGE DÉTAIL ANNONCE (La partie qui posait problème)
-    // =========================================================
-
+    // --- DETAIL ANNONCE ---
     public function view($id)
     {
-        // On récupère l'annonce avec toutes ses relations
+        // On charge toutes les relations nécessaires
         $annonce = Annonce::with([
-            'photo',
-            'ville',
-            'utilisateur',
-            'type_Hebergement',
-            'avisValides.utilisateur'
+            'photo', 'ville', 'utilisateur', 'type_Hebergement', 'avisValides.utilisateur', 
+            'equipement', 'service' 
         ])->findOrFail($id);
 
         $iduser = Auth::check() ? Auth::user()->idutilisateur : -1;
+        $exists = \App\Models\Favoris::where('idutilisateur', $iduser)->where('idannonce', $id)->exists();
 
-        $exists = \App\Models\Favoris::where('idutilisateur', '=', $iduser)
-            ->where('idannonce', '=', $id)
-            ->exists();
-
-        // Récupération des disponibilités pour le calendrier JS
         $disponibilites = \App\Models\Calendrier::where('idannonce', $id)
-            ->whereHas('date', function ($q) {
-                $q->where('date', '>=', now()->toDateString());
-            })
-            ->with('date')
-            ->get();
+            ->whereHas('date', function ($q) { $q->where('date', '>=', now()->toDateString()); })
+            ->with('date')->get();
 
         $dispoMap = [];
         foreach ($disponibilites as $cal) {
@@ -225,32 +210,15 @@ class AnnonceController extends Controller
         ]);
     }
 
-    // =========================================================
-    // AUTRES FONCTIONS
-    // =========================================================
-
-    public function addFav($idannonce)
-    {
+    // Utilitaires
+    public function addFav($idannonce) {
         $user = auth()->user();
         $exists = \App\Models\Favoris::where('idutilisateur', $user->idutilisateur)->where('idannonce', $idannonce)->exists();
-        
-        if (!$exists) {
-            \App\Models\Favoris::create(['idutilisateur' => $user->idutilisateur, 'idannonce' => $idannonce]);
-        } else {
-            \App\Models\Favoris::where('idutilisateur', $user->idutilisateur)->where('idannonce', $idannonce)->delete();
-        }
+        if (!$exists) \App\Models\Favoris::create(['idutilisateur' => $user->idutilisateur, 'idannonce' => $idannonce]);
+        else \App\Models\Favoris::where('idutilisateur', $user->idutilisateur)->where('idannonce', $idannonce)->delete();
         return redirect()->back();
     }
-
-    public function view_reserver(Request $req, $idannonce) { 
-        return view("reserver-annonce"); 
-    }
-    
-    public function reserver(Request $req) { 
-        return redirect()->back(); 
-    }
-    
-    public function showReviews($id) { 
-        return view('tous-les-avis'); 
-    }
+    public function view_reserver(Request $req, $idannonce) { return view("reserver-annonce"); }
+    public function reserver(Request $req) { return redirect()->back(); }
+    public function showReviews($id) { return view('tous-les-avis'); }
 }

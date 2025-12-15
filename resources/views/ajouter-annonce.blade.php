@@ -26,8 +26,6 @@
                 <input type="file" name="file[]" id="fileInput" accept=".png, .jpeg, .jpg" multiple required hidden> 
             </div> 
             
-
-
             <label>Titre</label>
             <input type="text" id="titre" name="titre" placeholder="Maison 3 chambres centre d'Annecy" required>
 
@@ -54,10 +52,8 @@
 
                         selectAddress(feature) {
                             this.query = feature.properties.label;
-                            
                             this.city = feature.properties.city;
                             this.zip = feature.properties.postcode;
-                            
                             this.showResults = false;
                         },
 
@@ -66,17 +62,12 @@
                                 this.results = [];
                                 return; 
                             }
-
                             try {
                                 let response = await fetch(`https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(this.query)}&limit=5&autocomplete=1`);
-                                
                                 if (!response.ok) throw new Error('Network error');
-                                
                                 let data = await response.json();
-                                
                                 this.results = data.features; 
                                 this.showResults = true;
-
                             } catch (e) {
                                 console.error(e);
                             }
@@ -179,10 +170,11 @@
                     @if(isset($equipements))
                         @foreach($equipements as $eq)
                             <label class="pill-label">
+                                {{-- ON GARDE TES NOMS, MAIS ON ENVOIE L'ID --}}
                                 <input type="checkbox" 
                                     name="DepotEquipement[]" 
-                                    value="{{ $eq->nom_equipement }}"
-                                    @checked(in_array($eq->nom_equipement, request('DepotEquipement', [])))>
+                                    value="{{ $eq->idequipement }}" 
+                                    @checked(in_array($eq->idequipement, request('DepotEquipement', [])))>
                                 
                                 <span class="pill-content">
                                     <span class="icon-wrapper">
@@ -202,10 +194,11 @@
                     @if(isset($services))
                         @foreach($services as $sv)
                             <label class="pill-label">
+                                {{-- ON GARDE TES NOMS, MAIS ON ENVOIE L'ID --}}
                                 <input type="checkbox" 
                                     name="DepotService[]" 
-                                    value="{{ $sv->nom_service }}"
-                                    @checked(in_array($sv->nom_service, request('DepotService', [])))>
+                                    value="{{ $sv->idservice }}" 
+                                    @checked(in_array($sv->idservice, request('DepotService', [])))>
                                 
                                 <span class="pill-content">
                                     <span class="icon-wrapper">
