@@ -14,6 +14,7 @@
 </div>
 
 <div class="annonce-grid">
+    {{-- COLONNE GAUCHE : PHOTOS + CALENDRIER --}}
     <div class="photo-column">
         <div class="carousel-placeholder">
             @if($annonce->photo && count($annonce->photo) > 0)
@@ -22,7 +23,7 @@
                     Voir les photos
                 </div>
             @else
-                <img src="/path/to/default-image.jpg" alt="Sans photo" class="img-placeholder">
+                <img src="/images/placeholder.jpg" alt="Sans photo" class="img-placeholder">
             @endif
         </div>
 
@@ -33,6 +34,7 @@
                 @endforeach
             @endif
         </div>
+
         <div class="center flex-col w-full">
             <h3 class="mt-xl">Demander une réservation</h3>
             <form id="booking-form" method="GET" action="{{ url('/demander_reservation/' . $annonce->idannonce) }}">
@@ -76,244 +78,25 @@
                     </div>
                 </div>
             </form>
-            <script defer>
-                document.addEventListener('DOMContentLoaded', function() {
-                    const dispoData = JSON.parse({!! isset($dispoJson) ? json_encode($dispoJson) : '{}' !!});
-                    const prixParNuit = parseFloat("{{ $annonce->prix_nuit }}");
-                    const minNights = parseInt("{{ $annonce->nb_nuit_min ?? 1 }}"); 
-
-                    const today = new Date();
-                    today.setHours(0,0,0,0);
-                    const maxDate = new Date(today);
-                    maxDate.setFullYear(today.getFullYear() + 2);
-
-                    let currentViewDate = new Date(today);
-                    let startDate = null;
-                    let endDate = null;
-
-                    const gridEl = document.getElementById('cal-grid');
-                    const titleEl = document.getElementById('cal-title');
-                    const prevBtn = document.getElementById('btn-prev');
-                    const nextBtn = document.getElementById('btn-next');
-                    const todayBtn = document.getElementById('btn-today');
-                    const clearBtn = document.getElementById('btn-clear');
-                    const validateBtn = document.getElementById('btn-validate');
-                    const errorEl = document.getElementById('cal-error'); // Select the error div
-                    
-                    const startInput = document.getElementById('booking_start_date');
-                    const endInput = document.getElementById('booking_end_date');
-
-                    function formatDateKey(date) {
-                        const y = date.getFullYear();
-                        const m = String(date.getMonth() + 1).padStart(2, '0');
-                        const d = String(date.getDate()).padStart(2, '0');
-                        return `${y}-${m}-${d}`;
-                    }
-
-                    function showError(msg) {
-                        errorEl.textContent = msg;
-                        errorEl.style.display = 'block';
-                        setTimeout(() => {
-                            errorEl.style.display = 'none';
-                        }, 3000);
-                    }
-
-                    function updateHiddenInputs() {
-                        startInput.value = startDate ? formatDateKey(startDate) : '';
-                        endInput.value = endDate ? formatDateKey(endDate) : '';
-                    }
-
-                    function updateTotalPrice() {
-                        const priceEl = document.getElementById('display-price');
-
-                        if (startDate && endDate) {
-                            const diffTime = Math.abs(endDate - startDate);
-                            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-                            const total = diffDays * prixParNuit;
-                            priceEl.textContent = total.toFixed(2);
-                            validateBtn.disabled = false;
-                            validateBtn.style.opacity = '1';
-                            validateBtn.style.cursor = 'pointer';
-                        } else {
-                            priceEl.textContent = '0';
-                            validateBtn.disabled = true;
-                            validateBtn.style.opacity = '0.5';
-                            validateBtn.style.cursor = 'not-allowed';
-                        }
-                    }
-
-                    function isRangeAvailable(start, end) {
-                        let current = new Date(start);
-                        const checkoutTime = end.getTime();
-                        
-                        while (current.getTime() < checkoutTime) {
-                            const dateString = formatDateKey(current);
-                            if (dispoData[dateString] && dispoData[dateString].dispo === false) {
-                                return false;
-                            }
-                            current.setDate(current.getDate() + 1);
-                        }
-                        return true;
-                    }
-
-                    function renderCalendar() {
-                        while (gridEl.children.length > 7) {
-                            gridEl.removeChild(gridEl.lastChild);
-                        }
-
-                        const year = currentViewDate.getFullYear();
-                        const month = currentViewDate.getMonth();
-
-                        const monthName = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' }).format(currentViewDate);
-                        titleEl.textContent = monthName.charAt(0).toUpperCase() + monthName.slice(1);
-
-                        const firstDayOfMonth = new Date(year, month, 1);
-                        let startDayIndex = firstDayOfMonth.getDay();
-                        startDayIndex = (startDayIndex === 0) ? 6 : startDayIndex - 1;
-
-                        const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-                        for (let i = 0; i < startDayIndex; i++) {
-                            const emptyCell = document.createElement('div');
-                            emptyCell.className = 'cal-cellule';
-                            emptyCell.style.border = 'none';
-                            emptyCell.style.backgroundColor = 'transparent';
-                            gridEl.appendChild(emptyCell);
-                        }
-
-                        for (let d = 1; d <= daysInMonth; d++) {
-                            const dateObj = new Date(year, month, d);
-                            const dateString = formatDateKey(dateObj);
-                            
-                            const cell = document.createElement('div');
-                            cell.className = 'cal-cellule';
-                            cell.textContent = d;
-
-                            let isDisabled = false;
-                            if (dateObj < today) isDisabled = true;
-                            else if (dateObj > maxDate) isDisabled = true;
-                            else if (dispoData[dateString] && dispoData[dateString].dispo === false) isDisabled = true;
-
-                            if (isDisabled) {
-                                cell.classList.add('disabled');
-                            } else {
-                                cell.addEventListener('click', () => selectDate(dateObj));
-                                
-                                const dateTime = dateObj.getTime();
-                                const sTime = startDate ? startDate.getTime() : null;
-                                const eTime = endDate ? endDate.getTime() : null;
-
-                                if (sTime && dateTime === sTime) {
-                                    cell.classList.add('selectionne', 'debut-plage');
-                                }
-                                else if (eTime && dateTime === eTime) {
-                                    cell.classList.add('selectionne', 'fin-plage');
-                                }
-                                else if (sTime && eTime && dateTime > sTime && dateTime < eTime) {
-                                    cell.classList.add('dans-plage');
-                                }
-                            }
-                            gridEl.appendChild(cell);
-                        }
-                        
-                        const prevMonthDate = new Date(year, month - 1);
-                        if (year < today.getFullYear() || (year === today.getFullYear() && month <= today.getMonth())) {
-                            prevBtn.disabled = true;
-                            prevBtn.style.opacity = "0.3";
-                            prevBtn.style.cursor = "not-allowed";
-                        } else {
-                            prevBtn.disabled = false;
-                            prevBtn.style.opacity = "1";
-                            prevBtn.style.cursor = "pointer";
-                        }
-
-                        const nextMonthDate = new Date(year,month+1);
-                        if (nextMonthDate > new Date(today.getFullYear()+2, today.getMonth()) ) {
-                            nextBtn.disabled = true;
-                            nextBtn.style.opacity = "0.3";
-                            nextBtn.style.cursor = "not-allowed";
-                        } else {
-                            nextBtn.disabled = false;
-                            nextBtn.style.opacity = "1";
-                            nextBtn.style.cursor = "pointer";
-                        }
-                    }
-
-                    function selectDate(date) {
-                        errorEl.style.display = 'none';
-
-                        if (!startDate || (startDate && date < startDate) || (startDate && endDate && date < startDate)) {
-                            
-                            const proposedEnd = new Date(date);
-                            proposedEnd.setDate(date.getDate() + minNights);
-
-                            if (isRangeAvailable(date, proposedEnd)) {
-                                startDate = date;
-                                endDate = proposedEnd;
-                            } else {
-                                showError("La durée minimum n'est pas disponible pour cette date.");
-                                return;
-                            }
-                        } 
-                        else if (startDate && date > startDate) {
-                            
-                            const diffTime = Math.abs(date - startDate);
-                            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-                            if (diffDays < minNights) {
-                                showError(`Le séjour doit être de ${minNights} nuits minimum.`);
-                                return;
-                            }
-
-                            if (isRangeAvailable(startDate, date)) {
-                                endDate = date;
-                            } else {
-                                showError("Certaines dates sélectionnées ne sont pas disponibles.");
-                                return; 
-                            }
-                        }
-
-                        updateHiddenInputs();
-                        renderCalendar();
-                        updateTotalPrice();
-                    }
-
-                    prevBtn.addEventListener('click', () => {
-                        currentViewDate.setMonth(currentViewDate.getMonth() - 1);
-                        renderCalendar();
-                        updateTotalPrice();
-                    });
-
-                    nextBtn.addEventListener('click', () => {
-                        currentViewDate.setMonth(currentViewDate.getMonth() + 1);
-                        renderCalendar();
-                        updateTotalPrice();
-                    });
-
-                    todayBtn.addEventListener('click', () => {
-                        currentViewDate = new Date(today);
-                        renderCalendar();
-                        updateTotalPrice();
-                    });
-
-                    clearBtn.addEventListener('click', () => {
-                        startDate = null;
-                        endDate = null;
-                        updateHiddenInputs();
-                        renderCalendar();
-                        updateTotalPrice();
-                        errorEl.style.display = 'none';
-                    });
-
-                    renderCalendar();
-                });
-            </script>
         </div>
     </div>
+
+    {{-- COLONNE DROITE : INFOS ANNONCE --}}
     <div class="info-column">
         
         <header style="border:none; padding:0; text-align:left; margin:0;">
             <h1 class="titre-annonce">{{ $annonce->titre_annonce }}</h1>
+
+            {{-- >>> LE BADGE GARANTIE EST ICI <<< --}}
+            @if($annonce->est_garantie)
+                <div style="background-color: #d1e7dd; color: #0f5132; padding: 10px; border-radius: 5px; margin: 10px 0; border: 1px solid #badbcc; display: inline-block;">
+                    <strong>🌟 PAIEMENT GARANTI</strong>
+                    <br>
+                    <small>Propriétaire vérifié par téléphone</small>
+                </div>
+            @endif
+            {{-- >>> FIN DU BADGE <<< --}}
+
                 <p style="margin-top: 0.5rem; color: var(--text-muted); font-size: 0.9rem;">
                     {{ $annonce->adresse_annonce . ', ' . $annonce->ville->nomville . ' ' . $annonce->ville->code_postal }} &bull; 
     
@@ -323,7 +106,7 @@
                     {{ number_format($annonce->moyenneAvisParAnnonce()['moyenne'], 1) }}
                 </span>
                 
-                <a href="{{ route('annonce.avis', $annonce->idannonce) }}" style="text-decoration: underline; color: inherit; cursor: pointer; margin-left: 5px;">
+                <a href="#section-avis" style="text-decoration: underline; color: inherit; cursor: pointer; margin-left: 5px;">
                     ({{ $annonce->moyenneAvisParAnnonce()['nbAvis'] }} avis)
                 </a>
             </p>
@@ -346,8 +129,6 @@
                 <svg id="favoris" class="{{ $isFav ? 'liked' : '' }}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-heart-icon lucide-heart"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/></svg>
             </a>
         </div>
-
-
 
         <ul class="details-list">
             <li class="detail-item">
@@ -418,7 +199,7 @@
     </div>
 </div>
 
-
+{{-- MODAL PHOTOS --}}
 <div class="modal-overlay" id="modal-overlay" style="display: none;">
     <div class="carrousel-conatainer">
         <div class="carrousel-body">
@@ -436,15 +217,13 @@
             <div class="dots"></div>
             
         </div>
-
     </div>
-
 </div>
 
+{{-- ANNONCES SIMILAIRES --}}
 <div class="res-section">
-        <p class="section-title">Annonce(s) similaire(s)</p>
-
-        <div class="res-scroller">
+    <p class="section-title">Annonce(s) similaire(s)</p>
+    <div class="res-scroller">
         @forelse($annonce->similaires as $similaire)
         <a class="similaire-card" href="{{ url('annonce/'.strval($similaire->idannonce)) }}">
             <div class="similaire-card-img">
@@ -479,19 +258,18 @@
         </a>
         @empty
             <div class="res-empty">
-                <p>Aucune réservation trouvée.</p>
+                <p>Aucune annonce similaire trouvée.</p>
             </div>
         @endforelse
     </div>
 </div>
 
-
+{{-- SECTION RESERVATIONS (POUR LE PROPRIO) --}}
 @if (auth()->check() && auth()->user()->idutilisateur === $annonce->idproprietaire)
 <div class="res-section">
     <p class="section-title">Réservation(s) de cette annonce</p>
     <div class="res-scroller">
-
-                        @forelse($annonce->reservation as $res)
+        @forelse($annonce->reservation as $res)
             <a class="res-card" href="{{ url('reservation/'.strval($res->idreservation)) }}" >
                 <div class="res-header">
                     <div>
@@ -535,22 +313,7 @@
                                 <span>{{ $res->nb_enfants }} Enfant(s)</span>
                             </div>
                         @endif
-
-                        @if($res->nb_bebes > 0)
-                            <div class="res-info-row">
-                                <svg class="res-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-baby-icon lucide-baby"><path d="M10 16c.5.3 1.2.5 2 .5s1.5-.2 2-.5"/><path d="M15 12h.01"/><path d="M19.38 6.813A9 9 0 0 1 20.8 10.2a2 2 0 0 1 0 3.6 9 9 0 0 1-17.6 0 2 2 0 0 1 0-3.6A9 9 0 0 1 12 3c2 0 3.5 1.1 3.5 2.5s-.9 2.5-2 2.5c-.8 0-1.5-.4-1.5-1"/><path d="M9 12h.01"/></svg>
-                                <span>{{ $res->nb_bebes }} Bébé(s)</span>
-                            </div>
-                        @endif
-
-                        @if($res->nb_animaux > 0)
-                            <div class="res-info-row">
-                                <svg class="res-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-paw-print-icon lucide-paw-print"><circle cx="11" cy="4" r="2"/><circle cx="18" cy="8" r="2"/><circle cx="20" cy="16" r="2"/><path d="M9 10a5 5 0 0 1 5 5v3.5a3.5 3.5 0 0 1-6.84 1.045Q6.52 17.48 4.46 16.84A3.5 3.5 0 0 1 5.5 10Z"/></svg>
-                                <span>{{ $res->nb_animaux }} Animaux</span>
-                            </div>
-                        @endif
                     </div>
-
                     <div>
                         <div class="res-label">Séjour</div>
                         <div class="res-info-row">
@@ -561,44 +324,31 @@
                 </div>
 
                 <div class="res-price-box">
-                    <div class="res-price-row">
-                        <span>Frais de service</span>
-                        <span>{{ number_format($res->frais_services, 2, ',', ' ') }} €</span>
-                    </div>
-                    <div class="res-price-row">
-                        <span>Taxe de séjour</span>
-                        <span>{{ number_format($res->taxe_sejour, 2, ',', ' ') }} €</span>
-                    </div>
-                    
-                    <div class="res-price-divider"></div>
-
                     <div class="res-total">
                         <span>Total</span>
                         <span>{{ number_format($res->montant_total, 2, ',', ' ') }} €</span>
                     </div>
                 </div>
             </a>
-                    @empty
-        <div class="res-empty">
+        @empty
+            <div class="res-empty">
                 <p>Aucune réservation trouvée.</p>
             </div>
-            @endforelse
+        @endforelse
     </div>
 </div>
 @endif
-<<<<<<< HEAD
-=======
 
-    <div id="section-avis" class="container" style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd;">
-    
+{{-- SECTION AVIS (FUSIONNÉE CORRECTEMENT) --}}
+<div id="section-avis" class="container" style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd;">
     <h3>Commentaires des voyageurs</h3>
 
     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
         <span style="font-size: 2rem; font-weight: bold;">
-            ★ {{ number_format($annonce->avisValides->avg('NOTE'), 1) }}
+            ★ {{ number_format($annonce->moyenneAvisParAnnonce()['moyenne'], 1) }}
         </span>
         <span style="color: #666;">
-            ({{ $annonce->avisValides->count() }} avis)
+            ({{ $annonce->moyenneAvisParAnnonce()['nbAvis'] }} avis)
         </span>
     </div>
 
@@ -636,11 +386,177 @@
     </div>
 </div>
 
->>>>>>> 37118175ca7422eac0a8a3e66f9e8140e7f803cb
 @endsection
+
 @push('scripts')
 <script defer>
-    console.log('Detail annonce script loaded');
+    // --- SCRIPT CALENDRIER ---
+    document.addEventListener('DOMContentLoaded', function() {
+        const dispoData = JSON.parse({!! isset($dispoJson) ? json_encode($dispoJson) : '{}' !!});
+        const prixParNuit = parseFloat("{{ $annonce->prix_nuit }}");
+        const minNights = parseInt("{{ $annonce->nb_nuit_min ?? 1 }}"); 
+
+        const today = new Date();
+        today.setHours(0,0,0,0);
+        const maxDate = new Date(today);
+        maxDate.setFullYear(today.getFullYear() + 2);
+
+        let currentViewDate = new Date(today);
+        let startDate = null;
+        let endDate = null;
+
+        const gridEl = document.getElementById('cal-grid');
+        const titleEl = document.getElementById('cal-title');
+        const prevBtn = document.getElementById('btn-prev');
+        const nextBtn = document.getElementById('btn-next');
+        const todayBtn = document.getElementById('btn-today');
+        const clearBtn = document.getElementById('btn-clear');
+        const validateBtn = document.getElementById('btn-validate');
+        const errorEl = document.getElementById('cal-error');
+        
+        const startInput = document.getElementById('booking_start_date');
+        const endInput = document.getElementById('booking_end_date');
+
+        function formatDateKey(date) {
+            const y = date.getFullYear();
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const d = String(date.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+
+        function showError(msg) {
+            errorEl.textContent = msg;
+            errorEl.style.display = 'block';
+            setTimeout(() => { errorEl.style.display = 'none'; }, 3000);
+        }
+
+        function updateHiddenInputs() {
+            startInput.value = startDate ? formatDateKey(startDate) : '';
+            endInput.value = endDate ? formatDateKey(endDate) : '';
+        }
+
+        function updateTotalPrice() {
+            const priceEl = document.getElementById('display-price');
+            if (startDate && endDate) {
+                const diffTime = Math.abs(endDate - startDate);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+                const total = diffDays * prixParNuit;
+                priceEl.textContent = total.toFixed(2);
+                if(validateBtn) {
+                    validateBtn.disabled = false;
+                    validateBtn.style.opacity = '1';
+                    validateBtn.style.cursor = 'pointer';
+                }
+            } else {
+                priceEl.textContent = '0';
+                if(validateBtn) {
+                    validateBtn.disabled = true;
+                    validateBtn.style.opacity = '0.5';
+                    validateBtn.style.cursor = 'not-allowed';
+                }
+            }
+        }
+
+        function isRangeAvailable(start, end) {
+            let current = new Date(start);
+            const checkoutTime = end.getTime();
+            while (current.getTime() < checkoutTime) {
+                const dateString = formatDateKey(current);
+                if (dispoData[dateString] && dispoData[dateString].dispo === false) return false;
+                current.setDate(current.getDate() + 1);
+            }
+            return true;
+        }
+
+        function renderCalendar() {
+            while (gridEl.children.length > 7) { gridEl.removeChild(gridEl.lastChild); }
+
+            const year = currentViewDate.getFullYear();
+            const month = currentViewDate.getMonth();
+            const monthName = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' }).format(currentViewDate);
+            titleEl.textContent = monthName.charAt(0).toUpperCase() + monthName.slice(1);
+
+            const firstDayOfMonth = new Date(year, month, 1);
+            let startDayIndex = firstDayOfMonth.getDay();
+            startDayIndex = (startDayIndex === 0) ? 6 : startDayIndex - 1;
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            for (let i = 0; i < startDayIndex; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.className = 'cal-cellule';
+                emptyCell.style.border = 'none';
+                emptyCell.style.backgroundColor = 'transparent';
+                gridEl.appendChild(emptyCell);
+            }
+
+            for (let d = 1; d <= daysInMonth; d++) {
+                const dateObj = new Date(year, month, d);
+                const dateString = formatDateKey(dateObj);
+                const cell = document.createElement('div');
+                cell.className = 'cal-cellule';
+                cell.textContent = d;
+
+                let isDisabled = false;
+                if (dateObj < today) isDisabled = true;
+                else if (dateObj > maxDate) isDisabled = true;
+                else if (dispoData[dateString] && dispoData[dateString].dispo === false) isDisabled = true;
+
+                if (isDisabled) {
+                    cell.classList.add('disabled');
+                } else {
+                    cell.addEventListener('click', () => selectDate(dateObj));
+                    const dateTime = dateObj.getTime();
+                    const sTime = startDate ? startDate.getTime() : null;
+                    const eTime = endDate ? endDate.getTime() : null;
+
+                    if (sTime && dateTime === sTime) cell.classList.add('selectionne', 'debut-plage');
+                    else if (eTime && dateTime === eTime) cell.classList.add('selectionne', 'fin-plage');
+                    else if (sTime && eTime && dateTime > sTime && dateTime < eTime) cell.classList.add('dans-plage');
+                }
+                gridEl.appendChild(cell);
+            }
+        }
+
+        function selectDate(date) {
+            errorEl.style.display = 'none';
+            if (!startDate || (startDate && date < startDate) || (startDate && endDate && date < startDate)) {
+                const proposedEnd = new Date(date);
+                proposedEnd.setDate(date.getDate() + minNights);
+                if (isRangeAvailable(date, proposedEnd)) {
+                    startDate = date;
+                    endDate = proposedEnd;
+                } else {
+                    showError("La durée minimum n'est pas disponible pour cette date.");
+                    return;
+                }
+            } else if (startDate && date > startDate) {
+                const diffTime = Math.abs(date - startDate);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                if (diffDays < minNights) {
+                    showError(`Le séjour doit être de ${minNights} nuits minimum.`);
+                    return;
+                }
+                if (isRangeAvailable(startDate, date)) {
+                    endDate = date;
+                } else {
+                    showError("Certaines dates sélectionnées ne sont pas disponibles.");
+                    return; 
+                }
+            }
+            updateHiddenInputs();
+            renderCalendar();
+            updateTotalPrice();
+        }
+
+        prevBtn.addEventListener('click', () => { currentViewDate.setMonth(currentViewDate.getMonth() - 1); renderCalendar(); });
+        nextBtn.addEventListener('click', () => { currentViewDate.setMonth(currentViewDate.getMonth() + 1); renderCalendar(); });
+        todayBtn.addEventListener('click', () => { currentViewDate = new Date(today); renderCalendar(); updateTotalPrice(); });
+        clearBtn.addEventListener('click', () => { startDate = null; endDate = null; updateHiddenInputs(); renderCalendar(); updateTotalPrice(); errorEl.style.display = 'none'; });
+
+        renderCalendar();
+    });
+
+    // --- SCRIPT CAROUSEL & MODAL ---
     function openModal() {
         document.getElementById('modal-overlay').style.display = 'flex';
     }
@@ -659,79 +575,66 @@
     const nextBtn = document.getElementById('nextBtn');
     const dotsContainer = document.querySelector('.dots');
     const photoItems = document.querySelectorAll('.photo-item');
-
-    const itemPhoto = document.querySelectorAll('.photo-item');
-    
     let currentIndex = 0;
 
-    itemPhoto.forEach(item => {
+    photoItems.forEach(item => {
         item.addEventListener('click', () => {
             const index = item.getAttribute('data-index');
             currentIndex = parseInt(index);
             track.style.scrollBehavior = 'auto';
             document.getElementById('modal-overlay').style.display = 'flex';
             updateCarousel();
-
-            setTimeout(() => {
-                track.style.scrollBehavior = 'smooth';
-            }, 50);
+            setTimeout(() => { track.style.scrollBehavior = 'smooth'; }, 50);
         });
     });
 
-    slides.forEach((slide, index) => {
-        const dot = document.createElement('div');
-        dot.classList.add('dot');
-
-        if (index === 0) dot.classList.add('active');
-
-        dot.addEventListener('click', () => {
-            currentIndex = index;
-            updateCarousel();
+    if(slides.length > 0) {
+        slides.forEach((slide, index) => {
+            const dot = document.createElement('div');
+            dot.classList.add('dot');
+            if (index === 0) dot.classList.add('active');
+            dot.addEventListener('click', () => {
+                currentIndex = index;
+                updateCarousel();
+            });
+            dotsContainer.appendChild(dot);
         });
-
-        dotsContainer.appendChild(dot);
-    });
+    }
 
     const dots = document.querySelectorAll('.dot');
 
     function updateCarousel() {
-
+        if(slides.length === 0) return;
         const slideWidth = slides[0].clientWidth;
-        track.scrollTo({
-            left: currentIndex * slideWidth,
-            behavior: 'auto'
-        });
+        track.scrollTo({ left: currentIndex * slideWidth, behavior: 'auto' });
         dots.forEach(dot => dot.classList.remove('active'));
-        dots[currentIndex].classList.add('active');
+        if(dots[currentIndex]) dots[currentIndex].classList.add('active');
     }
 
-    nextBtn.addEventListener('click', () => {
-        currentIndex++;
-        if (currentIndex >= slides.length) {
-            currentIndex = 0;
-        }
-        updateCarousel();
-    });
+    if(nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            currentIndex++;
+            if (currentIndex >= slides.length) currentIndex = 0;
+            updateCarousel();
+        });
+    }
 
-    prevBtn.addEventListener('click', () => {
-        currentIndex--;
-        if (currentIndex < 0) {
-            currentIndex = slides.length - 1;
-        }
-        updateCarousel();
-    });
+    if(prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            currentIndex--;
+            if (currentIndex < 0) currentIndex = slides.length - 1;
+            updateCarousel();
+        });
+    }
 
     window.addEventListener('resize', updateCarousel);
 
-    const btnfavoris = document.getElementById('favoris')
-
-    btnfavoris.addEventListener('click', () => {
-        if (!btnfavoris.classList.contains('liked')) {
-            btnfavoris.classList.add('liked')
-        } else {
-            btnfavoris.classList.remove('liked')
-        }
-    })
-
+    const btnfavoris = document.getElementById('favoris');
+    if(btnfavoris){
+        btnfavoris.addEventListener('click', () => {
+            if (!btnfavoris.classList.contains('liked')) btnfavoris.classList.add('liked');
+            else btnfavoris.classList.remove('liked');
+        });
+    }
 </script>
 @endpush

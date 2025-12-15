@@ -60,6 +60,16 @@ Route::post('/modifier_compte/upload', [CompteController::class, 'upload'])->mid
 Route::get('/demander_reservation/{id}', [AnnonceController::class, 'view_reserver'])->middleware('auth');
 Route::post('/confirmer_reservation', [AnnonceController::class, 'reserver'])->middleware('auth');
 
+
+Route::get('/telephone', [AnnonceController::class, 'afficherFormVerification'])->name('form.verification');
+Route::post('/envoyer-sms', [AnnonceController::class, 'envoyerCodeSms'])->name('action.envoyer.sms');
+Route::post('/verifier-code', [AnnonceController::class, 'traiterVerification'])->name('action.verifier.code');
+
+// --- ADMINISTRATION (GARANTIE) ---
+Route::get('/admin/dashboard', [AnnonceController::class, 'adminDashboard'])->name('admin.dashboard');
+Route::post('/admin/garantie/{id}', [AnnonceController::class, 'toggleGarantie'])->name('admin.toggle.garantie');
+
+
 // pour yoyo&ninie
 Route::get('/creer_annonce', [AnnonceController::class, 'afficher_form'])->middleware('auth');
 Route::post('/ajouter_annonce', [AnnonceController::class, 'ajouter_annonce'])->middleware('auth');

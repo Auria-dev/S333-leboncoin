@@ -31,7 +31,8 @@ class Annonce extends Model
         'nombre_chambre',
         'longitude',
         'latitude',
-        'photo_profil'
+        'photo_profil',
+        'est_garantie'
     ];
 
     public function ville() {
