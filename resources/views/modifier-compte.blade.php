@@ -23,9 +23,22 @@
     </div>
 
     <form class="form-pdp" method="POST" action="{{ url('modifier_compte/upload') }}" enctype="multipart/form-data">  
-        @csrf  
-        <input type="file" name="file" id="fileInput" accept=".png, .jpeg, .jpg">  
-        <button type="submit">Enregistrer l'image</button>  
+        @csrf   
+        <div class="upload-container">
+            <div class="button-group">
+                <button type="button" id="customSelectBtn" class="btn btn-select">
+                    Choisir
+                </button>
+                        
+                <button type="submit" id="uploadBtn" class="btn btn-upload">
+                    Modifier
+                </button>
+            </div>
+    
+            <span id="fileChosen">Aucune image sélectionnée</span>
+    
+            <input type="file" name="file" id="fileInput" accept=".png, .jpeg, .jpg" hidden>
+        </div>
     </form>
 
    
@@ -217,9 +230,22 @@
         </div>
 
         @if(!$isEntreprise && $user->particulier->piece_identite === null)
-            <div class="input-groupe">
-                <label>Transmettre votre pièce d'identité.</label>
-                <input type="file" name="file" id="fileInput" accept=".pdf" @change="$dispatch('field-touched')">
+            <div class="upload-container">
+                    <label>Transmettre votre pièce d'identité sous forme de PDF.</label>
+
+                <div class="button-group">
+                    <button type="button" id="customSelectBtnPDF" class="btn btn-select">
+                        Sélectionner un fichier
+                    </button>
+                        
+                    <button type="submit" id="uploadBtnPDF" class="btn btn-upload">
+                        Télécharger
+                    </button>
+                </div>
+    
+                <span id="fileChosenPDF">Aucun fichier sélectionné</span>
+
+                <input type="file" name="file" id="realFileInputPDF" accept=".pdf" hidden>
             </div>
         @endif
 
@@ -386,5 +412,44 @@
                 }
             });
         });
+
+
+    const realFileBtn = document.getElementById("fileInput"); 
+    const customBtn = document.getElementById("customSelectBtn");
+    const customTxt = document.getElementById("fileChosen");
+
+    if (customBtn && realFileBtn) {
+        customBtn.addEventListener("click", function(e) {
+            e.preventDefault(); 
+            realFileBtn.click();
+        });
+
+        realFileBtn.addEventListener("change", function() {
+            if (realFileBtn.files.length > 0) {
+                customTxt.textContent = realFileBtn.files[0].name;
+            } else {
+                customTxt.textContent = "Aucune image sélectionnée";
+            }
+        });
+    }
+
+    const realFileBtnPDF = document.getElementById("realFileInputPDF"); 
+    const customBtnPDF = document.getElementById("customSelectBtnPDF");
+    const customTxtPDF = document.getElementById("fileChosenPDF");
+
+    if (customBtnPDF && realFileBtnPDF) {
+        customBtnPDF.addEventListener("click", function(e) {
+            e.preventDefault(); 
+            realFileBtnPDF.click();
+        });
+
+        realFileBtnPDF.addEventListener("change", function() {
+            if (realFileBtnPDF.files.length > 0) {
+                customTxtPDF.textContent = realFileBtnPDF.files[0].name;
+            } else {
+                customTxtPDF.textContent = "Aucun fichier sélectionné";
+            }
+        });
+    }
     </script>
 @endsection

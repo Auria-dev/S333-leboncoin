@@ -365,7 +365,7 @@
                 <div class="reservation-summary-card">
                     <h3 class="font-bold mb-sm">{{ $otherRoleName }}</h3>
                     <div class="host-info" style="margin-bottom: 15px;">
-                        <img src="{{ asset($otherProfile->photo_profil ?? 'assets/default-avatar.png') }}"
+                        <img src="{{ asset($otherProfile->photo_profil ?? 'images/photo-profil.jpg') }}"
                             class="host-avatar" style="width: 50px; height: 50px;">
                         <div>
                             <div class="host-name font-bold">{{ $otherProfile->prenom_utilisateur }}
