@@ -2455,3 +2455,9 @@ input.date-custom-input {
     color: var(--input-text-disabled);
     margin-left: 5px;
 }
+
+#fileChosenPDF {
+    font-size: 13px;
+    color: var(--input-text-disabled);
+    margin-left: 5px;
+}
