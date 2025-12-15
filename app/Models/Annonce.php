@@ -4,13 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Annonce;
 
 class Annonce extends Model
 {
     use HasFactory;
+
     protected $table = "annonce";
-    protected $primaryKey = "idannonce";
+    protected $primaryKey = "idannonce"; // Indispensable pour que Laravel retrouve l'annonce créée
     public $timestamps = false;
 
     protected $fillable = [
@@ -34,6 +34,28 @@ class Annonce extends Model
         'photo_profil',
         'est_garantie'
     ];
+
+    // --- RELATIONS ---
+
+    public function equipement() {
+        return $this->belongsToMany(
+            Equipement::class, 
+            'equipe',        // Nom de TA table pivot
+            'idannonce',     // Clé annonce
+            'idequipement'   // Clé equipement
+        );
+    }
+
+    public function service() {
+        return $this->belongsToMany(
+            Service::class, 
+            'propose',       // Nom de TA table pivot
+            'idannonce', 
+            'idservice'
+        );
+    }
+
+    // --- AUTRES RELATIONS (Inchangées) ---
 
     public function ville() {
         return $this->belongsTo(Ville::class, "idville");
@@ -59,6 +81,7 @@ class Annonce extends Model
         return $this->hasMany(Reservation::class, "idannonce");
     }
 
+    // Gestion des annonces similaires (Ta logique complexe)
     public function similaires_id_annonce() {
         return $this->belongsToMany(Annonce::class, "annonce_similaire", "idannonce", "idsimilaire");
     }
@@ -71,27 +94,12 @@ class Annonce extends Model
     {
         $similairesA = $this->similaires_id_annonce;
         $similairesS = $this->similaires_id_similaire;
-        
         return $similairesA->merge($similairesS);
     }
 
-    public function equipement() {
-        return $this->belongsToMany(Equipement::class, 
-        "equipe", 
-        "idannonce", 
-        "idequipement")->using(Equipe::class);
-    }
-
-    public function service() {
-        return $this->belongsToMany(Service::class, 
-        "propose", 
-        "idannonce", 
-        "idservice")->using(Propose::class);
-    }
-
+    // Helper pour la moyenne des avis
     public function moyenneAvisParAnnonce() {
         $reservations = $this->reservation;
-
         $sommeNotes = 0;
         $nbAvis = 0;
         $moyenne = 0;
@@ -108,9 +116,9 @@ class Annonce extends Model
         if($nbAvis > 0) {
             $moyenne = $sommeNotes / $nbAvis;
         }
-        
         return ['moyenne'=>$moyenne, 'nbAvis'=>$nbAvis, 'sommeNotes'=>$sommeNotes];
     }
+
     public function avisValides()
     {
         return $this->hasManyThrough(

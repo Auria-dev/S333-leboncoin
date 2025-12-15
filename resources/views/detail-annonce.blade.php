@@ -78,285 +78,6 @@
                     </div>
                 </div>
             </form>
-
-
-
-            <div class="map-pane-annonce" style="width: 100%; height: 400px; margin-top: 1rem; border: 1px solid var(--border-default); border-radius: 8px; overflow: hidden;">
-                <div id="maCarte"></div> 
-            </div>
-
-            <style>
-                /* .cal-cellule.selected {
-                    background-color: var(--primary);
-                    color: white;
-                }
-                
-                .cal-cellule.in-range {
-                    background-color: var(--primary);
-                    background-color: color-mix(in srgb, var(--primary), white 80%);
-                    color: black;
-                    border-radius: 0;
-                }
-
-                .cal-cellule.selected:hover {
-                    background-color: var(--primary-hover);
-                    color: white;
-                }
-                
-
-                .cal-cellule.disabled {
-                    opacity: 0.3;
-                    pointer-events: none;
-                    text-decoration: line-through;
-                } */
-            </style>
-            <script defer>
-                document.addEventListener('DOMContentLoaded', function() {
-                    const dispoData = JSON.parse({!! isset($dispoJson) ? json_encode($dispoJson) : '{}' !!});
-                    const prixParNuit = parseFloat("{{ $annonce->prix_nuit }}");
-                    const minNights = parseInt("{{ $annonce->nb_nuit_min ?? 1 }}"); 
-
-                    const today = new Date();
-                    today.setHours(0,0,0,0);
-                    const maxDate = new Date(today);
-                    maxDate.setFullYear(today.getFullYear() + 2);
-
-                    let currentViewDate = new Date(today);
-                    let startDate = null;
-                    let endDate = null;
-
-                    const gridEl = document.getElementById('cal-grid');
-                    const titleEl = document.getElementById('cal-title');
-                    const prevBtn = document.getElementById('btn-prev');
-                    const nextBtn = document.getElementById('btn-next');
-                    const todayBtn = document.getElementById('btn-today');
-                    const clearBtn = document.getElementById('btn-clear');
-                    const validateBtn = document.getElementById('btn-validate');
-                    const errorEl = document.getElementById('cal-error');
-                    
-                    const startInput = document.getElementById('booking_start_date');
-                    const endInput = document.getElementById('booking_end_date');
-
-                    function formatDateKey(date) {
-                        const y = date.getFullYear();
-                        const m = String(date.getMonth() + 1).padStart(2, '0');
-                        const d = String(date.getDate()).padStart(2, '0');
-                        return `${y}-${m}-${d}`;
-                    }
-
-                    function showError(msg) {
-                        errorEl.textContent = msg;
-                        errorEl.style.display = 'block';
-                        setTimeout(() => {
-                            errorEl.style.display = 'none';
-                        }, 3000);
-                    }
-
-                    function updateHiddenInputs() {
-                        startInput.value = startDate ? formatDateKey(startDate) : '';
-                        endInput.value = endDate ? formatDateKey(endDate) : '';
-                    }
-
-                    function updateTotalPrice() {
-                        const priceEl = document.getElementById('display-price');
-                        const prixParNuit = {{ $annonce->prix_nuit }};
-                        const taxeSejour = {{ $annonce->ville->taxe_sejour ?? 0 }};
-
-                        if (startDate && endDate) {
-                            const diffTime = Math.abs(endDate - startDate);
-                            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-
-                            if (diffDays > 0) {
-                                const montantLocation = diffDays * prixParNuit;
-                                const fraisService = Math.ceil(montantLocation * 0.1);
-                                const taxe = parseFloat(taxeSejour); 
-                                const total = montantLocation + fraisService + taxe;
-                                priceEl.textContent = total.toFixed(2);
-                                
-                                validateBtn.disabled = false;
-                                validateBtn.style.opacity = '1';
-                                validateBtn.style.cursor = 'pointer';
-                            } else {
-                                priceEl.textContent = '0';
-                                validateBtn.disabled = true;
-                                validateBtn.style.opacity = '0.5';
-                                validateBtn.style.cursor = 'not-allowed';
-                            }
-                        } else {
-                            priceEl.textContent = '0';
-                            validateBtn.disabled = true;
-                            validateBtn.style.opacity = '0.5';
-                            validateBtn.style.cursor = 'not-allowed';
-                        }
-                    }
-
-                    function isRangeAvailable(start, end) {
-                        let current = new Date(start);
-                        const checkoutTime = end.getTime();
-                        
-                        while (current.getTime() < checkoutTime) {
-                            const dateString = formatDateKey(current);
-                            if (dispoData[dateString] && dispoData[dateString].dispo === false) {
-                                return false;
-                            }
-                            current.setDate(current.getDate() + 1);
-                        }
-                        return true;
-                    }
-
-                    function renderCalendar() {
-                        while (gridEl.children.length > 7) {
-                            gridEl.removeChild(gridEl.lastChild);
-                        }
-
-                        const year = currentViewDate.getFullYear();
-                        const month = currentViewDate.getMonth();
-
-                        const monthName = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' }).format(currentViewDate);
-                        titleEl.textContent = monthName.charAt(0).toUpperCase() + monthName.slice(1);
-
-                        const firstDayOfMonth = new Date(year, month, 1);
-                        let startDayIndex = firstDayOfMonth.getDay();
-                        startDayIndex = (startDayIndex === 0) ? 6 : startDayIndex - 1;
-
-                        const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-                        for (let i = 0; i < startDayIndex; i++) {
-                            const emptyCell = document.createElement('div');
-                            emptyCell.className = 'cal-cellule';
-                            emptyCell.style.border = 'none';
-                            emptyCell.style.backgroundColor = 'transparent';
-                            gridEl.appendChild(emptyCell);
-                        }
-
-                        for (let d = 1; d <= daysInMonth; d++) {
-                            const dateObj = new Date(year, month, d);
-                            const dateString = formatDateKey(dateObj);
-                            
-                            const cell = document.createElement('div');
-                            cell.className = 'cal-cellule';
-                            cell.textContent = d;
-
-                            let isDisabled = false;
-                            if (dateObj < today) isDisabled = true;
-                            else if (dateObj > maxDate) isDisabled = true;
-                            else if (dispoData[dateString] && dispoData[dateString].dispo === false) isDisabled = true;
-
-                            if (isDisabled) {
-                                cell.classList.add('disabled');
-                            } else {
-                                cell.addEventListener('click', () => selectDate(dateObj));
-                                
-                                const dateTime = dateObj.getTime();
-                                const sTime = startDate ? startDate.getTime() : null;
-                                const eTime = endDate ? endDate.getTime() : null;
-
-                                if (sTime && dateTime === sTime) {
-                                    cell.classList.add('selectionne', 'debut-plage');
-                                }
-                                else if (eTime && dateTime === eTime) {
-                                    cell.classList.add('selectionne', 'fin-plage');
-                                }
-                                else if (sTime && eTime && dateTime > sTime && dateTime < eTime) {
-                                    cell.classList.add('dans-plage');
-                                }
-                            }
-                            gridEl.appendChild(cell);
-                        }
-                        
-                        const prevMonthDate = new Date(year, month - 1);
-                        if (year < today.getFullYear() || (year === today.getFullYear() && month <= today.getMonth())) {
-                            prevBtn.disabled = true;
-                            prevBtn.style.opacity = "0.3";
-                            prevBtn.style.cursor = "not-allowed";
-                        } else {
-                            prevBtn.disabled = false;
-                            prevBtn.style.opacity = "1";
-                            prevBtn.style.cursor = "pointer";
-                        }
-
-                        const nextMonthDate = new Date(year,month+1);
-                        if (nextMonthDate > new Date(today.getFullYear()+2, today.getMonth()) ) {
-                            nextBtn.disabled = true;
-                            nextBtn.style.opacity = "0.3";
-                            nextBtn.style.cursor = "not-allowed";
-                        } else {
-                            nextBtn.disabled = false;
-                            nextBtn.style.opacity = "1";
-                            nextBtn.style.cursor = "pointer";
-                        }
-                    }
-
-                    function selectDate(date) {
-                        errorEl.style.display = 'none';
-
-                        if (!startDate || (startDate && date < startDate) || (startDate && endDate && date < startDate)) {
-                            
-                            const proposedEnd = new Date(date);
-                            proposedEnd.setDate(date.getDate() + minNights);
-
-                            if (isRangeAvailable(date, proposedEnd)) {
-                                startDate = date;
-                                endDate = proposedEnd;
-                            } else {
-                                showError("La durée minimum n'est pas disponible pour cette date.");
-                                return;
-                            }
-                        } 
-                        else if (startDate && date > startDate) {
-                            
-                            const diffTime = Math.abs(date - startDate);
-                            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-                            if (diffDays < minNights) {
-                                showError(`Le séjour doit être de ${minNights} nuits minimum.`);
-                                return;
-                            }
-
-                            if (isRangeAvailable(startDate, date)) {
-                                endDate = date;
-                            } else {
-                                showError("Certaines dates sélectionnées ne sont pas disponibles.");
-                                return; 
-                            }
-                        }
-
-                        updateHiddenInputs();
-                        renderCalendar();
-                        updateTotalPrice();
-                    }
-
-                    prevBtn.addEventListener('click', () => {
-                        currentViewDate.setMonth(currentViewDate.getMonth() - 1);
-                        renderCalendar();
-                        updateTotalPrice();
-                    });
-
-                    nextBtn.addEventListener('click', () => {
-                        currentViewDate.setMonth(currentViewDate.getMonth() + 1);
-                        renderCalendar();
-                        updateTotalPrice();
-                    });
-
-                    todayBtn.addEventListener('click', () => {
-                        currentViewDate = new Date(today);
-                        renderCalendar();
-                        updateTotalPrice();
-                    });
-
-                    clearBtn.addEventListener('click', () => {
-                        startDate = null;
-                        endDate = null;
-                        updateHiddenInputs();
-                        renderCalendar();
-                        updateTotalPrice();
-                        errorEl.style.display = 'none';
-                    });
-
-                    renderCalendar();
-                });
-            </script>
-
         </div>
     </div>
 
@@ -382,16 +103,11 @@
                 <span class="stars" style="--rating: {{ $annonce->moyenneAvisParAnnonce()['moyenne'] }}; margin-right: 5px;"></span> 
     
                 <span style="font-weight: bold;">
-                    {{ number_format($annonce->avisValides->avg('note'), 1) }}
+                    {{ number_format($annonce->moyenneAvisParAnnonce()['moyenne'], 1) }}
                 </span>
                 
-
                 <a href="#section-avis" style="text-decoration: underline; color: inherit; cursor: pointer; margin-left: 5px;">
                     ({{ $annonce->moyenneAvisParAnnonce()['nbAvis'] }} avis)
-
-                <a href="{{ route('annonce.avis', $annonce->idannonce) }}" style="text-decoration: underline; color: inherit; cursor: pointer; margin-left: 5px;">
-                    ({{ $annonce->avisValides->count() }} avis)
-
                 </a>
             </p>
 
@@ -623,20 +339,13 @@
 </div>
 @endif
 
-
-
-    <div id="section-avis" class="container" style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; max-width: 800px;">
-    
-
+{{-- SECTION AVIS (FUSIONNÉE CORRECTEMENT) --}}
+<div id="section-avis" class="container" style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd;">
     <h3>Commentaires des voyageurs</h3>
 
     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
         <span style="font-size: 2rem; font-weight: bold;">
-
             ★ {{ number_format($annonce->moyenneAvisParAnnonce()['moyenne'], 1) }}
-
-            ★ {{ number_format($annonce->avisValides->avg('note'), 1) }}
-
         </span>
         <span style="color: #666;">
             ({{ $annonce->moyenneAvisParAnnonce()['nbAvis'] }} avis)
@@ -648,26 +357,26 @@
             <div class="avis-card" style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #eee;">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
                     <div style="font-weight: bold;">
-                        {{ $avis->utilisateur->prenom_utilisateur ?? 'Voyageur' }}
+                        {{ $avis->utilisateur->PRENOM_UTILISATEUR ?? 'Voyageur' }}
                         <span style="font-weight: normal; color: #888; font-size: 0.9em;">
-                            - le {{ \Carbon\Carbon::parse($avis->date_depot)->format('d/m/Y') }}
+                            - le {{ \Carbon\Carbon::parse($avis->DATE_DEPOT)->format('d/m/Y') }}
                         </span>
                     </div>
                     <div style="color: #ffb400;">
                         @for($i = 0; $i < 5; $i++)
-                            @if($i < $avis->note) ★ @else ☆ @endif
+                            @if($i < $avis->NOTE) ★ @else ☆ @endif
                         @endfor
                     </div>
                 </div>
                 
                 <p style="margin: 0; line-height: 1.5; color: #333;">
-                    {{ $avis->commentaire }}
+                    {{ $avis->COMMENTAIRE }}
                 </p>
 
-                @if($avis->reponse_avis)
+                @if($avis->REPONSE_AVIS)
                     <div style="margin-top: 10px; padding: 10px; background-color: #f9f9f9; border-left: 3px solid #ccc; font-size: 0.9em;">
                         <strong>Réponse du propriétaire :</strong><br>
-                        {{ $avis->reponse_avis }}
+                        {{ $avis->REPONSE_AVIS }}
                     </div>
                 @endif
             </div>
@@ -677,19 +386,13 @@
     </div>
 </div>
 
-
-
-
 @endsection
 
 @push('scripts')
 <script defer>
     // --- SCRIPT CALENDRIER ---
     document.addEventListener('DOMContentLoaded', function() {
-        // On vérifie que les données existent avant de parser
-        const rawJson = {!! isset($dispoJson) ? json_encode($dispoJson) : "'{}'" !!};
-        const dispoData = (typeof rawJson === 'string') ? JSON.parse(rawJson) : rawJson;
-        
+        const dispoData = JSON.parse({!! isset($dispoJson) ? json_encode($dispoJson) : '{}' !!});
         const prixParNuit = parseFloat("{{ $annonce->prix_nuit }}");
         const minNights = parseInt("{{ $annonce->nb_nuit_min ?? 1 }}"); 
 
@@ -722,22 +425,18 @@
         }
 
         function showError(msg) {
-            if(errorEl) {
-                errorEl.textContent = msg;
-                errorEl.style.display = 'block';
-                setTimeout(() => { errorEl.style.display = 'none'; }, 3000);
-            }
+            errorEl.textContent = msg;
+            errorEl.style.display = 'block';
+            setTimeout(() => { errorEl.style.display = 'none'; }, 3000);
         }
 
         function updateHiddenInputs() {
-            if(startInput) startInput.value = startDate ? formatDateKey(startDate) : '';
-            if(endInput) endInput.value = endDate ? formatDateKey(endDate) : '';
+            startInput.value = startDate ? formatDateKey(startDate) : '';
+            endInput.value = endDate ? formatDateKey(endDate) : '';
         }
 
         function updateTotalPrice() {
             const priceEl = document.getElementById('display-price');
-            if(!priceEl) return;
-
             if (startDate && endDate) {
                 const diffTime = Math.abs(endDate - startDate);
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
@@ -770,15 +469,12 @@
         }
 
         function renderCalendar() {
-            if(!gridEl) return;
             while (gridEl.children.length > 7) { gridEl.removeChild(gridEl.lastChild); }
 
             const year = currentViewDate.getFullYear();
             const month = currentViewDate.getMonth();
-            if(titleEl) {
-                const monthName = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' }).format(currentViewDate);
-                titleEl.textContent = monthName.charAt(0).toUpperCase() + monthName.slice(1);
-            }
+            const monthName = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' }).format(currentViewDate);
+            titleEl.textContent = monthName.charAt(0).toUpperCase() + monthName.slice(1);
 
             const firstDayOfMonth = new Date(year, month, 1);
             let startDayIndex = firstDayOfMonth.getDay();
@@ -822,7 +518,7 @@
         }
 
         function selectDate(date) {
-            if(errorEl) errorEl.style.display = 'none';
+            errorEl.style.display = 'none';
             if (!startDate || (startDate && date < startDate) || (startDate && endDate && date < startDate)) {
                 const proposedEnd = new Date(date);
                 proposedEnd.setDate(date.getDate() + minNights);
@@ -852,10 +548,10 @@
             updateTotalPrice();
         }
 
-        if(prevBtn) prevBtn.addEventListener('click', () => { currentViewDate.setMonth(currentViewDate.getMonth() - 1); renderCalendar(); });
-        if(nextBtn) nextBtn.addEventListener('click', () => { currentViewDate.setMonth(currentViewDate.getMonth() + 1); renderCalendar(); });
-        if(todayBtn) todayBtn.addEventListener('click', () => { currentViewDate = new Date(today); renderCalendar(); updateTotalPrice(); });
-        if(clearBtn) clearBtn.addEventListener('click', () => { startDate = null; endDate = null; updateHiddenInputs(); renderCalendar(); updateTotalPrice(); if(errorEl) errorEl.style.display = 'none'; });
+        prevBtn.addEventListener('click', () => { currentViewDate.setMonth(currentViewDate.getMonth() - 1); renderCalendar(); });
+        nextBtn.addEventListener('click', () => { currentViewDate.setMonth(currentViewDate.getMonth() + 1); renderCalendar(); });
+        todayBtn.addEventListener('click', () => { currentViewDate = new Date(today); renderCalendar(); updateTotalPrice(); });
+        clearBtn.addEventListener('click', () => { startDate = null; endDate = null; updateHiddenInputs(); renderCalendar(); updateTotalPrice(); errorEl.style.display = 'none'; });
 
         renderCalendar();
     });
@@ -881,20 +577,18 @@
     const photoItems = document.querySelectorAll('.photo-item');
     let currentIndex = 0;
 
-    if(photoItems) {
-        photoItems.forEach(item => {
-            item.addEventListener('click', () => {
-                const index = item.getAttribute('data-index');
-                currentIndex = parseInt(index);
-                if(track) track.style.scrollBehavior = 'auto';
-                document.getElementById('modal-overlay').style.display = 'flex';
-                updateCarousel();
-                if(track) setTimeout(() => { track.style.scrollBehavior = 'smooth'; }, 50);
-            });
+    photoItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const index = item.getAttribute('data-index');
+            currentIndex = parseInt(index);
+            track.style.scrollBehavior = 'auto';
+            document.getElementById('modal-overlay').style.display = 'flex';
+            updateCarousel();
+            setTimeout(() => { track.style.scrollBehavior = 'smooth'; }, 50);
         });
-    }
+    });
 
-    if(slides.length > 0 && dotsContainer) {
+    if(slides.length > 0) {
         slides.forEach((slide, index) => {
             const dot = document.createElement('div');
             dot.classList.add('dot');
@@ -910,7 +604,7 @@
     const dots = document.querySelectorAll('.dot');
 
     function updateCarousel() {
-        if(slides.length === 0 || !track) return;
+        if(slides.length === 0) return;
         const slideWidth = slides[0].clientWidth;
         track.scrollTo({ left: currentIndex * slideWidth, behavior: 'auto' });
         dots.forEach(dot => dot.classList.remove('active'));
