@@ -48,16 +48,40 @@ class CompteController extends Controller {
     }
 
     function store(Request $req) {
-        $req->validate([
+        $rules = [
             'nom' => 'required|string|max:50',
             'prenom' => 'required|string|max:50',
             'email' => 'required|email|unique:utilisateur,mail',
-            'telephone' => 'required|digits:10|unique:utilisateur,telephone', // TODO (auria): better phone number handling (remove spaces before checking, so on)
+            'telephone' => 'required|digits:10|unique:utilisateur,telephone',
             'adresse' => 'required|string',
             'password' => 'required|string|min:8|confirmed',
             'file' => 'nullable|file|mimes:pdf|max:2048',
-        ]);
-
+        ];
+    
+        $messages = [
+            'nom.required' => 'Le nom est obligatoire.',
+            'prenom.required' => 'Le prénom est obligatoire.',
+    
+            'email.required' => "L'adresse email est obligatoire.",
+            'email.email' => "L'adresse email n'est pas valide.",
+            'email.unique' => "Cette adresse email est déjà utilisée.",
+    
+            'telephone.required' => 'Le numéro de téléphone est obligatoire.',
+            'telephone.digits' => 'Le numéro de téléphone doit contenir exactement 10 chiffres.',
+            'telephone.unique' => 'Ce numéro de téléphone est déjà utilisé par un autre compte.',
+    
+            'adresse.required' => "L'adresse est obligatoire.",
+    
+            'password.required' => 'Le mot de passe est obligatoire.',
+            'password.min' => 'Le mot de passe doit contenir au moins :min caractères.',
+            'password.confirmed' => 'La confirmation du mot de passe ne correspond pas.',
+    
+            'file.mimes' => 'Le fichier doit être au format PDF.',
+            'file.max' => 'Le fichier ne doit pas dépasser 2 Mo.',
+        ];
+    
+        $req->validate($rules, $messages);
+        
         $codeville = Ville::where('nom_ville', $req->ville)->first();
         
 
@@ -168,7 +192,11 @@ class CompteController extends Controller {
             'confirmed' => "La confirmation du mot de passe ne correspond pas.",
             'mimes' => "Le fichier doit être au format :values.",
             'max' => "Le champ :attribute ne doit pas dépasser :max caractères/Ko.",
+            'telephone.unique' => 'Ce numéro de téléphone est déjà utilisé par un autre compte.',
+            'email.unique' => 'Cette adresse email est déjà utilisée.',
+            'required' => 'Le champ :attribute est obligatoire.',
         ];
+
         $attributes = [
             'email' => 'adresse email',
             'telephone' => 'numéro de téléphone',
