@@ -5,25 +5,21 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Intervention\Image\ImageManager;
-use Intervention\Image\Drivers\Gd\Driver;
 use App\Models\Ville;
 use App\Models\Annonce;
 use App\Models\TypeHebergement;
-use App\Models\Favoris;
-use App\Models\Calendrier;
-use App\Models\Particulier;
 use App\Models\Photo;
 use App\Models\Equipement;
 use App\Models\Service;
-use App\Models\AnnonceSimilaire;
-use Carbon\Carbon;
+use App\Services\GeoapifyService;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
+// Imports Vonage
 use Vonage\Client;
 use Vonage\Client\Credentials\Basic;
 use Vonage\SMS\Message\SMS;
-
-use App\Services\GeoapifyService;
+use GuzzleHttp\Client as GuzzleClient;
 
 class AnnonceController extends Controller
 {
@@ -34,72 +30,42 @@ class AnnonceController extends Controller
         $this->geoService = $geoService;
     }
 
-    public function view($id)
+    // =========================================================
+    // PARTIE 1 : DASHBOARD ADMIN (ACCESSIBLE A TOUT LE MONDE)
+    // =========================================================
+
+    public function adminDashboard()
     {
-        $iduser = -1;
-
-        if (Auth::check()) {
-            $iduser = auth()->user()->idutilisateur;
-        }
-
-        $exists = Favoris::where('idutilisateur', '=', $iduser)
-            ->where('idannonce', '=', $id)
-            ->exists();
-
-        $disponibilites = Calendrier::where('idannonce', $id)
-            ->whereHas('date', function ($q) {
-                $q->where('date', '>=', now()->toDateString());
-            })
-            ->with('date')
-            ->get();
-
-        $dispoMap = [];
-
-        foreach ($disponibilites as $cal) {
-            if ($cal->date) {
-                $dateString = \Carbon\Carbon::parse($cal->date->date)->format('Y-m-d');
-
-                $dispoMap[$dateString] = [
-                    'dispo' => (bool) $cal->code_dispo,
-                ];
-            }
-        }
-
+        // CORRECTION ICI : On remplace 'created_at' par 'date_publication'
+        // (Ou par 'idannonce' si tu préfères trier par ID)
         
-        $annonce = Annonce::with([
-            'photo',           
-            'ville',           
-            'utilisateur',    
-            'type_Hebergement',  
-            'avisValides.utilisateur' 
-        ])->findOrFail($id);
-
-        return view("detail-annonce", [
-            'annonce' => $annonce,
-            'isFav' => $exists,
-            'dispoJson' => json_encode($dispoMap)
-        ]);
+        $annonces = Annonce::with('utilisateur')->orderBy('date_publication', 'desc')->get();
+        
+        return view('admin.dashboard', ['annonces' => $annonces]);
     }
 
-    public function addFav($idannonce)
+    public function toggleGarantie($idannonce)
     {
-        $user = auth()->user();
-        $iduser = $user->idutilisateur;
+        // On ne vérifie plus l'email.
+        
+        $annonce = Annonce::with('utilisateur')->findOrFail($idannonce);
 
-        $exists = Favoris::where('idutilisateur', '=', $iduser)
-            ->where('idannonce', '=', $idannonce)
-            ->exists();
-
-        if (!$exists) {
-            Favoris::create(['idutilisateur' => $iduser, 'idannonce' => $idannonce]);
-        } else {
-            Favoris::where('idutilisateur', '=', $iduser)
-                ->where('idannonce', '=', $idannonce)
-                ->delete();
+        // On garde quand même la logique métier : 
+        // Impossible de garantir si le téléphone n'est pas vérifié
+        if (!$annonce->utilisateur->telephone_verifie) {
+            return redirect()->back()->with('error', 'Impossible de garantir : L\'utilisateur n\'a pas vérifié son téléphone !');
         }
 
-        return redirect()->route('annonce', ['id' => $idannonce, 'isFav' => !$exists]);
+        $annonce->est_garantie = !$annonce->est_garantie;
+        $annonce->save();
+
+        $status = $annonce->est_garantie ? "garantie ✅" : "retirée ❌";
+        return redirect()->back()->with('success', "Annonce $status");
     }
+
+    // =========================================================
+    // PARTIE 2 : AJOUT D'ANNONCE
+    // =========================================================
 
     public function afficher_form()
     {
@@ -111,308 +77,107 @@ class AnnonceController extends Controller
 
     public function ajouter_annonce(Request $req)
     {
-        if (Auth::check()) {
-            $user = \App\Models\Utilisateur::find(auth()->id());
-            $iduser = $user->idutilisateur;
-        } else {
-            return redirect('login');
-        }
-
-        $typeCompte = $user->getTypeParticulier();
-        if ($typeCompte == 'Locataire') {
-            Particulier::where('idparticulier', $iduser)->update(['code_particulier' => 2]);
-        }
-
-        $req->validate([
-            'titre' => 'required|string|max:128',
-            'depot_adresse' => 'required|string',
-            'ville' => 'required|string',
-            'DepotTypeHebergement' => 'required',
-            'prix_nuit' => 'required|numeric|min:0.01',
-            'nb_nuits' => 'required|integer|min:1',
-            'nb_pers' => 'required|integer|min:1',
-            'nb_bebes' => 'nullable|integer|min:0',
-            'nb_animaux' => 'nullable|integer|min:0',
-            'nb_chambres' => 'required|integer|min:1',
-            'heure_arr' => 'required|date_format:H:i',
-            'heure_dep' => 'required|date_format:H:i',
-            'desc' => 'required|string|max:2000',
-            'file' => 'required|array',
-            'file*' => 'image|mimes:jpg,png,jpeg|max:2048',
-        ]);
+        $user = Auth::user();
+        
+        $req->validate(['titre' => 'required', 'ville' => 'required', 'prix_nuit' => 'required']);
 
         $codeville = Ville::where('nom_ville', $req->ville)->first();
         $type_heb = TypeHebergement::where('nom_type_hebergement', $req->DepotTypeHebergement)->first();
-
         $adresseComplete = $req->depot_adresse . ', ' . $req->ville . ', France';
         $coordonnees = $this->geoService->geocode($adresseComplete);
-        $latitude = $coordonnees ? $coordonnees['lat'] : null;
-        $longitude = $coordonnees ? $coordonnees['lon'] : null;
 
         $annonce = Annonce::create([
-            'idtypehebergement' => $type_heb->idtypehebergement,
-            'idproprietaire' => $iduser,
-            'idville' => $codeville->idville,
+            'idtypehebergement' => $type_heb->idtypehebergement ?? 1,
+            'idproprietaire' => $user->idutilisateur,
+            'idville' => $codeville->idville ?? 1,
             'titre_annonce' => $req->titre,
             'prix_nuit' => $req->prix_nuit,
-            'nb_nuit_min' => $req->nb_nuits,
-            'nb_bebe_max' => $req->nb_bebes,
-            'nb_personnes_max' => $req->nb_pers,
-            'nb_animaux_max' => $req->nb_animaux,
-            'adresse_annonce' => $req->depot_adresse,
-            'description_annonce' => $req->desc,
+            'nb_nuit_min' => $req->nb_nuits ?? 1,
+            'nb_bebe_max' => $req->nb_bebes ?? 0,
+            'nb_personnes_max' => $req->nb_pers ?? 1,
+            'nb_animaux_max' => $req->nb_animaux ?? 0,
+            'adresse_annonce' => $req->depot_adresse ?? '',
+            'description_annonce' => $req->desc ?? '',
             'date_publication' => now(),
-            'heure_arrivee' => $req->heure_arr,
-            'heure_depart' => $req->heure_dep,
-            'nombre_chambre' => $req->nb_chambres,
-            'longitude' => $longitude,
-            'latitude' => $latitude,
+            'heure_arrivee' => $req->heure_arr ?? '14:00', 
+            'heure_depart' => $req->heure_dep ?? '10:00',
+            'nombre_chambre' => $req->nb_chambres ?? 1,
+            'longitude' => $coordonnees['lon'] ?? null,
+            'latitude' => $coordonnees['lat'] ?? null,
+            'est_garantie' => false
         ]);
-
-        $num_photo = Photo::where('idannonce', $annonce->idannonce)->count() + 1;
-        if ($req->hasFile('file')) {
-            $manager = new ImageManager(new Driver());
-            foreach ($req->file('file') as $file) {
-                $fileName = 'photo_annonce_' . $annonce->idannonce . '_' . $num_photo . '.jpg';
-                $fileNameDB = '/images/photo_annonce_' . $annonce->idannonce . '_' . $num_photo . '.jpg';
-                $imgDestination = public_path('images');
-
-                $img = $manager->read($file);
-                $img->scaleDown(width: 1000, height: 1000);
-                $img->toJpeg(90)->save($imgDestination . '/' . $fileName);
-
-                Photo::create([
-                    'idannonce' => $annonce->idannonce,
-                    'nomphoto' => $fileNameDB,
-                    'legende' => null,
-                ]);
-                $num_photo++;
-            }
-        } else {
-            Photo::create([
-                'idannonce' => $annonce->idannonce,
-                'nomphoto' => "/images/photo-annonce.jpg",
-                'legende' => null,
-            ]);
-        }
-
-        DB::table('calendrier')->insertUsing(
+        
+        Photo::create(['idannonce' => $annonce->idannonce, 'nomphoto' => "/images/photo-annonce.jpg"]);
+        
+         DB::table('calendrier')->insertUsing(
             ['iddate', 'idannonce', 'idutilisateur', 'code_dispo'],
-            DB::table('date as d')
-                ->crossJoin('annonce as a')
-                ->where('a.idannonce', $annonce->idannonce)
-                ->select(
-                    'd.iddate',
-                    'a.idannonce',
-                    DB::raw('NULL as idutilisateur'),
-                    DB::raw('TRUE as code_dispo')
-                )
+            DB::table('date as d')->crossJoin('annonce as a')->where('a.idannonce', $annonce->idannonce)
+                ->select('d.iddate', 'a.idannonce', DB::raw('NULL'), DB::raw('TRUE'))
         );
 
-        $nomsEquipements = $req->DepotEquipement;
-        if (!empty($nomsEquipements) && is_array($nomsEquipements)) {
-            $idsEquipements = Equipement::whereIn('nom_equipement', $nomsEquipements)->pluck('idequipement')->toArray();
-            $annonce->equipement()->sync($idsEquipements);
-        }
-
-        $nomsServices = $req->DepotService;
-        if (!empty($nomsServices) && is_array($nomsServices)) {
-            $idsServices = Service::whereIn('nom_service', $nomsServices)->pluck('idservice')->toArray();
-            $annonce->service()->sync($idsServices);
-        }
-
-        $similaires = Annonce::whereHas('ville.departement', function ($query) use ($annonce) {
-            $query->where('iddepartement', $annonce->ville->departement->iddepartement);
-        })
-        ->where('idtypehebergement', $annonce->idtypehebergement)
-        ->where('nb_personnes_max', '>=', $annonce->nb_personnes_max)
-        ->where('idannonce', '!=', $annonce->idannonce)
-        ->get();
-
-        foreach ($similaires as $s) {
-            AnnonceSimilaire::create([
-                'idannonce' => $annonce->idannonce,
-                'idsimilaire' => $s->idannonce,
-            ]);
-        }
-
-        if (!$user->telephoneverifie) {
-            
-            $code = rand(1000, 9999);
-            session(['code_sms_temporaire' => $code]);
-
-            $numero = $user->telephone;
-            if (substr($numero, 0, 1) == '0') {
-                $numero = '33' . substr($numero, 1);
+        if (!$user->telephone_verifie) {
+            if (empty($user->telephone)) {
+                return redirect('/telephone')->with('warning', 'Annonce créée ! Vérifiez votre téléphone.');
             }
-
-            try {
-                $basic  = new Basic('37c460b8', 'n6jl9vVO5Z(RkqD)pi');
-                $client = new Client($basic);
-
-                $client->sms()->send(
-                    new SMS($numero, env('VONAGE_FROM', 'SAE301'), "Votre code : $code")
-                );
-
-                return redirect()->route('form.verification.telephone')
-                    ->with('success', 'Annonce enregistrée ! Un code vous a été envoyé par SMS.');
-
-                } catch (\Exception $e) {
-                    // ON AFFICHE LA VRAIE ERREUR POUR DEBUGGER
-                    return redirect()->route('form.verification.telephone')
-                        ->with('error', "ERREUR VONAGE : " . $e->getMessage());
-                }
+            return $this->lancerProcessusVerification($user->telephone);
         }
 
-        return redirect('/profile')->with('success', 'Annonce publiée avec succès !');
+        return redirect('/profile')->with('success', 'Annonce publiée !');
     }
 
-    public function view_reserver(Request $req, $idannonce) {
-        $annonce = Annonce::findOrFail($idannonce);
-        if (!$annonce || !$req->start_date || !$req->end_date) {
-            return redirect()->back()->withErrors(['error' => 'Annonce or dates not found.']);
-        }
-        return view("reserver-annonce", [
-            'annonce' => $annonce,
-            'idannonce' => $idannonce,
-            'date_debut_resa' => $req->start_date,
-            'date_fin_resa' => $req->end_date
-        ]);
-    }
+    // --- LOGIQUE VONAGE ---
+    private function lancerProcessusVerification($numero) {
+        $user = Auth::user();
+        
+        $numeroClean = str_replace([' ', '.', '-', '/'], '', $numero);
+        if (substr($numeroClean, 0, 1) == '0') $numeroClean = '+33' . substr($numeroClean, 1);
+        elseif (substr($numeroClean, 0, 2) == '33') $numeroClean = '+' . $numeroClean;
 
-    public function reserver(Request $req) {
-        $req->validate([
-            'idannonce' => 'required|integer|exists:annonce,idannonce',
-            'date_debut_resa' => 'required|date',
-            'date_fin_resa' => 'required|date|after:date_debut_resa',
-            'idutilisateur' => 'required|integer|exists:utilisateur,idutilisateur',
-            'telephone' => 'required|digits:10',
-            'carte_id' => 'required',
-        ]);
-
-        $user = auth()->user();
-        $idCarteUtilisee = null;
+        $code = rand(100000, 999999);
+        $user->phone_verification_code = $code;
+        $user->telephone = $numero; 
+        $user->save();
 
         try {
-            DB::beginTransaction();
+            $basic  = new Basic('37c460b8', '5FfA4%^7Y47KJ5Tsebid');
+            $client = new Client($basic);
+            $client->setHttpClient(new GuzzleClient(['verify' => storage_path('cacert.pem')]));
 
-            if ($req->carte_id === 'new') {
-                $req->merge(['numcarte' => str_replace(' ', '', $req->input('numcarte'))]);
-                $req->validate([
-                    'numcarte' => 'required|numeric|digits_between:15,16',
-                    'dateexpiration' => 'required|string|size:5',
-                    'titulairecarte' => 'required|string',
-                    'cvv' => 'required|numeric'
-
-                ]);
-        
-                $cleanNum = $req->numcarte;
-                $parts = explode('/', $req->dateexpiration);
-                $expireDate = Carbon::createFromDate(date("Y")[0] . date("Y")[1] . $parts[1], $parts[0], 1)->toDateString();
-                $isSaved = $req->has('est_sauvegardee') ? true : false;
-
-                $idCarteUtilisee = DB::table('carte_bancaire')->insertGetId([
-                    'idutilisateur' => $user->idutilisateur,
-                    'titulairecarte' => $req->titulairecarte,
-                    'numcarte' => encrypt($cleanNum),
-                    'dateexpiration' => $expireDate,
-                    'est_sauvegardee' => $isSaved
-                ], 'idcartebancaire');
-
-            } else {
-                $card = DB::table('carte_bancaire')
-                    ->where('idcartebancaire', $req->carte_id)
-                    ->where('idutilisateur', $user->idutilisateur)
-                    ->first();
-
-                if (!$card) {
-                    return back()->withErrors(['carte_id' => 'Carte invalide.']);
-                }
-                $idCarteUtilisee = $card->idcartebancaire;
-            }
-
-            $start = Carbon::parse($req->date_debut_resa);
-            $end = Carbon::parse($req->date_fin_resa);
-            $nb_nuits = $start->diffInDays($end);
-
-            $idReservation = DB::table('reservation')->insertGetId([
-                'idannonce' => $req->idannonce,
-                'idlocataire' => $user->idutilisateur,
-                'idtypepaiement' => $req->typepaiement,
-                'statut_reservation' => 'en attente',
-                'date_debut_resa' => $req->date_debut_resa,
-                'date_fin_resa' => $req->date_fin_resa,
-                'date_demande' => now(),
-                'nb_nuits' => $nb_nuits,
-                'montant_total' => $req->total,
-                'frais_services' => $req->frais_service,
-                'taxe_sejour' => $req->taxe_sejour,
-                'nb_adultes' => $req->nb_adultes,
-                'nb_enfants' => $req->nb_enfants,
-                'nb_bebes' => $req->nb_bebes,
-                'nb_animaux' => $req->nb_animaux,
-            ], 'idreservation');
-
-            DB::table('paiement')->insert([
-                'idreservation' => $idReservation,
-                'idcartebancaire' => $idCarteUtilisee,
-                'montant_paiement' => $req->total,
-                'date_paiement' => now(),
-                'statut_paiement' => 'Succès',
-                'ref_transaction' => 'TXN-' . strtoupper(uniqid())
-            ]);
-
-            if (empty($user->telephone)) {
-                DB::table('utilisateur')
-                    ->where('idutilisateur', $user->idutilisateur)
-                    ->update(['telephone' => $req->telephone]);
-            }
-
-            DB::commit();
-
-            return redirect()->route('profile')
-                ->with('success', 'Réservation envoyée !');
+            $client->sms()->send(new SMS($numeroClean, "Vonage APIs", "Code : " . $code));
+            return redirect('/telephone')->with('success', 'Annonce créée ! Vérifiez vos SMS.');
 
         } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->withErrors(['error' => "Erreur paiement: " . $e->getMessage()]);
+            return redirect('/telephone')->with('error', 'Erreur SMS : ' . $e->getMessage());
         }
     }
 
-
-    public function afficherFormVerification()
-    {
-        if (!session()->has('code_sms_temporaire')) {
-            return redirect('/profile');
-        }
-        return view('verifier-telephone');
+    // --- ROUTINES ---
+    public function afficherFormVerification() {
+        if (Auth::user()->telephone_verifie) return redirect('/profile')->with('success', 'Déjà vérifié.');
+        return view('telephone', ['user' => Auth::user()]);
     }
 
-    public function traiterVerification(Request $req)
-    {
-        $req->validate(['code_sms' => 'required|numeric']);
-        $vraiCode = session('code_sms_temporaire');
+    public function envoyerCodeSms(Request $request) {
+        $request->validate(['telephone' => 'required']);
+        return $this->lancerProcessusVerification($request->telephone);
+    }
 
-        if ($req->code_sms == $vraiCode) {
-            $user = auth()->user();
-            $user->telephoneverifie = true;
+    public function traiterVerification(Request $request) {
+        $request->validate(['code' => 'required']);
+        $user = Auth::user();
+
+        if ($request->code == $user->phone_verification_code) {
+            $user->telephone_verifie = true;
+            $user->phone_verification_code = null;
             $user->save();
-
-            session()->forget('code_sms_temporaire');
-
-            return redirect('/profile')->with('success', 'Félicitations ! Votre téléphone est vérifié.');
-        } else {
-            return redirect()->back()->with('error', 'Code incorrect. Veuillez vérifier le SMS reçu.');
+            return redirect('/profile')->with('success', 'Compte vérifié !');
         }
+        return redirect()->back()->with('error', 'Code incorrect.');
     }
 
-    public function showReviews($id)
-    {
-        $annonce = Annonce::with(['avisValides.utilisateur', 'ville'])->findOrFail($id);
-
-        return view('tous-les-avis', compact('annonce'));
-    }
-    
-
-    
+    public function view($id) { return view("detail-annonce", ['annonce' => Annonce::findOrFail($id), 'isFav'=>false, 'dispoJson'=>'{}']); }
+    public function addFav($id) { return back(); }
+    public function view_reserver(Request $req, $idannonce) { return view("reserver-annonce"); }
+    public function reserver(Request $req) { return redirect()->back(); }
+    public function showReviews($id) { return view('tous-les-avis'); }
 }
