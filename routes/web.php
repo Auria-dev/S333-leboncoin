@@ -11,6 +11,7 @@ use App\Http\Controllers\VerifierProfilController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\DeposerAvisController;
 use App\Http\Controllers\ServiceImmoController;
+use App\Http\Controllers\GoogleController;
 
 
 
@@ -128,4 +129,7 @@ Route::middleware(['auth'])->group(function () {
     })->name('admin.avis.update');
 
 });
+
+Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('login.google');
+Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
 
