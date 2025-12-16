@@ -84,7 +84,6 @@ class CompteController extends Controller {
         
         $codeville = Ville::where('nom_ville', $req->ville)->first();
         
-
         $user = Utilisateur::create([
             'idville' => $codeville->idville,
             'nom_utilisateur' => $req->nom,
