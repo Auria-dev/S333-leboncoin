@@ -11,4 +11,8 @@ class TypeHebergement extends Model
     protected $table = "type_hebergement";
     protected $primaryKey = "idtypehebergement";
     public $timestamps = false;
+
+    protected $fillable = [
+        "nom_type_hebergement"
+    ];
 }

@@ -66,12 +66,9 @@ Route::get('/telephone', [AnnonceController::class, 'afficherFormVerification'])
 Route::post('/envoyer-sms', [AnnonceController::class, 'envoyerCodeSms'])->name('action.envoyer.sms');
 Route::post('/verifier-code', [AnnonceController::class, 'traiterVerification'])->name('action.verifier.code');
 
-// --- ADMINISTRATION (GARANTIE) ---
 Route::get('/admin/dashboard', [AnnonceController::class, 'adminDashboard'])->middleware('auth')->name('admin.dashboard');
 Route::post('/admin/garantie/{id}', [AnnonceController::class, 'toggleGarantie'])->middleware('auth')->name('admin.toggle.garantie');
 
-
-// pour yoyo&ninie
 Route::get('/creer_annonce', [AnnonceController::class, 'afficher_form'])->middleware('auth');
 Route::post('/ajouter_annonce', [AnnonceController::class, 'ajouter_annonce'])->middleware('auth');
 
@@ -87,6 +84,11 @@ Route::post('/ajouter_paiement', [CompteController::class, 'ajouter_paiement'])-
 Route::post('/modifier_paiement', [CompteController::class, 'modifier_paiement'])->middleware('auth');
 Route::get('/payer/{id}', [CompteController::class, 'afficher_paiement'])->middleware('auth');
 
+Route::get('/admin/ajout_equipements', [AnnonceController::class, 'afficher_ajout_equipements'])->middleware('auth')->name('admin/ajout_equipements');
+Route::get('/admin/ajout_typehebergement', [AnnonceController::class, 'afficher_ajout_typehebergement'])->middleware('auth')->name('admin/ajout_typehebergement');
+Route::post('admin/typehebergement/store', [AnnonceController::class, 'store_typehebergement'])->middleware('auth');
+Route::post('admin/annonce/update-type', [AnnonceController::class,'update_annonce_type'])->middleware('auth');
+Route::post('admin/equipements/store', [AnnonceController::class, 'store_equipements'])->middleware('auth');
 
 Route::get('/reservation/{id}', [ReservationController::class, 'view_modifier'])->middleware('auth');
 Route::put('/reservation/update/{id}', [ReservationController::class, 'modifier_reservation'])->middleware('auth');
@@ -114,7 +116,7 @@ Route::get('/annonce/{id}/avis', [App\Http\Controllers\AnnonceController::class,
 Route::middleware(['auth'])->group(function () {
 
     Route::get('/admin/avis', function () {
-        if (auth()->user()->idutilisateur != 52) {
+        if (auth()->user()->idutilisateur != 52) { // TODO: change this horrible hardcoded check to just check if its an admin "Service Immobilier"
             abort(403, 'Accès réservé au Service Immobilier.');
         }
         return app(ServiceImmoController::class)->indexAvis();
@@ -132,4 +134,3 @@ Route::middleware(['auth'])->group(function () {
 
 Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('login.google');
 Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
-
