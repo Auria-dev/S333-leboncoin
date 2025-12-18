@@ -48,7 +48,7 @@
     --spacing: 2.5rem;
     --star-size: 20px;
 }
-/* 
+ 
 @media (prefers-color-scheme: dark) {
     :root {
         --primary-rgb: 226, 232, 240;
@@ -99,7 +99,7 @@
         --spacing: 2.5rem;
         --star-size: 20px;
     }
-} */
+}
 
 * {
     box-sizing: border-box;

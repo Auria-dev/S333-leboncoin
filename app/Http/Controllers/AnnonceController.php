@@ -450,4 +450,48 @@ class AnnonceController extends Controller
 
         return view('tous-les-avis', compact('annonce'));
     }
+
+
+    public function afficher_ajout_equipements() {
+        $equipements = Equipement::all();
+        return view('ajouter-equipements', ['equipements' => $equipements]);
+    }
+    
+    public function ajouter_equipements() {
+        
+    }
+        
+    public function afficher_ajout_typehebergement() {
+        $type_hebergements = TypeHebergement::all();
+        $annonces = Annonce::all();
+        return view('ajouter-typehebergement', [
+            'type_hebergements' => $type_hebergements, 
+            'annonces'=>$annonces
+        ]);
+    } 
+
+    public function store_typehebergement(Request $request) {
+        $request->validate([
+            'nom_type_hebergement' => 'required|unique:type_hebergement,nom_type_hebergement'
+        ]);
+
+        TypeHebergement::create([
+            'nom_type_hebergement' => $request->nom_type_hebergement
+        ]);
+
+        return redirect()->back()->with('success', 'Nouveau type ajouté avec succès !');
+    }
+
+    public function update_annonce_type(Request $request) {
+        $request->validate([
+            'idannonce' => 'required|exists:annonce,idannonce',
+            'idtypehebergement' => 'required|exists:type_hebergement,idtypehebergement'
+        ]);
+
+        $annonce = Annonce::find($request->idannonce);
+        $annonce->idtypehebergement = $request->idtypehebergement;
+        $annonce->save();
+
+        return redirect()->back()->with('success', 'L’annonce a été mise à jour !');
+    }
 }
