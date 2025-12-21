@@ -226,9 +226,14 @@
                     <h3 class="font-bold mb-sm mt-md">Actions</h3>
 
                     <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                        <button class="other-btn">
-                            Contacter {{ $otherProfile->prenom_utilisateur }} {{ $otherProfile->nom_utilisateur }}
-                        </button>
+                        <form action="{{ route('contact.create') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="receveur_id" value="{{ $otherProfile->idutilisateur }}">
+                            
+                            <button type="submit" class="other-btn">
+                                Contacter {{ $otherProfile->prenom_utilisateur }} {{ $otherProfile->nom_utilisateur }}
+                            </button>
+                        </form>
 
                         @if($isRequester)
                             @if($reservation->statut_reservation == 'en attente')

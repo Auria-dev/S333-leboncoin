@@ -12,6 +12,7 @@ use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\DeposerAvisController;
 use App\Http\Controllers\ServiceImmoController;
 use App\Http\Controllers\GoogleController;
+use App\Http\Controllers\MsgController;
 
 
 
@@ -89,6 +90,11 @@ Route::get('/admin/ajout_typehebergement', [AnnonceController::class, 'afficher_
 Route::post('admin/typehebergement/store', [AnnonceController::class, 'store_typehebergement'])->middleware('auth');
 Route::post('admin/annonce/update-type', [AnnonceController::class,'update_annonce_type'])->middleware('auth');
 Route::post('admin/equipements/store', [AnnonceController::class, 'store_equipements'])->middleware('auth');
+
+Route::get('/messagerie/{id?}', [MsgController::class, 'afficher_messagerie'])->middleware('auth')->name('messagerie');
+Route::post('/messagerie/envoyer', [MsgController::class, 'envoyer_message'])->middleware('auth')->name('messagerie.envoyer');
+
+Route::post('/contact/creer', [App\Http\Controllers\MsgController::class, 'creer_contact'])->middleware('auth')->name('contact.create');
 
 Route::get('/reservation/{id}', [ReservationController::class, 'view_modifier'])->middleware('auth');
 Route::put('/reservation/update/{id}', [ReservationController::class, 'modifier_reservation'])->middleware('auth');
