@@ -120,11 +120,24 @@ class ReservationController extends Controller
     }
 
     public function clore_incident(Request $req) {
+        $req->validate(['justif_incident' => 'nullable|string']);
         $id = $req->idincident;
         $incident = Incident::findOrFail($id);
         $incident->update(['statut_incident' => "clos"]);
 
-        
+        if($req->has('justif_incident') && $req->justif_incident != null) {
+            $incident->update(['reponse_incident' => $req->justif_incident]);
+        }
+ 
         return redirect()->route('profile')->with('success','Incident clos.');
+    }
+
+    public function justifier_incident(Request $req) {
+        $req->validate(['justif_incident' => 'required|string']);
+        $id = $req->idincident;
+        $incident = Incident::findOrFail($id);
+        $incident->update(['reponse_incident' => $req->justif_incident]);
+
+        return redirect()->route('profile')->with('success','Incident justifié.');
     }
 }
