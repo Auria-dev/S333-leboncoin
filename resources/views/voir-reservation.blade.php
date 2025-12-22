@@ -271,15 +271,16 @@
                     </div>
                 </div>
             </div>
-            @if($isRequester && isset($reservation->incident))
-                <div class="reservation-summary-card mt-md">
+
+           
+            <div class="reservation-summary-card mt-md">
                 <div class="res-header">
-                        <div>
-                            <h3 class="font-bold mb-sm">Incident</h3>
-                            <span class="res-dates">
-                                <p class="card-meta" style="line-height: 0;">Incident signalé le {{\Carbon\Carbon::parse($reservation->incident->date_signalement)->format('d/m/Y')}}</p>
-                            </span>
-                        </div>
+                    <div>
+                        <h3 class="font-bold mb-sm">Incident</h3>
+                        <span class="res-dates">
+                            <p class="card-meta" style="line-height: 0;">Incident signalé le {{\Carbon\Carbon::parse($reservation->incident->date_signalement)->format('d/m/Y')}}</p>
+                        </span>
+                    </div>
                         @if($reservation->incident->statut_incident === "clos")
                         <span class="status-dot st-accepted">
                             {{ $reservation->incident->statut_incident }}
@@ -289,15 +290,18 @@
                             {{ $reservation->incident->statut_incident }}
                         </span>
                         @endif
-                    </div>
+                </div>
 
-                    <div>
-                        <p style="margin-top: 2rem">{{$reservation->incident->description_incident}}</p>
-                        <div class="mt-md" style="border-top: 1px solid var(--border-default);"></div>
+                <div>
+                    <p style="margin-top: 2rem">{{$reservation->incident->description_incident}}</p>
+                    <div class="mt-md" style="border-top: 1px solid var(--border-default);"></div>
+                    @if($reservation->incident->reponse_incident !== null)
+                        <p style="margin-top: 1rem; margin-bottom: 1rem">{{$reservation->incident->reponse_incident}}</p>
+                    @endif
+
+                    @if($isRequester && isset($reservation->incident))
                         @if($reservation->incident->reponse_incident === null)
-                            <p class="card-meta" style="margin-bottom: 2rem">Auncune réponse</p>
-                        @else
-                            <p>{{$reservation->incident->reponse_incident}}</p>
+                            <p class="card-meta">Auncune réponse</p>
                         @endif
                         <div>
                             @if($reservation->incident->statut_incident !== "clos")
@@ -307,13 +311,41 @@
                                     onsubmit="return confirm('Êtes-vous sûr de vouloir clore l\'incident ? Cette action est irréversible.');">
                                     @csrf
                                     <input type="hidden" name="idincident" value="{{  $reservation->incident->idincident }}">
-                                    <button type="submit" class="other-btn">Clore l'incident</button>
+                                    <button type="submit" class="submit-btn" style="margin-top: 2rem;">Clore l'incident</button>
                                 </form>
                             @endif
                         </div>
-                    </div>
+                    @endif
+
+
+                    @if($isOwner && isset($reservation->incident))
+                        <div>
+                            @if($reservation->incident->statut_incident === "clos" && $reservation->incident->reponse_incident === null)
+                                <p class="card-meta">Vous n'avez fourni auncune réponse</p>
+                            @endif
+                            @if($reservation->incident->statut_incident !== "clos")
+                                <form method="POST"
+                                    style="width:100%; display:inline;"
+                                    class="mt-md">
+                                    @csrf
+                                    <input type="hidden" name="idincident" value="{{  $reservation->incident->idincident }}">
+                                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                        @if($reservation->incident->reponse_incident === null)
+                                            <textarea name="justif_incident" id="justif_incident" placeholder="En attente d'une justification de votre part" style="margin-top : 1rem; margin-bottom : 1rem;" rows="5"></textarea>
+                                            <button type="submit" class="other-btn" formaction="{{ url('reservation/justifier_incident') }}"
+                                            onclick="setRequired(true)">
+                                            Donner une justification sans clore</button>
+                                        @endif
+                                        <button type="submit" class="submit-btn" formaction="{{ url('reservation/clore_incident') }}"
+                                        onclick="setRequired(false); return confirm('Êtes-vous sûr de vouloir clore l\'incident ? Cette action est irréversible.');">
+                                        Reconnaître l'incident et clore</button>
+                                    </div>
+                                </form>
+                            @endif
+                        </div>
+                    @endif
                 </div>
-            @endif
+            </div>
         </div>
 
         <div class="reservation-summary-column">
@@ -473,5 +505,18 @@
                     updateButtonStates();
                 }
             });
+
+            function setRequired(value) {
+            const input = document.getElementById('justif_incident');
+            if (input){
+                if (value) {
+                input.setAttribute('required', 'required');
+                } 
+                else {
+                    input.removeAttribute('required');
+                }
+            }
+            
+}
         </script>
 @endsection

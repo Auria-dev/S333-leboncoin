@@ -15,10 +15,6 @@
                     <button type="button" id="customSelectBtn" class="btn btn-select">
                         Choisir des images
                     </button>
-                            
-                    <button type="submit" id="uploadBtn" class="btn btn-upload">
-                        Ajouter
-                    </button>
                 </div>
         
                 <span id="fileChosen">Aucune image sélectionnée</span>
@@ -260,7 +256,8 @@
     const customBtn = document.getElementById("customSelectBtn");
     const customTxt = document.getElementById("fileChosen");
 
-    customBtn.addEventListener("click", function() {
+    customBtn.addEventListener("click", function(e) {
+        e.preventDefault();
         realFileBtn.click();
     });
 
