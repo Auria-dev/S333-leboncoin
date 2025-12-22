@@ -393,6 +393,18 @@
             Vérifier les annonces
         </a>
     </div>
+
+    <div style="margin-top: 30px; padding-top: 20px;">
+        <a href="{{ route('admin/ajout_equipements') }}" class="other-btn">
+            Gérer les équipements
+        </a>
+    </div>
+
+    <div style="margin-top: 30px; padding-top: 20px;">
+        <a href="{{ route('admin/ajout_typehebergement') }}" class="other-btn">
+            Gérer les types d'hébergement
+        </a>
+    </div>
 @endif
 
 @endsection
