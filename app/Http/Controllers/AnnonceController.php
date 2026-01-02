@@ -304,7 +304,6 @@ class AnnonceController extends Controller
         ])->findOrFail($id);
 
         return view("detail-annonce", [
-            'annonce' => Annonce::findOrFail($id),
             'annonceAsArray' => collect([Annonce::findOrFail($id)]),
             'annonce' => $annonce,
             'isFav' => $exists,
