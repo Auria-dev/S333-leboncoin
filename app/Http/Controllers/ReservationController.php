@@ -7,6 +7,7 @@ use App\Models\Reservation;
 use App\Models\Incident;
 use App\Models\Paiement;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class ReservationController extends Controller
 {
@@ -25,21 +26,109 @@ class ReservationController extends Controller
         ]);
     }
 
-    public function modifier_reservation(Request $request, $idreservation) {
+    public function modifier_reservation(Request $req, $idreservation) {
         $reservation = Reservation::findOrFail($idreservation);
 
-        // Validate the request data
-        $validatedData = $request->validate([
+        // 1. Basic Validation of Counts
+        $req->validate([
             'nb_adultes' => 'required|integer|min:1',
             'nb_enfants' => 'required|integer|min:0',
-            'nb_bebes' => 'required|integer|min:0',
-            'nb_animaux' => 'required|integer|min:0'
+            'nb_bebes'   => 'required|integer|min:0',
+            'nb_animaux' => 'required|integer|min:0',
         ]);
 
-        // dd($reservation, $validatedData);
-        $reservation->update($validatedData);
-        
-        return back()->with('success','Réservation mise à jour avec succès.');
+        try {
+            DB::beginTransaction();
+
+            $taxRate = $reservation->annonce->ville->taxe_sejour;
+            $newTax = ($req->nb_adultes + $req->nb_enfants) * $taxRate;
+
+            $basePrice = $reservation->montant_total - $reservation->taxe_sejour;
+            
+            $newTotal = $basePrice + $newTax;
+            $priceDifference = $newTotal - $reservation->montant_total;
+
+            if ($priceDifference > 0.01) {
+                
+                $req->validate([
+                    'carte_id' => 'required',
+                ]);
+
+                $user = auth()->user();
+                $idCarteUtilisee = null;
+
+                if ($req->carte_id === 'new') {
+                    $req->merge(['numcarte' => str_replace(' ', '', $req->input('numcarte'))]);
+
+                    $req->validate([
+                        'titulairecarte' => 'required|string',
+                        'numcarte'       => 'required|numeric|digits_between:15,16',
+                        'dateexpiration' => 'required|string|size:5', // Format MM/YY
+                        'cvv'            => 'required|numeric|digits_between:3,4'
+                    ]);
+
+                    $cleanNum = $req->numcarte;
+                    
+                    $parts = explode('/', $req->dateexpiration);
+                    $expireDate = Carbon::createFromDate('20' . $parts[1], $parts[0], 1)->endOfMonth()->toDateString();
+                    
+                    $isSaved = $req->has('est_sauvegardee') ? true : false;
+
+                    $idCarteUtilisee = DB::table('carte_bancaire')->insertGetId([
+                        'idutilisateur'   => $user->idutilisateur,
+                        'titulairecarte'  => $req->titulairecarte,
+                        'numcarte'        => encrypt($cleanNum),
+                        'dateexpiration'  => $expireDate,
+                        'est_sauvegardee' => $isSaved
+                    ], 'idcartebancaire');
+
+                } 
+                else {
+                    $card = DB::table('carte_bancaire')
+                        ->where('idcartebancaire', $req->carte_id)
+                        ->where('idutilisateur', $user->idutilisateur)
+                        ->first();
+
+                    if (!$card) {
+                        throw new \Exception('Carte bancaire invalide ou introuvable.');
+                    }
+
+                    $req->validate([
+                        'cvv_verify_' . $req->carte_id => 'required|numeric'
+                    ], [
+                        'cvv_verify_' . $req->carte_id . '.required' => 'Le CVV est requis pour confirmer la carte.'
+                    ]);
+
+                    $idCarteUtilisee = $card->idcartebancaire;
+                }
+
+                DB::table('paiement')->insert([
+                    'idreservation'    => $reservation->idreservation,
+                    'idcartebancaire'  => $idCarteUtilisee,
+                    'montant_paiement' => $priceDifference,
+                    'date_paiement'    => now(),
+                    'statut_paiement'  => 'Succès',
+                    'ref_transaction'  => 'MAJ-' . strtoupper(uniqid())
+                ]);
+            }
+
+            $reservation->nb_adultes    = $req->nb_adultes;
+            $reservation->nb_enfants    = $req->nb_enfants;
+            $reservation->nb_bebes      = $req->nb_bebes;
+            $reservation->nb_animaux    = $req->nb_animaux;
+            $reservation->taxe_sejour   = $newTax;
+            $reservation->montant_total = $newTotal;
+            
+            $reservation->save();
+
+            DB::commit();
+
+            return back()->with('success', 'Réservation mise à jour avec succès.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withErrors(['error' => "Erreur de mise à jour: " . $e->getMessage()])->withInput();
+        }
     }
 
     public function annuler_reservation(Request $request, $idreservation) {
