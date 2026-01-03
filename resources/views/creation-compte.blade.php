@@ -291,20 +291,20 @@
                          return;
                     }
 
-                    let sum = 0;
-                    for (let i = 0; i < cleanVal.length; i++) {
-                        let digit = parseInt(cleanVal.charAt(i));
-                        if (i % 2 === 0) { 
-                            digit *= 2;
-                            if (digit > 9) digit -= 9;
-                        }
-                        sum += digit;
-                    }
+                    // let sum = 0;
+                    // for (let i = 0; i < cleanVal.length; i++) {
+                    //     let digit = parseInt(cleanVal.charAt(i));
+                    //     if (i % 2 === 0) { 
+                    //         digit *= 2;
+                    //         if (digit > 9) digit -= 9;
+                    //     }
+                    //     sum += digit;
+                    // }
                     
-                    const luhnValid = (sum % 10 === 0);
+                    // const luhnValid = (sum % 10 === 0);
                     
-                    this.error = luhnValid ? null : 'Numéro SIRET invalide.';
-                    this.$dispatch('field-error', !luhnValid);
+                    // this.error = luhnValid ? null : 'Numéro SIRET invalide.';
+                    // this.$dispatch('field-error', !luhnValid);
                 }
             }));
 

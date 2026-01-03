@@ -237,10 +237,6 @@
                     <button type="button" id="customSelectBtnPDF" class="btn btn-select">
                         Sélectionner un fichier
                     </button>
-                        
-                    <button type="submit" id="uploadBtnPDF" class="btn btn-upload">
-                        Télécharger
-                    </button>
                 </div>
     
                 <span id="fileChosenPDF" class="fileChosen">Aucun fichier sélectionné</span>

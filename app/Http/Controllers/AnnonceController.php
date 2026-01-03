@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Models\Utilisateur;
 use App\Models\Ville;
 use App\Models\Annonce;
 use App\Models\Favoris;
@@ -13,13 +14,12 @@ use App\Models\TypeHebergement;
 use App\Models\Photo;
 use App\Models\Equipement;
 use App\Models\AnnonceSimilaire;
+use App\Models\CategorieEquipement;
 use App\Models\Service;
 use App\Services\GeoapifyService;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
 use Carbon\Carbon;
-
-// Imports Vonage
 use Vonage\Client;
 use Vonage\Client\Credentials\Basic;
 use Vonage\SMS\Message\SMS;
@@ -34,31 +34,6 @@ class AnnonceController extends Controller
         $this->geoService = $geoService;
     }
 
-    public function adminDashboard()
-    {
-        $user = Auth::user();
-        if (!$user->administrateur) 
-            return redirect()->back()->with('error', 'Vous n\'avez pas accès à cette page.');
-
-        $annonces = Annonce::with('utilisateur')->orderBy('date_publication', 'desc')->get();
-        return view('admin.dashboard', ['annonces' => $annonces]);
-    }
-
-    public function toggleGarantie($idannonce)
-    {
-        $annonce = Annonce::with('utilisateur')->findOrFail($idannonce);
-
-        if (!$annonce->utilisateur->telephone_verifie) {
-            return redirect()->back()->with('error', 'Impossible de garantir : L\'utilisateur n\'a pas vérifié son téléphone !');
-        }
-
-        $annonce->est_garantie = !$annonce->est_garantie;
-        $annonce->save();
-
-        $status = $annonce->est_garantie ? "garantie ✅" : "retirée ❌";
-        return redirect()->back()->with('success', "Annonce $status");
-    }
-
     public function afficher_form()
     {
         $types = TypeHebergement::all();
@@ -70,7 +45,7 @@ class AnnonceController extends Controller
     public function ajouter_annonce(Request $req)
     {
         if (Auth::check()) {
-            $user = \App\Models\Utilisateur::find(auth()->id());
+            $user = Utilisateur::find(auth()->id());
             $iduser = $user->idutilisateur;
         } else {
             return redirect('login');
@@ -304,7 +279,6 @@ class AnnonceController extends Controller
         ])->findOrFail($id);
 
         return view("detail-annonce", [
-            'annonce' => Annonce::findOrFail($id),
             'annonceAsArray' => collect([Annonce::findOrFail($id)]),
             'annonce' => $annonce,
             'isFav' => $exists,
@@ -449,5 +423,118 @@ class AnnonceController extends Controller
         $annonce = Annonce::with(['avisValides.utilisateur', 'ville'])->findOrFail($id);
 
         return view('tous-les-avis', compact('annonce'));
+    }
+
+
+    public function afficher_ajout_equipements() {
+        $equipements = Equipement::all();
+        $annonces = Annonce::all();
+        
+        return view('ajouter-equipements', [
+            'equipements' => $equipements, 
+            'annonces' => $annonces
+        ]);
+    }
+
+    public function store_equipement(Request $request) {
+        $request->validate([
+            'nom_equipement' => 'required|unique:equipement,nom_equipement',
+            'idcategorie' => 'required|integer'
+        ]);
+
+        $categorie_equipement = CategorieEquipement::Find($request->idcategorie);
+        if (!$categorie_equipement->idcategorie) {
+            return back()->withErrors(['error'=> 'Impossible de trouver la catégorie d\'équipement. Contacter un administrateur.']);
+        }
+
+        Equipement::create([
+            'nom_equipement' => $request->nom_equipement,
+            'idcategorie' => $categorie_equipement->idcategorie,
+        ]);
+
+        return redirect()->back()->with('success', 'Nouvel équipement créé avec succès !');
+    }
+
+    public function lier_equipement_annonce(Request $request) {
+        $request->validate([
+            'idannonce' => 'required|exists:annonce,idannonce',
+            'idequipement' => 'required|exists:equipement,idequipement'
+        ]);
+
+        $annonce = Annonce::find($request->idannonce);
+        $annonce->equipement()->syncWithoutDetaching([$request->idequipement]);
+        return redirect()->back()->with('success', 'Équipement ajouté à l\'annonce !');
+    }
+
+    public function afficher_ajout_typehebergement() {
+        $type_hebergements = TypeHebergement::all();
+        $annonces = Annonce::all();
+        return view('ajouter-typehebergement', [
+            'type_hebergements' => $type_hebergements, 
+            'annonces'=>$annonces
+        ]);
+    }
+
+    public function store_typehebergement(Request $request) {
+        $request->validate([
+            'nom_type_hebergement' => 'required|unique:type_hebergement,nom_type_hebergement'
+        ]);
+
+        TypeHebergement::create([
+            'nom_type_hebergement' => $request->nom_type_hebergement
+        ]);
+
+        return redirect()->back()->with('success', 'Nouveau type ajouté avec succès !');
+    }
+
+    public function update_annonce_type(Request $request) {
+        $request->validate([
+            'idannonce' => 'required|exists:annonce,idannonce',
+            'idtypehebergement' => 'required|exists:type_hebergement,idtypehebergement'
+        ]);
+
+        $annonce = Annonce::find($request->idannonce);
+        $annonce->idtypehebergement = $request->idtypehebergement;
+        $annonce->save();
+
+        return redirect()->back()->with('success', 'L’annonce a été mise à jour !');
+    }
+
+    public function view_gerer_annonce()
+    {
+        $user = Auth::user();
+        if (!$user->administrateur) 
+            return redirect()->back()->with('error', 'Vous n\'avez pas accès à cette page.');
+
+        $annonces = Annonce::orderBy('date_publication', 'desc')->get();
+        return view('gerer-annonce', ['annonces' => $annonces]);
+    }
+
+    public function afficher_annonce_attente(Request $req)
+    {
+        $query = Annonce::query();
+
+        if ($req->filled('statut')) {
+            $query->where('code_verif', $req->statut);
+        }
+
+        $annonces = $query->get();
+
+        return view('gerer-annonce', compact('annonces'));
+    }
+
+    public function save_statut_annonce(Request $req)
+    {
+        $statuts = $req->statuts;
+
+        if($statuts) {
+            foreach ($statuts as $idannonce => $value) {
+                if(!empty($value)) {
+                    Annonce::where("idannonce", $idannonce)->update(["code_verif" => $value]);
+                }
+            }
+            return redirect()->back()->with('success', 'Statut des annonces modifié !');
+        }
+        return redirect()->back()->with('info', 'Aucun statut modifié.');
     }
 }

@@ -31,6 +31,4 @@ class VerifierProfilController extends Controller
         }
         return redirect('/creer_annonce')->with('success', 'Profil complété ! Vous pouvez dès maintenant déposer votre annonce.');
     }
-
-
 }
