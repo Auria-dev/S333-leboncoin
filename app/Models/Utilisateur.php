@@ -24,6 +24,7 @@ class Utilisateur extends Authenticatable {
         'mot_de_passe',
         'telephone',
         'mail',
+        'google_id',
         'adresse_utilisateur',
         'date_creation',
         'photo_profil'
