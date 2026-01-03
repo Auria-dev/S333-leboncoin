@@ -74,9 +74,16 @@ Route::get('/admin/ajout_equipements', [AnnonceController::class, 'afficher_ajou
 Route::get('/admin/ajout_typehebergement', [AnnonceController::class, 'afficher_ajout_typehebergement'])->middleware('auth')->name('admin/ajout_typehebergement');
 Route::post('admin/typehebergement/store', [AnnonceController::class, 'store_typehebergement'])->middleware('auth');
 Route::post('admin/annonce/update-type', [AnnonceController::class,'update_annonce_type'])->middleware('auth');
-Route::post('admin/equipements/store', [AnnonceController::class, 'store_equipements'])->middleware('auth');
+
 Route::get('/admin/gerer_annonce', [AnnonceController::class, 'view_gerer_annonce'])->middleware('auth')->name('admin/gerer_annonce');
 Route::get('/afficher_attente', [AnnonceController::class, 'afficher_annonce_attente'])->middleware('auth')->name('annonce_attente');
+Route::post('/admin/equipement/store', [AnnonceController::class, 'store_equipement']);
+Route::post('/admin/equipement/link', [AnnonceController::class, 'lier_equipement_annonce']);
+
+Route::get('/messagerie/{id?}', [MsgController::class, 'afficher_messagerie'])->middleware('auth')->name('messagerie');
+Route::post('/messagerie/envoyer', [MsgController::class, 'envoyer_message'])->middleware('auth')->name('messagerie.envoyer');
+Route::post('/contact/creer', [MsgController::class, 'creer_contact'])->middleware('auth')->name('contact.create');
+
 
 Route::get('/reservation/{id}', [ReservationController::class, 'view_modifier'])->middleware('auth');
 Route::put('/reservation/update/{id}', [ReservationController::class, 'modifier_reservation'])->middleware('auth');
@@ -109,7 +116,7 @@ Route::post('/contact/creer', [MsgController::class, 'creer_contact'])->middlewa
 Route::get('/annonce/{id}/avis', [AnnonceController::class, 'showReviews'])->name('annonce.avis');
 Route::middleware(['auth'])->group(function () {
     Route::get('/admin/avis', function () {
-        if (auth()->user()->idutilisateur != 52) { // TODO: change this horrible hardcoded check to just check if its an admin "Service Immobilier"
+        if (auth()->user()->idutilisateur != 52) { // i hate whoever did this.
             abort(403, 'Accès réservé au Service Immobilier.');
         }
         return app(ServiceImmoController::class)->indexAvis();
