@@ -371,7 +371,7 @@
             @endphp
             
             @if($nbEnAttente > 0)
-                <span style="background-color: red; color: white; padding: 2px 6px; border-radius: 50%; font-size: 0.8em; margin-left: 5px; vertical-align: middle;">
+                <span class="status-dot st-pending">
                     {{ $nbEnAttente }}
                 </span>
             @endif
