@@ -24,4 +24,9 @@ class Equipement extends Model
         "idequipement",
         "idannonce")->using(Equipe::class);
     }
+
+    protected $fillable = [
+        "idcategorie",
+        "nom_equipement"
+    ];
 }
