@@ -3,7 +3,8 @@
 @section('title', 'Gérer les annonces')
 
 @section('content')
-<form action="{{ route('annonce_attente') }}" method="GET">
+<form action="{{ url('afficher_attente') }}" method="GET">
+    @csrf
     <label class="pill-label">
         <input type="checkbox" 
                name="statut" 
@@ -20,7 +21,8 @@
     </label>
 </form>
 
-<form>
+<form id="form-statut-annonce" method="POST" action="{{ url('enregistrer_statut_annonce') }}">
+    @csrf
     <table>
         <thead>
             <tr>
@@ -69,9 +71,16 @@
                     <span class="status-dot st-rejected">refusée</span>
                 @else
                     <span class="status-dot st-pending">en attente</span>
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
-                        <label for="accepter">Accepter</label>
-                        <input type="radio" id="accepter" name="statut_annonce" value="acceptée">
+                    <input type="hidden" name="idannonce" value="{{ $annonce->idannonce }}">
+                    <div style="margin-top: 10px; justify-self: center;" >
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <label for="accepter">Accepter</label>
+                            <input type="radio" id="accepter" name="statuts[{{ $annonce->idannonce }}]" value="acceptée" style="margin-bottom: 5px;">
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <label for="refuser">Refuser</label>
+                            <input type="radio" id="refuser" name="statuts[{{ $annonce->idannonce }}]" value="refusée" style="margin-bottom: 5px;">
+                        </div>                       
                     </div>
                 @endif
                 </td>
@@ -80,7 +89,7 @@
         </tbody>
     </table>
     <div class="mt-md" style="position: fixed; top: 50px; left: 10px;">
-    <button type="submit" id="btn-enregistrer" class="submit-btn" 
+    <button type="submit" id="btn-enregistrer" class="submit-btn"
         style="
             width: 40px;           
             height: 40px;          
@@ -89,7 +98,6 @@
             align-items: center;     
             padding: 0;            
         ">
-        
         <svg width="20px" height="20px" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
             <g transform="translate(-152.000000, -515.000000)" fill="currentColor"> 
                 <path d="M171,525 C171.552,525 172,524.553 172,524 L172,520 C172,519.447 171.552,519 171,519 C170.448,519 170,519.447 170,520 L170,524 C170,524.553 170.448,525 171,525 Z M182,543 C182,544.104 181.104,545 180,545 L156,545 C154.896,545 154,544.104 154,543 L154,519 C154,517.896 154.896,517 156,517 L158,517 L158,527 C158,528.104 158.896,529 160,529 L176,529 C177.104,529 178,528.104 178,527 L178,517 L180,517 C181.104,517 182,517.896 182,519 L182,543 L182,543 Z M160,517 L176,517 L176,526 C176,526.553 175.552,527 175,527 L161,527 C160.448,527 160,526.553 160,526 L160,517 L160,517 Z M180,515 L156,515 C153.791,515 152,516.791 152,519 L152,543 C152,545.209 153.791,547 156,547 L180,547 C182.209,547 184,545.209 184,543 L184,519 C184,516.791 182.209,515 180,515 Z"></path>

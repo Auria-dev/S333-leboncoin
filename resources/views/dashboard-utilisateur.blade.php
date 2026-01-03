@@ -131,8 +131,7 @@
                         </div>
                     </a>
 
-                    {{-- 3. NOUVELLE SECTION AVIS (Hors du lien <a>) --}}
-                    <div style="margin-top: auto; padding-top: 10px; border-top: 1px dashed var(--border-default);">
+                    <div>
                         @php
                             // Vérification : Séjour terminé ?
                             $isFinished = \Carbon\Carbon::parse($res->date_fin_resa)->isPast();
@@ -146,22 +145,20 @@
                             </p>
 
                         @elseif($res->idavis === null)
-                            {{-- Bouton "Noter ce séjour" --}}
                             <a href="{{ route('avis.create', $res->idreservation) }}" 
-                               class="other-btn" 
-                               style="width: 100%; display: block; text-align: center; background-color: #ff6e14; color: white; border: none; text-decoration: none;">
+                               class="submit-btn" 
+                               style="width: 100%; display: block;">
                                 Noter ce séjour
                             </a>
 
                         @else
-                            {{-- Affichage du statut de l'avis déposé --}}
-                            <div style="text-align: center; font-weight: 600; font-size: 0.9rem;">
+                            <div class="card-footer" style="justify-content: center">
                                 @if($statutAvis === 'en_attente')
-                                    <span style="color: orange;">Avis en cours de vérification</span>
+                                    <span>Avis en cours de vérification</span>
                                 @elseif($statutAvis === 'valide')
-                                    <span style="color: green;">Avis publié en ligne</span>
+                                    <span>Avis publié en ligne</span>
                                 @elseif($statutAvis === 'refuse')
-                                    <span style="color: red;">Avis refusé (Modération)</span>
+                                    <span>Avis refusé (Modération)</span>
                                 @else
                                     <span>Avis enregistré</span>
                                 @endif

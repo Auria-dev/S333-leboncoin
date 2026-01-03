@@ -77,7 +77,6 @@ class Annonce extends Model
         return $this->hasMany(Reservation::class, "idannonce");
     }
 
-    // Gestion des annonces similaires (Ta logique complexe)
     public function similaires_id_annonce() {
         return $this->belongsToMany(Annonce::class, "annonce_similaire", "idannonce", "idsimilaire");
     }
@@ -93,8 +92,8 @@ class Annonce extends Model
         return $similairesA->merge($similairesS);
     }
 
-    // Helper pour la moyenne des avis
-    public function moyenneAvisParAnnonce() {
+    public function moyenneAvisParAnnonce() 
+    {
         $reservations = $this->reservation;
         $sommeNotes = 0;
         $nbAvis = 0;

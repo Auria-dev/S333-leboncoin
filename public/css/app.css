@@ -20,6 +20,7 @@
     --success-text: #065f46;
     --text-main: #4A3B32;
     --text-muted: #8C7B70;
+    --bg-response: #8c7b700a;
     --text-inverse: #FFFFFF;
     --text-gradient-end: #7C6A60;
     --bg-body: #FFF8F5;
@@ -2500,3 +2501,18 @@ tr:last-child td {
     text-align: left;
 }
 
+.verif-proprio {
+    border-radius: 20px;
+    border: 1px solid;
+    padding: 0.225rem 1rem 0.225rem 0.225rem;
+    font-size: 13px;
+    gap: 2px;
+    display: flex;
+}
+
+.certification {
+    width: fit-content;  
+    gap: 10px;
+    margin-top: 1rem;
+    font-size: 11px;
+}
