@@ -15,10 +15,6 @@
                     <button type="button" id="customSelectBtn" class="btn btn-select">
                         Choisir des images
                     </button>
-                            
-                    <button type="submit" id="uploadBtn" class="btn btn-upload">
-                        Ajouter
-                    </button>
                 </div>
         
                 <span id="fileChosen">Aucune image sélectionnée</span>
@@ -170,7 +166,6 @@
                     @if(isset($equipements))
                         @foreach($equipements as $eq)
                             <label class="pill-label">
-                                {{-- ON GARDE TES NOMS, MAIS ON ENVOIE L'ID --}}
                                 <input type="checkbox" 
                                     name="DepotEquipement[]" 
                                     value="{{ $eq->idequipement }}" 
@@ -260,7 +255,8 @@
     const customBtn = document.getElementById("customSelectBtn");
     const customTxt = document.getElementById("fileChosen");
 
-    customBtn.addEventListener("click", function() {
+    customBtn.addEventListener("click", function(e) {
+        e.preventDefault();
         realFileBtn.click();
     });
 

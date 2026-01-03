@@ -14,7 +14,6 @@
 </div>
 
 <div class="annonce-grid">
-    {{-- COLONNE GAUCHE : PHOTOS + CALENDRIER --}}
     <div class="photo-column">
         <div class="carousel-placeholder">
             @if($annonce->photo && count($annonce->photo) > 0)
@@ -91,16 +90,8 @@
         <header style="border:none; padding:0; text-align:left; margin:0;">
             <h1 class="titre-annonce">{{ $annonce->titre_annonce }}</h1>
 
-            @if($annonce->est_garantie)
-                <div style="background-color: #d1e7dd; color: #0f5132; padding: 10px; border-radius: 5px; margin: 10px 0; border: 1px solid #badbcc; display: inline-block;">
-                    <strong>🌟 PAIEMENT GARANTI</strong>
-                    <br>
-                    <small>Propriétaire vérifié par téléphone</small>
-                </div>
-            @endif
-
                 <p style="margin-top: 0.5rem; color: var(--text-muted); font-size: 0.9rem;">
-                        {{ $annonce->adresse_annonce . ', ' . $annonce->ville->nomville . ' ' . $annonce->ville->code_postal }} &bull; 
+                        {{ $annonce->ville->nom_ville . ' ' . $annonce->ville->code_postal }} &bull; 
         
                     <span class="stars" style="--rating: {{ $annonce->moyenneAvisParAnnonce()['moyenne'] }}; margin-right: 5px;"></span> 
         
@@ -200,7 +191,6 @@
     </div>
 </div>
 
-{{-- MODAL PHOTOS --}}
 <div class="modal-overlay" id="modal-overlay" style="display: none;">
     <div class="carrousel-conatainer">
         <div class="carrousel-body">
@@ -221,8 +211,7 @@
     </div>
 </div>
 
-{{-- ANNONCES SIMILAIRES --}}
-<div class="res-section">
+<div class="res-section" style="margin-top: 2rem;">
     <p class="section-title">Annonce(s) similaire(s)</p>
     <div class="res-scroller">
         @forelse($annonce->similaires as $similaire)
@@ -265,7 +254,6 @@
     </div>
 </div>
 
-{{-- SECTION RESERVATIONS (POUR LE PROPRIO) --}}
 @if (auth()->check() && auth()->user()->idutilisateur === $annonce->idproprietaire)
 <div class="res-section">
     <p class="section-title">Réservation(s) de cette annonce</p>
@@ -340,50 +328,60 @@
 </div>
 @endif
 
-
-<div id="section-avis" class="container" style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; max-width: 800px;">
+<div>
     
-    <h3>Commentaires des voyageurs</h3>
+    <h2 style="margin-bottom: 1rem;">Commentaires des voyageurs</h2>
 
-    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
-        <span style="font-size: 2rem; font-weight: bold;">
+    <div style="display: flex; align-items: baseline; gap: 10px; margin-bottom: 20px;">
+        <span style="font-size: 30px; font-weight: bold;">
             ★ {{ number_format($annonce->avisValides->avg('note'), 1) }}
         </span>
-        <span style="color: #666;">
+        <span style="color: var(--text-muted);">
             ({{ $annonce->avisValides->count() }} avis)
         </span>
     </div>
 
-    <div class="avis-list">
+    <div>
         @forelse($annonce->avisValides as $avis)
-            <div class="avis-card" style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #eee;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                    <div style="font-weight: bold;">
-                        {{ $avis->utilisateur->prenom_utilisateur ?? 'Voyageur' }}
-                        <span style="font-weight: normal; color: #888; font-size: 0.9em;">
-                            - le {{ \Carbon\Carbon::parse($avis->date_depot)->format('d/m/Y') }}
-                        </span>
+        <hr class="res-divider">
+            <div style="padding-top: 10px; padding-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 12px; font-weight: bold;">
+                        
+                        @if($avis->utilisateur->photo_profil === null)
+                            <img src="/images/photo-profil.jpg" class="profile-img" style="width: 50px; height: 50px; border-radius: 50%; ">
+                        @else
+                            <img src="{{ $avis->utilisateur->photo_profil }}" class="profile-img" style="width: 50px; height: 50px; border-radius: 50%;">
+                        @endif
+
+                        <div>
+                            {{ $avis->utilisateur->prenom_utilisateur }} {{ $avis->utilisateur->nom_utilisateur }}
+                            <span style="color: var(--text-muted); font-size: 0.8em; font-weight: normal; display: block;">
+                                {{ \Carbon\Carbon::parse($avis->date_depot)->format('d/m/Y') }}
+                            </span>
+                        </div>
                     </div>
-                    <div style="color: #ffb400;">
+
+                    <div style="color: var(--primary-hover); font-size: 1.2em;">
                         @for($i = 0; $i < 5; $i++)
                             @if($i < $avis->note) ★ @else ☆ @endif
                         @endfor
                     </div>
                 </div>
                 
-                <p style="margin: 0; line-height: 1.5; color: #333;">
+                <p style="line-height: 2">
                     {{ $avis->commentaire }}
                 </p>
 
                 @if($avis->reponse_avis)
-                    <div style="margin-top: 10px; padding: 10px; background-color: #f9f9f9; border-left: 3px solid #ccc; font-size: 0.9em;">
-                        <strong>Réponse du propriétaire :</strong><br>
-                        {{ $avis->reponse_avis }}
+                    <div style="margin-top: 10px; padding: 8px 0 5px 10px; background-color: var(--bg-response); border-left: 3px solid var(--text-muted); font-size: 0.9sem; border-top-right-radius: 30px; border-bottom-right-radius: 30px;">
+                        <p>{{$annonce->utilisateur->prenom_utilisateur}} {{$annonce->utilisateur->nom_utilisateur}} : </p>
+                        <p style="line-height: 2">{{ $avis->reponse_avis }} </p>
                     </div>
                 @endif
             </div>
         @empty
-            <p style="color: #666; font-style: italic;">Aucun commentaire pour le moment.</p>
+            <p style="color: var(--text-muted);; font-style: italic;">Aucun commentaire pour le moment.</p>
         @endforelse
     </div>
 </div>

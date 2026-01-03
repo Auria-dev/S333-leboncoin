@@ -65,7 +65,6 @@
     @endif
 
     @if ($utilisateur->getTypeParticulier() == 'Locataire' || $utilisateur->getTypeParticulier() == 'Locataire & Propriétaire' || $utilisateur->getTypeParticulier() == 'Entreprise')
-    
     <div class="res-section">
         <p class="section-title">Mes réservations</p>
         <div class="res-scroller">
@@ -132,8 +131,7 @@
                         </div>
                     </a>
 
-                    {{-- 3. NOUVELLE SECTION AVIS (Hors du lien <a>) --}}
-                    <div style="margin-top: auto; padding-top: 10px; border-top: 1px dashed var(--border-default);">
+                    <div>
                         @php
                             // Vérification : Séjour terminé ?
                             $isFinished = \Carbon\Carbon::parse($res->date_fin_resa)->isPast();
@@ -147,22 +145,20 @@
                             </p>
 
                         @elseif($res->idavis === null)
-                            {{-- Bouton "Noter ce séjour" --}}
                             <a href="{{ route('avis.create', $res->idreservation) }}" 
-                               class="other-btn" 
-                               style="width: 100%; display: block; text-align: center; background-color: #ff6e14; color: white; border: none; text-decoration: none;">
+                               class="submit-btn" 
+                               style="width: 100%; display: block;">
                                 Noter ce séjour
                             </a>
 
                         @else
-                            {{-- Affichage du statut de l'avis déposé --}}
-                            <div style="text-align: center; font-weight: 600; font-size: 0.9rem;">
+                            <div class="card-footer" style="justify-content: center">
                                 @if($statutAvis === 'en_attente')
-                                    <span style="color: orange;">Avis en cours de vérification</span>
+                                    <span>Avis en cours de vérification</span>
                                 @elseif($statutAvis === 'valide')
-                                    <span style="color: green;">Avis publié en ligne</span>
+                                    <span>Avis publié en ligne</span>
                                 @elseif($statutAvis === 'refuse')
-                                    <span style="color: red;">Avis refusé (Modération)</span>
+                                    <span>Avis refusé (Modération)</span>
                                 @else
                                     <span>Avis enregistré</span>
                                 @endif
@@ -179,66 +175,67 @@
         </div>
     </div>
 
+    @if ($utilisateur->getTypeParticulier() == 'Propriétaire' || $utilisateur->getTypeParticulier() == 'Locataire & Propriétaire' || $utilisateur->getTypeParticulier() == 'Entreprise')
+        <div class="res-section">
+            <h2 class="section-title">Mes annonces réservées</h2>
+            <div class="res-grid">
+                @forelse($utilisateur->demandesReservations as $demande)
+                    @php
+                        $start = \Carbon\Carbon::parse($demande->date_debut_resa);
+                        $end = \Carbon\Carbon::parse($demande->date_fin_resa);
+                        $nights = $start->diffInDays($end);
+                        $total_price = $nights * $demande->annonce->prix_nuit;
 
-    <div class="res-section">
-        <h2 class="section-title">Mes annonces en demande</h2>
-        <div class="res-grid">
-            @forelse($utilisateur->demandesReservations as $demande)
-                @php
-                    $start = \Carbon\Carbon::parse($demande->date_debut_resa);
-                    $end = \Carbon\Carbon::parse($demande->date_fin_resa);
-                    $nights = $start->diffInDays($end);
-                    $total_price = $nights * $demande->annonce->prix_nuit;
-
-                    $s = strtolower($demande->statut_reservation);
-                    $st_class = 'st-default';
-                    
-                    if(Str::contains($s, ['valid', 'accept'])) {
-                        $st_class = 'st-accepted';
-                    } elseif(Str::contains($s, ['refus', 'annul'])) {
-                        $st_class = 'st-rejected';
-                    } elseif(Str::contains($s, ['attent'])) {
-                        $st_class = 'st-pending';
-                    }
-                @endphp
-
-                <a href="{{ url('reservation/'.strval($demande->idreservation)) }}" class="compact-card">
-                    
-                    <div class="card-top">
-                        <h3 class="card-title">{{ $demande->annonce->titre_annonce }}</h3>
-                        <span class="status-dot {{ $st_class }}">
-                            {{ $demande->statut_reservation }}
-                        </span>
-                    </div>
-
-                    <div class="card-dates">
-                        <svg class="card-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                        <span>{{ $start->format('d M') }} - {{ $end->format('d M') }} ({{ $nights }} nuits)</span>
-                    </div>
-
-                    <div class="card-footer">
-                        <div class="user-info">
-                            @if($demande->particulier->utilisateur->photo_profil)
-                                <img src="{{ $demande->particulier->utilisateur->photo_profil }}" class="user-pfp" alt="User">
-                            @else
-                                <img src="/images/photo-profil.jpg" class="user-pfp" alt="User">
-                            @endif
-                            <div class="user-text-col">
-                                <span class="user-label">Voyageur</span>
-                                <span class="user-name">{{ $demande->particulier->utilisateur->prenom_utilisateur }}</span>
-                            </div>
-                        </div>
+                        $s = strtolower($demande->statut_reservation);
+                        $st_class = 'st-default';
                         
-                        <span class="card-price">{{ $total_price }}€</span>
+                        if(Str::contains($s, ['valid', 'accept'])) {
+                            $st_class = 'st-accepted';
+                        } elseif(Str::contains($s, ['refus', 'annul'])) {
+                            $st_class = 'st-rejected';
+                        } elseif(Str::contains($s, ['attent'])) {
+                            $st_class = 'st-pending';
+                        }
+                    @endphp
+
+                    <a href="{{ url('reservation/'.strval($demande->idreservation)) }}" class="compact-card">
+                        
+                        <div class="card-top">
+                            <h3 class="card-title">{{ $demande->annonce->titre_annonce }}</h3>
+                            <span class="status-dot {{ $st_class }}">
+                                {{ $demande->statut_reservation }}
+                            </span>
+                        </div>
+
+                        <div class="card-dates">
+                            <svg class="card-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            <span>{{ $start->format('d M') }} - {{ $end->format('d M') }} ({{ $nights }} nuits)</span>
+                        </div>
+
+                        <div class="card-footer">
+                            <div class="user-info">
+                                @if($demande->particulier->utilisateur->photo_profil)
+                                    <img src="{{ $demande->particulier->utilisateur->photo_profil }}" class="user-pfp" alt="User">
+                                @else
+                                    <img src="/images/photo-profil.jpg" class="user-pfp" alt="User">
+                                @endif
+                                <div class="user-text-col">
+                                    <span class="user-label">Voyageur</span>
+                                    <span class="user-name">{{ $demande->particulier->utilisateur->prenom_utilisateur }}</span>
+                                </div>
+                            </div>
+                            
+                            <span class="card-price">{{ $total_price }}€</span>
+                        </div>
+                    </a>
+                @empty
+                    <div style="grid-column: 1 / -1;" class="res-empty">
+                        <p style="color: var(--text-muted); margin: 0;">Aucune demande de réservation pour le moment.</p>
                     </div>
-                </a>
-            @empty
-                <div style="grid-column: 1 / -1;" class="res-empty">
-                    <p style="color: var(--text-muted); margin: 0;">Aucune demande de réservation pour le moment.</p>
-                </div>
-            @endforelse
+                @endforelse
+            </div>
         </div>
-    </div>
+    @endif
 
     <div class="res-section">
         <p class="section-title">Mes favoris</p>
@@ -354,7 +351,6 @@
             @endforelse
         </div>
     </div>
-
     @endif
 
     <form method="POST" action="{{ url('logout') }}" class="w-fit">
@@ -366,7 +362,7 @@
 
 @if($utilisateur->administrateur && $utilisateur->administrateur->typeAdmin->nom_type_admin === 'Service Immobilier')
     <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
-        <h3 style="margin-bottom: 15px;">Espace Service Immo</h3>
+        <h3 style="margin-bottom: 15px;">Espace Service Immobilier</h3>
         
         <a href="{{ route('admin.avis.index') }}" class="other-btn">
             Modérer les Avis
@@ -388,8 +384,20 @@
     <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
         <h3 style="margin-bottom: 15px;">Espace Service Petites Annonces</h3>
         
-        <a href="{{ route('admin.dashboard') }}" class="other-btn">
-            Vérifier les annonces
+        <a href="{{ route('admin/gerer_annonce') }}" class="other-btn">
+            Gérer les annonces
+        </a>
+    </div>
+
+    <div style="margin-top: 30px; padding-top: 20px;">
+        <a href="{{ route('admin/ajout_equipements') }}" class="other-btn">
+            Gérer les équipements
+        </a>
+    </div>
+
+    <div style="margin-top: 30px; padding-top: 20px;">
+        <a href="{{ route('admin/ajout_typehebergement') }}" class="other-btn">
+            Gérer les types d'hébergement
         </a>
     </div>
 @endif

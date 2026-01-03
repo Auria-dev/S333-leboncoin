@@ -12,6 +12,7 @@ use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\DeposerAvisController;
 use App\Http\Controllers\ServiceImmoController;
 use App\Http\Controllers\GoogleController;
+use App\Http\Controllers\MsgController;
 
 
 
@@ -60,32 +61,29 @@ Route::post('/modifier_compte/upload', [CompteController::class, 'upload'])->mid
 
 Route::get('/demander_reservation/{id}', [AnnonceController::class, 'view_reserver'])->middleware('auth');
 Route::post('/confirmer_reservation', [AnnonceController::class, 'reserver'])->middleware('auth');
-
-
-Route::get('/telephone', [AnnonceController::class, 'afficherFormVerification'])->name('form.verification');
-Route::post('/envoyer-sms', [AnnonceController::class, 'envoyerCodeSms'])->name('action.envoyer.sms');
-Route::post('/verifier-code', [AnnonceController::class, 'traiterVerification'])->name('action.verifier.code');
-
-// --- ADMINISTRATION (GARANTIE) ---
-Route::get('/admin/dashboard', [AnnonceController::class, 'adminDashboard'])->middleware('auth')->name('admin.dashboard');
-Route::post('/admin/garantie/{id}', [AnnonceController::class, 'toggleGarantie'])->middleware('auth')->name('admin.toggle.garantie');
-
-
-// pour yoyo&ninie
+    
 Route::get('/creer_annonce', [AnnonceController::class, 'afficher_form'])->middleware('auth');
 Route::post('/ajouter_annonce', [AnnonceController::class, 'ajouter_annonce'])->middleware('auth');
-
-Route::middleware(['auth'])->group(function () {
-    Route::get('/reservation/{id}/avis', [DeposerAvisController::class, 'create'])->name('avis.create');
-    Route::post('/reservation/{id}/avis', [DeposerAvisController::class, 'store'])->name('avis.store');
-});
-
-Route::post('/verifier_profil', [VerifierProfilController::class, 'verifier_profil'])->middleware('auth');
 
 Route::get('/ajouter_paiement', [CompteController::class, 'afficher_ajout_paiement'])->middleware('auth');
 Route::post('/ajouter_paiement', [CompteController::class, 'ajouter_paiement'])->middleware('auth');
 Route::post('/modifier_paiement', [CompteController::class, 'modifier_paiement'])->middleware('auth');
 Route::get('/payer/{id}', [CompteController::class, 'afficher_paiement'])->middleware('auth');
+
+Route::get('/admin/ajout_equipements', [AnnonceController::class, 'afficher_ajout_equipements'])->middleware('auth')->name('admin/ajout_equipements');
+Route::get('/admin/ajout_typehebergement', [AnnonceController::class, 'afficher_ajout_typehebergement'])->middleware('auth')->name('admin/ajout_typehebergement');
+Route::post('admin/typehebergement/store', [AnnonceController::class, 'store_typehebergement'])->middleware('auth');
+Route::post('admin/annonce/update-type', [AnnonceController::class,'update_annonce_type'])->middleware('auth');
+
+Route::get('/admin/gerer_annonce', [AnnonceController::class, 'view_gerer_annonce'])->middleware('auth')->name('admin/gerer_annonce');
+Route::get('/afficher_attente', [AnnonceController::class, 'afficher_annonce_attente'])->middleware('auth');
+Route::post('/enregistrer_statut_annonce', [AnnonceController::class, 'save_statut_annonce'])->middleware('auth');
+Route::post('/admin/equipement/store', [AnnonceController::class, 'store_equipement']);
+Route::post('/admin/equipement/link', [AnnonceController::class, 'lier_equipement_annonce']);
+
+Route::get('/messagerie/{id?}', [MsgController::class, 'afficher_messagerie'])->middleware('auth')->name('messagerie');
+Route::post('/messagerie/envoyer', [MsgController::class, 'envoyer_message'])->middleware('auth')->name('messagerie.envoyer');
+Route::post('/contact/creer', [MsgController::class, 'creer_contact'])->middleware('auth')->name('contact.create');
 
 
 Route::get('/reservation/{id}', [ReservationController::class, 'view_modifier'])->middleware('auth');
@@ -96,25 +94,30 @@ Route::post('/reservation/refuse/{id}', [ReservationController::class, 'refuser_
 Route::get('/reservation/declare/{id}', [ReservationController::class, 'declarer_incident'])->middleware('auth');
 Route::post('/reservation/save_incident', [ReservationController::class, 'save_incident'])->middleware('auth');
 Route::post('/reservation/clore_incident', [ReservationController::class, 'clore_incident'])->middleware('auth');
-Route::get('/verification/telephone', [AnnonceController::class, 'afficherFormVerification']) ->middleware('auth')->name('form.verification.telephone');
-Route::post('/verification/telephone', [AnnonceController::class, 'traiterVerification'])->middleware('auth')->name('traiter.verification.telephone');
-
-Route::get('/verification/telephone', [AnnonceController::class, 'afficherFormVerification'])
-    ->middleware('auth')
-    ->name('form.verification.telephone');
+Route::post('/reservation/justifier_incident', [ReservationController::class, 'justifier_incident'])->middleware('auth');
 
 
-Route::post('/verification/telephone', [AnnonceController::class, 'traiterVerification'])
-    ->middleware('auth')
-    ->name('traiter.verification.telephone');
-
-Route::get('/annonce/{id}/avis', [App\Http\Controllers\AnnonceController::class, 'showReviews'])->name('annonce.avis');
 
 
+
+
+// TODO : Revoir toutes ces routes
+Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('login.google');
+Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
+//Route::post('/admin/garantie/{id}', [AnnonceController::class, 'toggleGarantie'])->middleware('auth')->name('admin.toggle.garantie');
 Route::middleware(['auth'])->group(function () {
+    Route::get('/reservation/{id}/avis', [DeposerAvisController::class, 'create'])->name('avis.create');
+    Route::post('/reservation/{id}/avis', [DeposerAvisController::class, 'store'])->name('avis.store');
+});
+Route::post('/verifier_profil', [VerifierProfilController::class, 'verifier_profil'])->middleware('auth');
+Route::get('/messagerie/{id?}', [MsgController::class, 'afficher_messagerie'])->middleware('auth')->name('messagerie');
+Route::post('/messagerie/envoyer', [MsgController::class, 'envoyer_message'])->middleware('auth')->name('messagerie.envoyer');
+Route::post('/contact/creer', [MsgController::class, 'creer_contact'])->middleware('auth')->name('contact.create');
 
+Route::get('/annonce/{id}/avis', [AnnonceController::class, 'showReviews'])->name('annonce.avis');
+Route::middleware(['auth'])->group(function () {
     Route::get('/admin/avis', function () {
-        if (auth()->user()->idutilisateur != 52) {
+        if (auth()->user()->idutilisateur != 52) { // i hate whoever did this.
             abort(403, 'Accès réservé au Service Immobilier.');
         }
         return app(ServiceImmoController::class)->indexAvis();
@@ -129,7 +132,15 @@ Route::middleware(['auth'])->group(function () {
     })->name('admin.avis.update');
 
 });
-
-Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('login.google');
-Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
+Route::get('/telephone', [AnnonceController::class, 'afficherFormVerification'])->name('form.verification');
+Route::post('/envoyer-sms', [AnnonceController::class, 'envoyerCodeSms'])->name('action.envoyer.sms');
+Route::post('/verifier-code', [AnnonceController::class, 'traiterVerification'])->name('action.verifier.code');
+Route::get('/verification/telephone', [AnnonceController::class, 'afficherFormVerification']) ->middleware('auth')->name('form.verification.telephone');
+Route::post('/verification/telephone', [AnnonceController::class, 'traiterVerification'])->middleware('auth')->name('traiter.verification.telephone');
+Route::get('/verification/telephone', [AnnonceController::class, 'afficherFormVerification'])
+    ->middleware('auth')
+    ->name('form.verification.telephone');
+Route::post('/verification/telephone', [AnnonceController::class, 'traiterVerification'])
+    ->middleware('auth')
+    ->name('traiter.verification.telephone');
 

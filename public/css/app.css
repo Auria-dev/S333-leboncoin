@@ -20,6 +20,7 @@
     --success-text: #065f46;
     --text-main: #4A3B32;
     --text-muted: #8C7B70;
+    --bg-response: #8c7b700a;
     --text-inverse: #FFFFFF;
     --text-gradient-end: #7C6A60;
     --bg-body: #FFF8F5;
@@ -48,7 +49,8 @@
     --spacing: 2.5rem;
     --star-size: 20px;
 }
-/* 
+
+/*  
 @media (prefers-color-scheme: dark) {
     :root {
         --primary-rgb: 226, 232, 240;
@@ -124,6 +126,9 @@ html {
     html {
         background-color: var(--bg-body);
         background-image: radial-gradient(at 0% 0%, rgba(71, 71, 71, 0.1) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(137, 137, 137, 0.05) 0px, transparent 50%);
+        
+    background-image: none;
+    background: #fdf6f3;
     }
 }
 body.container {
@@ -1748,7 +1753,7 @@ input.date-custom-input {
 .add-annonce-form { display: flex; flex-direction: column; width: 700px; max-width: 100%; }
 .search-form { width: 100%; max-width: 400px; margin: 0 auto; }
 
-.previews-container { display: flex; gap: 10px; margin-top: 10px;}
+.previews-container { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;}
 .font-bold { font-weight: bold; }
 .text-sm { font-size: 0.85em; }
 .text-muted-color { color: var(--text-muted); }
@@ -2460,4 +2465,54 @@ input.date-custom-input {
     font-size: 13px;
     color: var(--input-text-disabled);
     margin-left: 5px;
+}
+
+table {
+    border-spacing: 0; 
+    border-collapse: separate;
+    border: 1px solid #000;
+    border-radius: 20px;
+    overflow: hidden; 
+    width: 100%;
+}
+
+thead {
+    background-color: var(--primary-hover); 
+    color: var(--primary-light);
+}
+
+th, td {
+    padding: 10px; 
+    text-align: center; 
+    vertical-align: middle;
+    border-bottom: 1px solid #000;
+    border-right: 1px solid #000;
+}
+
+th:last-child, td:last-child {
+    border-right: none;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+.td-left {
+    text-align: left;
+}
+
+.verif-proprio {
+    border-radius: 20px;
+    border: 1px solid;
+    padding: 0.225rem 1rem 0.225rem 0.225rem;
+    font-size: 13px;
+    gap: 2px;
+    display: flex;
+}
+
+.certification {
+    width: fit-content;  
+    gap: 10px;
+    margin-top: 1rem;
+    font-size: 11px;
 }

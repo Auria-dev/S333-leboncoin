@@ -33,8 +33,8 @@ It integrates various external services, including the **Google Maps API** for g
 - <a href="https://auria-dev.com/" target="_blank">Auria</a> 
 - <a href="http://51.83.36.122/~dupyoe/portfolio/" target="_blank">Yoénie DUPUY</a>
 - <a href="http://51.83.36.122/~renale/portfolio/" target="_blank">Alexandre RENAUD</a>
-- <a href="http://51.83.36.122/~maseti/" target="_blank">Jarod MUNERET</a>
-- <a href="http://51.83.36.122/~maseti/" target="_blank">Etienne MASSON</a>
+- <a href="http://51.83.36.122/~munjar/" target="_blank">Jarod MUNERET</a>
+- <a href="http://51.83.36.122/~maseti/portfolio/" target="_blank">Etienne MASSON</a>
 
 
 ## License

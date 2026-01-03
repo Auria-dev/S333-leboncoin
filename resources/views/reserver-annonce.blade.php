@@ -45,9 +45,10 @@
             <input type="hidden" name="idannonce" value="{{ $annonce->idannonce }}">
             <input type="hidden" name="idutilisateur" value="{{ auth()->user()->idutilisateur }}">
             <input type="hidden" name="montant_location" value="{{ $montant_location }}">
-            <input type="hidden" name="frais_service" value="{{ $frais_service }}">
-            <input type="hidden" name="taxe_sejour" value="{{ $taxe_sejour }}">
-            <input type="hidden" name="total" value="{{ $total }}">
+            <input type="hidden" name="frais_service" :value="prices.fraisService">
+            <input type="hidden" name="taxe_sejour" :value="(guests.adultes + guests.enfants) * prices.taxeSejourUnitaire">
+            <input type="hidden" name="total" :value="prices.total">
+
 
             <div class="picker-group">
                 <div class="picker-label-container">
@@ -357,12 +358,12 @@
 
             <div class="price-row bordered">
                 <span>Taxe de séjour</span>
-                <span>{{ $taxe_sejour }} €</span>
+                <span id="displayTaxs">{{ $taxe_sejour }} €</span>
             </div>
 
             <div class="total-row">
                 <span>Total</span>
-                <span>{{ $total }} €</span>
+                <span id="displayTotal">{{ $total }} €</span>
             </div>
 
         </div>
@@ -379,6 +380,14 @@
             selectedCardId: '{{ auth()->user()->carte_credit[0]->idcarte ?? "new" }}', 
             savedCardCvv: '',
             newCard: { number: '', expiry: '', cvv: '', name: '' },
+
+            prices: {
+                montantLocation: {{ $montant_location }},
+                fraisService: {{ $frais_service }},
+                taxeSejourUnitaire: {{ $taxe_sejour }},
+                total: {{ $total }}
+            },
+
 
             limits: {
                 maxPersons: {{ $max_capacity }},
@@ -398,6 +407,7 @@
                 savedCvv: false, savedCvvMsg: '',
                 newNumber: false, newExpiry: false, newCvv: false, newName: false
             },
+
             phoneErrorMessage: '',
 
             updateCounter(type, change) {
@@ -422,6 +432,19 @@
                 }
 
                 this.guests[type] = newVal;
+                let totalHumans = this.guests.adultes + this.guests.enfants;
+
+                let fraisService = Math.ceil(this.prices.montantLocation * 0.1);
+                let taxeSejour = totalHumans * this.prices.taxeSejourUnitaire;
+
+                this.prices.fraisService = fraisService;
+                this.prices.total = this.prices.montantLocation + fraisService + taxeSejour;
+
+                let dts = document.querySelector("#displayTaxs");
+                let dtt = document.querySelector("#displayTotal");
+
+                dts.innerHTML = taxeSejour + " €";
+                dtt.innerHTML = this.prices.total + " €";
             },
 
             formatCardNumber() {
