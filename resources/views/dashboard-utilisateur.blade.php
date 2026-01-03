@@ -65,7 +65,6 @@
     @endif
 
     @if ($utilisateur->getTypeParticulier() == 'Locataire' || $utilisateur->getTypeParticulier() == 'Locataire & Propriétaire' || $utilisateur->getTypeParticulier() == 'Entreprise')
-    
     <div class="res-section">
         <p class="section-title">Mes réservations</p>
         <div class="res-scroller">
@@ -355,7 +354,6 @@
             @endforelse
         </div>
     </div>
-
     @endif
 
     <form method="POST" action="{{ url('logout') }}" class="w-fit">
@@ -367,7 +365,7 @@
 
 @if($utilisateur->administrateur && $utilisateur->administrateur->typeAdmin->nom_type_admin === 'Service Immobilier')
     <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
-        <h3 style="margin-bottom: 15px;">Espace Service Immo</h3>
+        <h3 style="margin-bottom: 15px;">Espace Service Immobilier</h3>
         
         <a href="{{ route('admin.avis.index') }}" class="other-btn">
             Modérer les Avis
@@ -389,8 +387,8 @@
     <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
         <h3 style="margin-bottom: 15px;">Espace Service Petites Annonces</h3>
         
-        <a href="{{ route('admin.dashboard') }}" class="other-btn">
-            Vérifier les annonces
+        <a href="{{ route('admin/gerer_annonce') }}" class="other-btn">
+            Gérer les annonces
         </a>
     </div>
 

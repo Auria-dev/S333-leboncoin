@@ -166,7 +166,6 @@
                     @if(isset($equipements))
                         @foreach($equipements as $eq)
                             <label class="pill-label">
-                                {{-- ON GARDE TES NOMS, MAIS ON ENVOIE L'ID --}}
                                 <input type="checkbox" 
                                     name="DepotEquipement[]" 
                                     value="{{ $eq->idequipement }}" 
