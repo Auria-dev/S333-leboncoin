@@ -14,7 +14,6 @@
 </div>
 
 <div class="annonce-grid">
-    {{-- COLONNE GAUCHE : PHOTOS + CALENDRIER --}}
     <div class="photo-column">
         <div class="carousel-placeholder">
             @if($annonce->photo && count($annonce->photo) > 0)
@@ -91,16 +90,8 @@
         <header style="border:none; padding:0; text-align:left; margin:0;">
             <h1 class="titre-annonce">{{ $annonce->titre_annonce }}</h1>
 
-            @if($annonce->est_garantie)
-                <div style="background-color: #d1e7dd; color: #0f5132; padding: 10px; border-radius: 5px; margin: 10px 0; border: 1px solid #badbcc; display: inline-block;">
-                    <strong>🌟 PAIEMENT GARANTI</strong>
-                    <br>
-                    <small>Propriétaire vérifié par téléphone</small>
-                </div>
-            @endif
-
                 <p style="margin-top: 0.5rem; color: var(--text-muted); font-size: 0.9rem;">
-                        {{ $annonce->adresse_annonce . ', ' . $annonce->ville->nomville . ' ' . $annonce->ville->code_postal }} &bull; 
+                        {{ $annonce->ville->nom_ville . ' ' . $annonce->ville->code_postal }} &bull; 
         
                     <span class="stars" style="--rating: {{ $annonce->moyenneAvisParAnnonce()['moyenne'] }}; margin-right: 5px;"></span> 
         

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Models\Utilisateur;
 use App\Models\Ville;
 use App\Models\Annonce;
 use App\Models\Favoris;
@@ -18,8 +19,6 @@ use App\Services\GeoapifyService;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
 use Carbon\Carbon;
-
-// Imports Vonage
 use Vonage\Client;
 use Vonage\Client\Credentials\Basic;
 use Vonage\SMS\Message\SMS;
@@ -34,31 +33,6 @@ class AnnonceController extends Controller
         $this->geoService = $geoService;
     }
 
-    public function adminDashboard()
-    {
-        $user = Auth::user();
-        if (!$user->administrateur) 
-            return redirect()->back()->with('error', 'Vous n\'avez pas accès à cette page.');
-
-        $annonces = Annonce::with('utilisateur')->orderBy('date_publication', 'desc')->get();
-        return view('admin.dashboard', ['annonces' => $annonces]);
-    }
-
-    public function toggleGarantie($idannonce)
-    {
-        $annonce = Annonce::with('utilisateur')->findOrFail($idannonce);
-
-        if (!$annonce->utilisateur->telephone_verifie) {
-            return redirect()->back()->with('error', 'Impossible de garantir : L\'utilisateur n\'a pas vérifié son téléphone !');
-        }
-
-        $annonce->est_garantie = !$annonce->est_garantie;
-        $annonce->save();
-
-        $status = $annonce->est_garantie ? "garantie ✅" : "retirée ❌";
-        return redirect()->back()->with('success', "Annonce $status");
-    }
-
     public function afficher_form()
     {
         $types = TypeHebergement::all();
@@ -70,7 +44,7 @@ class AnnonceController extends Controller
     public function ajouter_annonce(Request $req)
     {
         if (Auth::check()) {
-            $user = \App\Models\Utilisateur::find(auth()->id());
+            $user = Utilisateur::find(auth()->id());
             $iduser = $user->idutilisateur;
         } else {
             return redirect('login');
@@ -493,5 +467,29 @@ class AnnonceController extends Controller
         $annonce->save();
 
         return redirect()->back()->with('success', 'L’annonce a été mise à jour !');
+    }
+
+    public function view_gerer_annonce()
+    {
+        $user = Auth::user();
+        if (!$user->administrateur) 
+            return redirect()->back()->with('error', 'Vous n\'avez pas accès à cette page.');
+
+        $annonces = Annonce::orderBy('date_publication', 'desc')->get();
+        return view('gerer-annonce', ['annonces' => $annonces]);
+    }
+
+    public function afficher_annonce_attente(Request $req)
+    {
+    $query = Annonce::query();
+
+    // On vérifie si le paramètre 'statut' est présent dans l'URL
+    if ($req->filled('statut')) {
+        $query->where('code_verif', $req->statut);
+    }
+
+    $annonces = $query->get();
+
+    return view('gerer-annonce', compact('annonces'));
     }
 }

@@ -10,7 +10,7 @@ class Annonce extends Model
     use HasFactory;
 
     protected $table = "annonce";
-    protected $primaryKey = "idannonce"; // Indispensable pour que Laravel retrouve l'annonce créée
+    protected $primaryKey = "idannonce"; 
     public $timestamps = false;
 
     protected $fillable = [
@@ -32,30 +32,26 @@ class Annonce extends Model
         'longitude',
         'latitude',
         'photo_profil',
-        'est_garantie'
+        'code_verif'
     ];
-
-    // --- RELATIONS ---
 
     public function equipement() {
         return $this->belongsToMany(
             Equipement::class, 
-            'equipe',        // Nom de TA table pivot
-            'idannonce',     // Clé annonce
-            'idequipement'   // Clé equipement
+            'equipe',      
+            'idannonce',     
+            'idequipement'   
         );
     }
 
     public function service() {
         return $this->belongsToMany(
             Service::class, 
-            'propose',       // Nom de TA table pivot
+            'propose',       
             'idannonce', 
             'idservice'
         );
     }
-
-    // --- AUTRES RELATIONS (Inchangées) ---
 
     public function ville() {
         return $this->belongsTo(Ville::class, "idville");

@@ -2465,3 +2465,38 @@ input.date-custom-input {
     color: var(--input-text-disabled);
     margin-left: 5px;
 }
+
+table {
+    border-spacing: 0; 
+    border-collapse: separate;
+    border: 1px solid #000;
+    border-radius: 20px;
+    overflow: hidden; 
+    width: 100%;
+}
+
+thead {
+    background-color: var(--primary-hover); 
+    color: var(--primary-light);
+}
+
+th, td {
+    padding: 10px; 
+    text-align: center; 
+    vertical-align: middle;
+    border-bottom: 1px solid #000;
+    border-right: 1px solid #000;
+}
+
+th:last-child, td:last-child {
+    border-right: none;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+.td-left {
+    text-align: left;
+}
+
