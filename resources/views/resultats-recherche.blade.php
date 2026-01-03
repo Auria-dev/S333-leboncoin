@@ -150,6 +150,20 @@
                                 {{ $annonce->nb_personnes_max }} pers &bull; 
                                 {{ $annonce->nb_bebe_max }} bébé
                             </div>
+                            
+                            @if($annonce->utilisateur->getTypeParticulier() == 'Propriétaire' || $annonce->utilisateur->getTypeParticulier() == 'Locataire & Propriétaire')
+                                @if($annonce->utilisateur->telephone_verifie && $annonce->utilisateur->particulier->piece_identite !== null)
+                                <div class="verif-proprio certification"> 
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-check-icon lucide-shield-check"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>
+                                    <p style="margin-top: 2px;"> Propriétaire vérifié </p>
+                                </div>
+                                @endif
+                            @else 
+                                <div class="verif-proprio certification"> 
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-check-icon lucide-shield-check"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>
+                                    <p style="margin-top: 2px;"> Entreprise </p>
+                                </div>
+                            @endif 
 
                             <div class="card-footer">
                                 <span class="location-badge">

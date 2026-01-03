@@ -417,7 +417,7 @@
                                     class="mt-md"
                                     onsubmit="return confirm('Êtes-vous sûr de vouloir clore l\'incident ? Cette action est irréversible.');">
                                     @csrf
-                                    <input type="hidden" name="idincident" value="{{  $reservation->incident->idincident }}">
+                                    <input type="hidden" name="idincident" value="{{ $reservation->incident->idincident }}">
                                     <button type="submit" class="submit-btn" style="margin-top: 2rem;">Clore l'incident</button>
                                 </form>
                             @endif

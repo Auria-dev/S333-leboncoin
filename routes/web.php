@@ -76,7 +76,8 @@ Route::post('admin/typehebergement/store', [AnnonceController::class, 'store_typ
 Route::post('admin/annonce/update-type', [AnnonceController::class,'update_annonce_type'])->middleware('auth');
 
 Route::get('/admin/gerer_annonce', [AnnonceController::class, 'view_gerer_annonce'])->middleware('auth')->name('admin/gerer_annonce');
-Route::get('/afficher_attente', [AnnonceController::class, 'afficher_annonce_attente'])->middleware('auth')->name('annonce_attente');
+Route::get('/afficher_attente', [AnnonceController::class, 'afficher_annonce_attente'])->middleware('auth');
+Route::post('/enregistrer_statut_annonce', [AnnonceController::class, 'save_statut_annonce'])->middleware('auth');
 Route::post('/admin/equipement/store', [AnnonceController::class, 'store_equipement']);
 Route::post('/admin/equipement/link', [AnnonceController::class, 'lier_equipement_annonce']);
 

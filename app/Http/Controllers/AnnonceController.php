@@ -512,15 +512,29 @@ class AnnonceController extends Controller
 
     public function afficher_annonce_attente(Request $req)
     {
-    $query = Annonce::query();
+        $query = Annonce::query();
 
-    // On vérifie si le paramètre 'statut' est présent dans l'URL
-    if ($req->filled('statut')) {
-        $query->where('code_verif', $req->statut);
+        if ($req->filled('statut')) {
+            $query->where('code_verif', $req->statut);
+        }
+
+        $annonces = $query->get();
+
+        return view('gerer-annonce', compact('annonces'));
     }
 
-    $annonces = $query->get();
+    public function save_statut_annonce(Request $req)
+    {
+        $statuts = $req->statuts;
 
-    return view('gerer-annonce', compact('annonces'));
+        if($statuts) {
+            foreach ($statuts as $idannonce => $value) {
+                if(!empty($value)) {
+                    Annonce::where("idannonce", $idannonce)->update(["code_verif" => $value]);
+                }
+            }
+            return redirect()->back()->with('success', 'Statut des annonces modifié !');
+        }
+        return redirect()->back()->with('info', 'Aucun statut modifié.');
     }
 }
