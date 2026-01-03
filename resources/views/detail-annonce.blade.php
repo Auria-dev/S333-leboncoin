@@ -282,6 +282,7 @@
         }
     </script>
 </div>
+
         <div style="margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--border-default);">
             <small style="color: var(--text-muted);">
                 Publié le {{ \Carbon\Carbon::parse($annonce->date_publication)->format('d/m/Y') }}
