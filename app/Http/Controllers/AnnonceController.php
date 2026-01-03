@@ -13,6 +13,7 @@ use App\Models\TypeHebergement;
 use App\Models\Photo;
 use App\Models\Equipement;
 use App\Models\AnnonceSimilaire;
+use App\Models\CategorieEquipement;
 use App\Models\Service;
 use App\Services\GeoapifyService;
 use Intervention\Image\ImageManager;
@@ -453,13 +454,44 @@ class AnnonceController extends Controller
 
     public function afficher_ajout_equipements() {
         $equipements = Equipement::all();
-        return view('ajouter-equipements', ['equipements' => $equipements]);
-    }
-    
-    public function ajouter_equipements() {
+        $annonces = Annonce::all();
         
+        return view('ajouter-equipements', [
+            'equipements' => $equipements, 
+            'annonces' => $annonces
+        ]);
     }
-        
+
+    public function store_equipement(Request $request) {
+        $request->validate([
+            'nom_equipement' => 'required|unique:equipement,nom_equipement',
+            'idcategorie' => 'required|integer'
+        ]);
+
+        $categorie_equipement = CategorieEquipement::Find($request->idcategorie);
+        if (!$categorie_equipement->idcategorie) {
+            return back()->withErrors(['error'=> 'Impossible de trouver la catégorie d\'équipement. Contacter un administrateur.']);
+        }
+
+        Equipement::create([
+            'nom_equipement' => $request->nom_equipement,
+            'idcategorie' => $categorie_equipement->idcategorie,
+        ]);
+
+        return redirect()->back()->with('success', 'Nouvel équipement créé avec succès !');
+    }
+
+    public function lier_equipement_annonce(Request $request) {
+        $request->validate([
+            'idannonce' => 'required|exists:annonce,idannonce',
+            'idequipement' => 'required|exists:equipement,idequipement'
+        ]);
+
+        $annonce = Annonce::find($request->idannonce);
+        $annonce->equipement()->syncWithoutDetaching([$request->idequipement]);
+        return redirect()->back()->with('success', 'Équipement ajouté à l\'annonce !');
+    }
+
     public function afficher_ajout_typehebergement() {
         $type_hebergements = TypeHebergement::all();
         $annonces = Annonce::all();
@@ -467,7 +499,7 @@ class AnnonceController extends Controller
             'type_hebergements' => $type_hebergements, 
             'annonces'=>$annonces
         ]);
-    } 
+    }
 
     public function store_typehebergement(Request $request) {
         $request->validate([
