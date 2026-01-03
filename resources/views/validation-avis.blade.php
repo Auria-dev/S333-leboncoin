@@ -26,7 +26,7 @@
                     {{ $avis->utilisateur->prenom_utilisateur }} {{ $avis->utilisateur->nom_utilisateur }}
                 </td>
                 <td>
-                    {{ $avis->reservation->annonce->titre_annonce ?? 'Annonce supprimée' }}
+                    {{ $avis->reservation->annonce->titre_annonce ?? "Annonce supprimée"}}
                 </td>
                 <td>
                     {{ $avis->note }}/5

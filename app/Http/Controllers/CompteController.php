@@ -147,6 +147,9 @@ class CompteController extends Controller {
         
         $entreprise = DB::table('entreprise')->where('identreprise', $user->idutilisateur)->first();
         $isEntreprise = $entreprise !== null;
+        $particulier = DB::table('particulier')->where('idparticulier', $user->idutilisateur)->first();
+        $isParticulier = $particulier !== null;
+
         
         $secteurs = SecteurActivite::all();
 
@@ -155,6 +158,7 @@ class CompteController extends Controller {
             'ville' => $ville,
             'entreprise' => $entreprise,
             'isEntreprise' => $isEntreprise,
+            'isParticulier' => $isParticulier,
             'secteurs' => $secteurs
         ]);   
     }
