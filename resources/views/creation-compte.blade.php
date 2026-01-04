@@ -163,7 +163,7 @@
                 </div>
             </div>
 
-            <div x-show="accountType === 'particulier'">
+            <div x-show="accountType !== 'entreprise'">
                 <div class="upload-container">
                     <label>
                         Afin de publier des annonces, la vérification de votre identité est requise. 
