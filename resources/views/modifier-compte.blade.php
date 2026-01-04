@@ -3,7 +3,6 @@
 @section('title', 'Modifier mon compte')
 
 @section('content')
-    {{-- Dependencies --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
@@ -229,7 +228,7 @@
             </div>
         </div>
 
-        @if(!$isEntreprise && $user->particulier->piece_identite === null)
+        @if($isParticulier && $user->particulier->piece_identite === null)
             <div class="upload-container">
                     <label>Transmettre votre pièce d'identité sous forme de PDF.</label>
 
