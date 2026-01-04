@@ -27,7 +27,7 @@ class Avis extends Model
 
     public function reservation()
     {
-        return $this->belongsTo(Reservation::class, 'IDRESERVATION', 'IDRESERVATION');
+        return $this->belongsTo(Reservation::class, 'idreservation', 'idreservation');
     }
     
     public function utilisateur()

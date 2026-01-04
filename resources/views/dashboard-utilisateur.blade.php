@@ -131,41 +131,34 @@
                         </div>
                     </a>
 
-                    <div>
-                        @php
-                            // Vérification : Séjour terminé ?
-                            $isFinished = \Carbon\Carbon::parse($res->date_fin_resa)->isPast();
-                            // Récupération du statut de l'avis (si existant)
-                            $statutAvis = $res->avis->STATUT_AVIS ?? null;
-                        @endphp
-
-                        @if(! $isFinished)
-                            <p style="font-size: 0.8rem; color: var(--text-muted); text-align: center; margin: 0;">
-                                Séjour en cours ou à venir
-                            </p>
-
-                        @elseif($res->idavis === null)
-                            <a href="{{ route('avis.create', $res->idreservation) }}" 
-                               class="submit-btn" 
-                               style="width: 100%; display: block;">
-                                Noter ce séjour
-                            </a>
-
-                        @else
-                            <div class="card-footer" style="justify-content: center">
-                                @if($statutAvis === 'en_attente')
-                                    <span>Avis en cours de vérification</span>
-                                @elseif($statutAvis === 'valide')
-                                    <span>Avis publié en ligne</span>
-                                @elseif($statutAvis === 'refuse')
-                                    <span>Avis refusé (Modération)</span>
-                                @else
-                                    <span>Avis enregistré</span>
-                                @endif
-                            </div>
-                        @endif
-                    </div>
-
+                    
+                    @php
+                        $isFinished = \Carbon\Carbon::parse($res->date_fin_resa)->isPast();
+                        $statutAvis = $res->avis->statut_avis ?? null;
+                        $statutResa = $res->statut_reservation;
+                    @endphp
+                    
+                    @if($isFinished && $statutResa === 'validée')
+                            @if($statutAvis === null)
+                                <a href="{{ route('avis.create', $res->idreservation) }}" 
+                                class="submit-btn" 
+                                style="width: 100%; display: block;">
+                                    Noter ce séjour
+                                </a>
+                            @else
+                                <div class="card-footer" style="justify-content: center">
+                                    @if($statutAvis === 'en_attente')
+                                        <span>Avis en cours de vérification</span>
+                                    @elseif($statutAvis === 'valide')
+                                        <span>Avis publié</span>
+                                    @elseif($statutAvis === 'refuse')
+                                        <span>Avis refusé</span>
+                                    @else
+                                        <span>Auncun avis</span>
+                                    @endif
+                                </div>
+                            @endif
+                    @endif
                 </div>
             @empty
                 <div class="res-empty">
@@ -371,7 +364,7 @@
             @endphp
             
             @if($nbEnAttente > 0)
-                <span style="background-color: red; color: white; padding: 2px 6px; border-radius: 50%; font-size: 0.8em; margin-left: 5px; vertical-align: middle;">
+                <span class="status-dot st-pending">
                     {{ $nbEnAttente }}
                 </span>
             @endif
@@ -398,6 +391,16 @@
     <div style="margin-top: 30px; padding-top: 20px;">
         <a href="{{ route('admin/ajout_typehebergement') }}" class="other-btn">
             Gérer les types d'hébergement
+        </a>
+    </div>
+@endif
+
+@if($utilisateur->administrateur && $utilisateur->administrateur->typeAdmin->nom_type_admin === 'Service Comptable')
+    <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
+        <h3 style="margin-bottom: 15px;">Espace Service Comptable</h3>
+        
+        <a href="{{ url('admin/gerer_incident') }}" class="other-btn">
+            Incidents & Remboursements
         </a>
     </div>
 @endif
