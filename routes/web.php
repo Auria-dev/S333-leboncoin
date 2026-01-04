@@ -11,8 +11,10 @@ use App\Http\Controllers\VerifierProfilController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\DeposerAvisController;
 use App\Http\Controllers\ServiceImmoController;
+use App\Http\Controllers\ServiceComptableController;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\MsgController;
+
 
 
 
@@ -95,6 +97,9 @@ Route::get('/reservation/declare/{id}', [ReservationController::class, 'declarer
 Route::post('/reservation/save_incident', [ReservationController::class, 'save_incident'])->middleware('auth');
 Route::post('/reservation/clore_incident', [ReservationController::class, 'clore_incident'])->middleware('auth');
 Route::post('/reservation/justifier_incident', [ReservationController::class, 'justifier_incident'])->middleware('auth');
+
+Route::get('/admin/gerer_incident', [ServiceComptableController::class, 'view_gerer_incident'])->middleware('auth');
+Route::post('/enregistrer_remboursement_incident', [ServiceComptableController::class, 'save_remboursement_incident'])->middleware('auth');
 
 
 

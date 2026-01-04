@@ -19,4 +19,8 @@ class Incident extends Model
         'reponse_incident',
         'statut_incident',
     ];
+
+    public function reservation() {
+        return $this->hasOne(Reservation::class, 'idreservation', 'idreservation');
+    }
 }

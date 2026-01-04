@@ -395,5 +395,15 @@
     </div>
 @endif
 
+@if($utilisateur->administrateur && $utilisateur->administrateur->typeAdmin->nom_type_admin === 'Service Comptable')
+    <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
+        <h3 style="margin-bottom: 15px;">Espace Service Comptable</h3>
+        
+        <a href="{{ url('admin/gerer_incident') }}" class="other-btn">
+            Incidents & Remboursements
+        </a>
+    </div>
+@endif
+
 @endsection
 

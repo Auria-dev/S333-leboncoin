@@ -71,7 +71,6 @@
                     <span class="status-dot st-rejected">refusée</span>
                 @else
                     <span class="status-dot st-pending">en attente</span>
-                    <input type="hidden" name="idannonce" value="{{ $annonce->idannonce }}">
                     <div style="margin-top: 10px; justify-self: center;" >
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <label for="accepter">Accepter</label>
