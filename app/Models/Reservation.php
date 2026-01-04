@@ -46,6 +46,10 @@ class Reservation extends Model
         return Carbon::parse($this->DATE_FIN_RESA)->isPast();
     }
 
+    public function paiement() {
+        return $this->hasMany(Paiement::class, "idreservation");
+    }
+
     
 
     // Statut reservation values:
