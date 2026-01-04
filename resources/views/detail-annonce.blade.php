@@ -72,7 +72,9 @@
                             <button type="button" id="btn-clear" class="cal-btn cal-btn-effacer">Désélectionner</button>
                             @if (auth()->check() && auth()->user()->idutilisateur !== $annonce->idproprietaire)
                             <input type="submit" id="btn-validate" class="cal-btn cal-btn-valider" value="Réserver" disabled style="opacity: 0.5; cursor: not-allowed;">
-                             @endif
+                            @elseif (!auth()->check())
+                            <button type="button" class="cal-btn cal-btn-valider" style="opacity: 1.0; cursor: pointer;" onclick="window.location.href='{{ route('login') }}'">Réserver</button>
+                            @endif
                         </div>
                     </div>
                 </div>
