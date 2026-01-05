@@ -15,6 +15,7 @@ use App\Http\Controllers\ServiceComptableController;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\MsgController;
 use App\Http\Controllers\Google2FAController;
+use App\Http\Controllers\StatsController;
 
 
 
@@ -151,7 +152,7 @@ Route::post('/verification/telephone', [AnnonceController::class, 'traiterVerifi
     ->middleware('auth')
     ->name('traiter.verification.telephone');
 
-Route::view('/stat', 'stats_bi');
+
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/compte/2fa/activer', [CompteController::class, 'activationdoublefacteur'])->name('2fa.enable');
@@ -162,3 +163,8 @@ Route::get('/login/2fa', [Google2FAController::class, 'index'])->name('2fa.index
 Route::post('/login/2fa', [Google2FAController::class, 'verify'])->name('2fa.verify');
 Route::get('/login/2fa', [Google2FAController::class, 'index'])->name('2fa.index');
 Route::post('/login/2fa', [Google2FAController::class, 'verify'])->name('2fa.verify');
+
+
+
+Route::get('/stat', [StatsController::class, 'afficher']);
+Route::post('/check-stat-login', [StatsController::class, 'verifier']);
