@@ -13,6 +13,7 @@ use App\Http\Controllers\DeposerAvisController;
 use App\Http\Controllers\ServiceImmoController;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\MsgController;
+use App\Http\Controllers\IncidentController;
 
 
 
@@ -96,6 +97,10 @@ Route::post('/reservation/save_incident', [ReservationController::class, 'save_i
 Route::post('/reservation/clore_incident', [ReservationController::class, 'clore_incident'])->middleware('auth');
 Route::post('/reservation/justifier_incident', [ReservationController::class, 'justifier_incident'])->middleware('auth');
 
+
+Route::get('/admin/gerer_incidents', [IncidentController::class, 'view_gerer_incidents'])->middleware('auth')->name('admin/gerer_incidents');
+Route::get('/admin/incidents_attente', [IncidentController::class, 'afficher_incidents_attente'])->middleware('auth')->name('admin/incidents_attente');
+Route::post('/enregistrer_statut_incident', [IncidentController::class, 'enregistrer_statut_incident'])->middleware('auth');
 
 
 
