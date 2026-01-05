@@ -1,0 +1,22 @@
+
+*** These modified files were found in JOE when it aborted on Sat Jan  3 18:06:45 2026
+*** JOE was aborted because the terminal closed
+
+*** File '/home/munjar/S333-leboncoin/.git/MERGE_MSG'
+giMerge branch 'main' of github.com:auria-dev/S333-leboncoin into main
+
+# Please enter a commit message to explain why this merge is necessary,
+# especially if it merges an updated upstream into a topic branch.
+#
+# Lines starting with '#' will be ignored, and an empty message aborts
+# the commit.
+
+*** File '(Unnamed)'
+/home/munjar/S333-leboncoin/.git/MERGE_MSG
+/home/munjar/S333-leboncoin/.git/MERGE_MSG
+
+*** File '* Startup Log *'
+Processing '/etc/joe/editorrc'...
+Processing '/etc/joe/ftyperc'...
+Finished processing /etc/joe/ftyperc
+Finished processing /etc/joe/editorrc
