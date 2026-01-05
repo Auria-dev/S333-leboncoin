@@ -395,25 +395,26 @@
     </div>
 @endif
 
-<<<<<<< HEAD
-@if($utilisateur->administrateur && $utilisateur->administrateur->typeAdmin->nom_type_admin === 'Service Location')
 
+@if($utilisateur->administrateur && $utilisateur->administrateur->typeAdmin->nom_type_admin === 'Service Location')
     <div style="margin-top: 30px; padding-top: 20px;">
+    <h3 style="margin-bottom: 15px;">Espace Service Location</h3>
         <a href="{{ route('admin/gerer_incidents') }}" class="other-btn">
             Gérer les incidents
         </a>
     </div>
+@endif
     
-=======
+
 @if($utilisateur->administrateur && $utilisateur->administrateur->typeAdmin->nom_type_admin === 'Service Comptable')
     <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
         <h3 style="margin-bottom: 15px;">Espace Service Comptable</h3>
         
-        <a href="{{ url('admin/gerer_incident') }}" class="other-btn">
+        <a href="{{ route('admin/gerer_LES_incidents') }}" class="other-btn">
             Incidents & Remboursements
         </a>
     </div>
->>>>>>> dd97b17ef41341b57377d4e28e31052de3ada229
+
 @endif
 
 @endsection

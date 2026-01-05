@@ -101,7 +101,7 @@ Route::post('/reservation/save_incident', [ReservationController::class, 'save_i
 Route::post('/reservation/clore_incident', [ReservationController::class, 'clore_incident'])->middleware('auth');
 Route::post('/reservation/justifier_incident', [ReservationController::class, 'justifier_incident'])->middleware('auth');
 
-Route::get('/admin/gerer_incident', [ServiceComptableController::class, 'view_gerer_incident'])->middleware('auth');
+Route::get('/admin/gerer_incident', [ServiceComptableController::class, 'view_gerer_incident'])->middleware('auth')->name('admin/gerer_LES_incidents');
 Route::post('/enregistrer_remboursement_incident', [ServiceComptableController::class, 'save_remboursement_incident'])->middleware('auth');
 
 
