@@ -402,5 +402,15 @@
     </div>
 @endif
 
+@if($utilisateur->administrateur && $utilisateur->administrateur->typeAdmin->nom_type_admin === 'Service Location')
+
+    <div style="margin-top: 30px; padding-top: 20px;">
+        <a href="{{ route('admin/gerer_incidents') }}" class="other-btn">
+            Gérer les incidents
+        </a>
+    </div>
+    
+@endif
+
 @endsection
 
