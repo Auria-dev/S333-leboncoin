@@ -395,6 +395,16 @@
     </div>
 @endif
 
+<<<<<<< HEAD
+@if($utilisateur->administrateur && $utilisateur->administrateur->typeAdmin->nom_type_admin === 'Service Location')
+
+    <div style="margin-top: 30px; padding-top: 20px;">
+        <a href="{{ route('admin/gerer_incidents') }}" class="other-btn">
+            Gérer les incidents
+        </a>
+    </div>
+    
+=======
 @if($utilisateur->administrateur && $utilisateur->administrateur->typeAdmin->nom_type_admin === 'Service Comptable')
     <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
         <h3 style="margin-bottom: 15px;">Espace Service Comptable</h3>
@@ -403,6 +413,7 @@
             Incidents & Remboursements
         </a>
     </div>
+>>>>>>> dd97b17ef41341b57377d4e28e31052de3ada229
 @endif
 
 @endsection
