@@ -14,9 +14,9 @@ use App\Http\Controllers\ServiceImmoController;
 use App\Http\Controllers\ServiceComptableController;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\MsgController;
+use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\Google2FAController;
 use App\Http\Controllers\StatsController;
-
 
 
 
@@ -104,6 +104,10 @@ Route::post('/reservation/justifier_incident', [ReservationController::class, 'j
 Route::get('/admin/gerer_incident', [ServiceComptableController::class, 'view_gerer_incident'])->middleware('auth');
 Route::post('/enregistrer_remboursement_incident', [ServiceComptableController::class, 'save_remboursement_incident'])->middleware('auth');
 
+
+Route::get('/admin/gerer_incidents', [IncidentController::class, 'view_gerer_incidents'])->middleware('auth')->name('admin/gerer_incidents');
+Route::get('/admin/incidents_attente', [IncidentController::class, 'afficher_incidents_attente'])->middleware('auth')->name('admin/incidents_attente');
+Route::post('/enregistrer_statut_incident', [IncidentController::class, 'enregistrer_statut_incident'])->middleware('auth');
 
 
 
