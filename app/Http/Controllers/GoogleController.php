@@ -51,7 +51,7 @@ class GoogleController extends Controller
                 ]);
 
                 DB::table('particulier')->insert([
-                    'idparticulier'    => $newUser->idutilisateur, /
+                    'idparticulier'    => $newUser->idutilisateur, 
                     'code_particulier' => 0, 
                     'piece_identite'   => null
                 ]);

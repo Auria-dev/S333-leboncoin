@@ -19,7 +19,7 @@ class ServiceComptableController extends Controller
             return redirect()->back()->with('error', 'Vous n\'avez pas accès à cette page.');
 
         $incidents = Incident::orderBy('date_signalement', 'desc')->where('statut_incident', 'clos')->get();
-        return view('gerer-incident', ['incidents' => $incidents]);
+        return view('gerer-incident-remboursement', ['incidents' => $incidents]);
     }
 
     public function save_remboursement_incident(Request $req) 
