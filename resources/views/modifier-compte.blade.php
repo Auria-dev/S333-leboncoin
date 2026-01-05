@@ -447,4 +447,126 @@
         });
     }
     </script>
+    {{-- STYLE --}}
+<style>
+    .security-card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        background-color: white;
+        transition: transform 0.2s;
+        overflow: hidden;
+    }
+    .security-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    }
+    .security-header {
+        background: linear-gradient(to right, #fff5ec, #ffffff);
+        padding: 20px 30px;
+        border-bottom: 1px solid #ffe6d4;
+        color: #ff6e14;
+    }
+    .security-body {
+        padding: 30px;
+    }
+    .status-active {
+        background-color: #e6f9ed;
+        color: #28a745;
+        padding: 8px 20px;
+        border-radius: 50px;
+        font-weight: 700;
+        display: inline-block;
+        font-size: 0.95em;
+    }
+    .btn-action-orange {
+        background-color: transparent;
+        border: 2px solid #ff6e14;
+        color: #ff6e14;
+        font-weight: 600;
+        padding: 10px 25px;
+        border-radius: 8px;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.3s ease;
+    }
+    .btn-action-orange:hover {
+        background-color: #ff6e14;
+        color: white;
+        text-decoration: none;
+        box-shadow: 0 4px 10px rgba(255, 110, 20, 0.2);
+    }
+    .btn-danger-link {
+        color: #dc3545;
+        background: none;
+        border: 1px solid #f1f1f1;
+        padding: 6px 15px;
+        border-radius: 6px;
+        font-size: 0.85em;
+        margin-top: 10px;
+        cursor: pointer;
+        transition: 0.3s;
+        display: inline-block;
+    }
+    .btn-danger-link:hover {
+        background-color: #fff5f5;
+        border-color: #dc3545;
+    }
+</style>
+
+{{-- BLOC CONTENEUR --}}
+<div class="container" style="margin-top: 30px; margin-bottom: 50px;">
+    <div class="row">
+        <div class="col-md-12">
+            
+            <div class="card security-card">
+                <div class="security-header">
+                    <h5 class="mb-0" style="font-weight: 700;">Sécurité du compte</h5>
+                </div>
+
+                <div class="security-body">
+                    <div class="row align-items-center">
+                        
+                        <div class="col-md-8">
+                            <div>
+                                <h5 style="font-weight: bold; margin-bottom: 8px;">Authentification à deux facteurs (2FA)</h5>
+                                <p class="text-muted mb-0" style="line-height: 1.6;">
+                                    Protégez votre compte contre le piratage. Une fois activée, un code temporaire sera requis à chaque connexion.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4 text-right d-flex flex-column align-items-end justify-content-center mt-4 mt-md-0">
+                            
+                            @if(auth()->user()->google2fa_secret)
+                                <div class="status-active mb-2">
+                                    Protection Active
+                                </div>
+                                
+                                <form action="{{ route('2fa.disable') }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="btn-danger-link" onclick="return confirm('Attention : Votre compte sera moins sécurisé. Continuer ?')">
+                                        Désactiver
+                                    </button>
+                                </form>
+
+                            @else
+                                <div style="text-align: right;">
+                                    <span class="d-block text-muted small mb-2">
+                                        Recommandé
+                                    </span>
+                                    <a href="{{ route('2fa.enable') }}" class="btn-action-orange">
+                                        Configurer la 2FA
+                                    </a>
+                                </div>
+                            @endif
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
 @endsection

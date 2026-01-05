@@ -21,6 +21,7 @@
                 </div>
             @endif
 
+            {{-- 1. Choix du type de compte --}}
             <div class="input-groupe">
                 <label>Type de compte</label>
                 <div class="radio-group-container">
@@ -37,6 +38,28 @@
                         <label for="compteEntreprise">Entreprise</label>
                     </div>
                 </div>
+            </div>
+
+            {{-- ========================================== --}}
+            {{--   BOUTON GOOGLE PLACÉ EN HAUT (UX)     --}}
+            {{-- ========================================== --}}
+            
+            <div style="margin-top: 20px;">
+                <a href="{{ route('login.google') }}" class="google-btn">
+                    <svg style="width:18px; height:18px; margin-right:10px;" viewBox="0 0 48 48">
+                        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
+                        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
+                        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
+                        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
+                    </svg>
+                    S'inscrire avec Google
+                </a>
+            </div>
+
+
+            <div style="text-align: center; margin: 25px 0; position: relative; opacity: 0.7;">
+                <span style="background-color: inherit; padding: 0 10px; position: relative; z-index: 1; font-weight: bold;">ou avec votre email</span>
+                <div style="position: absolute; top: 50%; left: 0; right: 0; border-top: 1px solid #ccc; z-index: 0;"></div>
             </div>
 
             <div class="side-by-side">
@@ -163,7 +186,7 @@
                 </div>
             </div>
 
-            <div x-show="accountType === 'particulier'">
+            <div x-show="accountType !== 'entreprise'">
                 <div class="upload-container">
                     <label>
                         Afin de publier des annonces, la vérification de votre identité est requise. 
@@ -182,8 +205,6 @@
                 </div>
             </div>
 
-            
-
             <div class="mt-md">
                 <input type="submit" value="S'inscrire" class="submit-btn"
                        :disabled="globalErrors"
@@ -197,6 +218,7 @@
 
     </div>
 
+    {{-- SCRIPTS ET STYLES (Inchangés) --}}
     <script>
         function toggleEntreprise(isEntreprise) {
             const container = document.querySelector('.entreprise-fields');
@@ -309,12 +331,10 @@
                 },
 
                 closeDropdown() {
-                    // Small delay to allow click event to register on items
                     setTimeout(() => { this.results = []; }, 200);
                 }
             }));
 
-            // Password Validation Logic
             Alpine.data('passwordManager', () => ({
                 p1: '',
                 p2: '',
@@ -381,6 +401,30 @@
         }
         .suggestion-item:hover {
             background-color: #f9fafb;
+        }
+        
+        .google-btn {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            padding: 12px;
+            background-color: #ffffff;
+            color: #757575;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            font-family: 'Roboto', sans-serif;
+            font-size: 15px;
+            transition: all 0.2s ease;
+            box-sizing: border-box; 
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            cursor: pointer;
+        }
+        .google-btn:hover {
+            background-color: #f1f1f1;
+            border-color: #c6c6c6;
         }
     </style>
 @endsection

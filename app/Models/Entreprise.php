@@ -12,5 +12,8 @@ class Entreprise extends Model
     protected $table = "entreprise";
     protected $primaryKey = "identreprise";
     public $timestamps = false;
-    
+
+    public function secteur() {
+        return $this->belongsTo(SecteurActivite::class, "idsecteur");
+    } 
 }
