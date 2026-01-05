@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use App\Models\Utilisateur;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
@@ -53,7 +51,6 @@ class GoogleController extends Controller
 
         } catch (Exception $e) {
             dd($e->getMessage());
-            //return redirect('/login')->with('error', 'Erreur de connexion Google');
         }
     }
 }
