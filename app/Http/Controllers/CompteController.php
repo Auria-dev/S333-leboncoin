@@ -14,15 +14,16 @@ use Illuminate\Foundation\Auth\User;
 use App\Models\Utilisateur;
 use App\Models\Ville;
 use App\Models\SecteurActivite;
-
-// TODO (auria): Voir comment login avec Google 
-// https://kinsta.com/blog/laravel-authentication/#laravel-socialite
+use App\Models\Reservation; 
+use PragmaRX\Google2FAQRCode\Google2FA;
 
 class CompteController extends Controller {
+
     function login() {
         return view("login");
     }
 
+    // --- FONCTION DE CONNEXION MODIFIÉE (2FA) ---
     function authenticate(Request $req) {
         $credentials = $req->validate([
             'email' => ['required', 'email'],
@@ -34,6 +35,24 @@ class CompteController extends Controller {
             'password' => $credentials['mot_de_passe']
         ])) {
             $req->session()->regenerate();
+
+            // --- DEBUT BLOC 2FA ---
+            $user = Auth::user();
+
+            // Si l'utilisateur a un secret enregistré (donc il a activé la 2FA)
+            if (!empty($user->google2fa_secret)) {
+                
+                // 1. On le déconnecte temporairement (sécurité)
+                Auth::logout();
+
+                // 2. On garde son ID en mémoire pour la page suivante
+                $req->session()->put('2fa:user:id', $user->idutilisateur);
+
+                // 3. On le redirige vers la page de saisie du code
+                return redirect()->route('2fa.index');
+            }
+            // --- FIN BLOC 2FA ---
+
             return redirect()->intended(RouteServiceProvider::HOME);
         }
 
@@ -61,21 +80,16 @@ class CompteController extends Controller {
         $messages = [
             'nom.required' => 'Le nom est obligatoire.',
             'prenom.required' => 'Le prénom est obligatoire.',
-    
             'email.required' => "L'adresse email est obligatoire.",
             'email.email' => "L'adresse email n'est pas valide.",
             'email.unique' => "Cette adresse email est déjà utilisée.",
-    
             'telephone.required' => 'Le numéro de téléphone est obligatoire.',
             'telephone.digits' => 'Le numéro de téléphone doit contenir exactement 10 chiffres.',
             'telephone.unique' => 'Ce numéro de téléphone est déjà utilisé par un autre compte.',
-    
             'adresse.required' => "L'adresse est obligatoire.",
-    
             'password.required' => 'Le mot de passe est obligatoire.',
             'password.min' => 'Le mot de passe doit contenir au moins :min caractères.',
             'password.confirmed' => 'La confirmation du mot de passe ne correspond pas.',
-    
             'file.mimes' => 'Le fichier doit être au format PDF.',
             'file.max' => 'Le fichier ne doit pas dépasser 2 Mo.',
         ];
@@ -112,7 +126,7 @@ class CompteController extends Controller {
             DB::table('particulier')->insert(
                 array(
                     'idparticulier'    => $user->idutilisateur, 
-                    'code_particulier' => 0, // 0 by default, user is a locataire until they upload something 
+                    'code_particulier' => 0, 
                     'piece_identite' => $fileName,   
                 )
             );
@@ -150,7 +164,6 @@ class CompteController extends Controller {
         $particulier = DB::table('particulier')->where('idparticulier', $user->idutilisateur)->first();
         $isParticulier = $particulier !== null;
 
-        
         $secteurs = SecteurActivite::all();
 
         return view("modifier-compte", [
@@ -188,7 +201,7 @@ class CompteController extends Controller {
         
         $messages = [
             'required' => 'Le champ :attribute est obligatoire.',
-            'email' => "L'adresse email n'est pas valide.",
+            'email.email' => "L'adresse email n'est pas valide.",
             'unique' => "Ce :attribute est déjà utilisé par un autre compte.",
             'digits' => "Le :attribute doit contenir exactement :digits chiffres.",
             'min' => "Le :attribute doit contenir au moins :min caractères.",
@@ -197,7 +210,6 @@ class CompteController extends Controller {
             'max' => "Le champ :attribute ne doit pas dépasser :max caractères/Ko.",
             'telephone.unique' => 'Ce numéro de téléphone est déjà utilisé par un autre compte.',
             'email.unique' => 'Cette adresse email est déjà utilisée.',
-            'required' => 'Le champ :attribute est obligatoire.',
         ];
 
         $attributes = [
@@ -266,7 +278,7 @@ class CompteController extends Controller {
         if($req->hasFile('file')) { 
             $manager = new ImageManager(new Driver()); 
             $file = $req->file('file');  
-	    
+        
             $fileName = 'photo_utilisateur_' . $user->idutilisateur . '.jpg';
             $fileNameDB = '/images/photo_utilisateur_' . $user->idutilisateur . '.jpg';
             $url = asset('images/'. $fileName);
@@ -308,5 +320,44 @@ class CompteController extends Controller {
             'reservation'=> $reservation
          ]
         );
+    }
+    public function activationdoublefacteur()
+    {
+        $user = Auth::user();
+        $google2fa = new Google2FA(); 
+        $secretKey = $google2fa->generateSecretKey();
+        $QR_Image = $google2fa->getQRCodeInline(
+            'LeBonCoin-Sae',
+            $user->mail,
+            $secretKey
+        );
+
+        return view('2fa_activation', ['QR_Image' => $QR_Image, 'secret' => $secretKey]);
+    }
+
+    public function confirmerdoublefacteurs(Request $request)
+    {
+        $user = Auth::user();
+        $google2fa = new Google2FA();
+        $valid = $google2fa->verifyKey($request->secret, $request->code);
+
+        if ($valid) {
+            DB::table('utilisateur')
+                ->where('idutilisateur', $user->idutilisateur)
+                ->update(['google2fa_secret' => $request->secret]);
+            
+            return redirect()->route('view_modifier_compte')->with('success', 'Double authentification activée avec succès !');
+        }
+
+        return back()->with('erreur', 'Le code est incorrect. Réessayez.');
+    }
+    public function desactiverdoublefacteur()
+    {
+        $user = Auth::user();
+        DB::table('utilisateur')
+            ->where('idutilisateur', $user->idutilisateur)
+            ->update(['google2fa_secret' => null]);
+
+        return back()->with('success', 'Double authentification désactivée.');
     }
 }

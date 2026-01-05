@@ -11,9 +11,11 @@ use App\Http\Controllers\VerifierProfilController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\DeposerAvisController;
 use App\Http\Controllers\ServiceImmoController;
+use App\Http\Controllers\ServiceComptableController;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\MsgController;
 use App\Http\Controllers\IncidentController;
+use App\Http\Controllers\Google2FAController;
 
 
 
@@ -57,6 +59,7 @@ Route::post('/sauvegarder_recherche', [RechercheController::class, 'sauvegarderR
 Route::delete('/recherche/{id}', [RechercheController::class, 'destroy'])->name('recherche.destroy')->middleware('auth');
 
 Route::get('/modifier_compte', [CompteController::class, 'view_modifier'])->middleware('auth');
+Route::get('/modifier_compte', [App\Http\Controllers\CompteController::class, 'view_modifier'])->name('view_modifier_compte');
 Route::put('/modifier_compte/update', [CompteController::class, 'modifier'])->middleware('auth');
 Route::post('/modifier_compte/upload', [CompteController::class, 'upload'])->middleware('auth');
 
@@ -96,6 +99,9 @@ Route::get('/reservation/declare/{id}', [ReservationController::class, 'declarer
 Route::post('/reservation/save_incident', [ReservationController::class, 'save_incident'])->middleware('auth');
 Route::post('/reservation/clore_incident', [ReservationController::class, 'clore_incident'])->middleware('auth');
 Route::post('/reservation/justifier_incident', [ReservationController::class, 'justifier_incident'])->middleware('auth');
+
+Route::get('/admin/gerer_incident', [ServiceComptableController::class, 'view_gerer_incident'])->middleware('auth');
+Route::post('/enregistrer_remboursement_incident', [ServiceComptableController::class, 'save_remboursement_incident'])->middleware('auth');
 
 
 Route::get('/admin/gerer_incidents', [IncidentController::class, 'view_gerer_incidents'])->middleware('auth')->name('admin/gerer_incidents');
@@ -149,3 +155,14 @@ Route::post('/verification/telephone', [AnnonceController::class, 'traiterVerifi
     ->middleware('auth')
     ->name('traiter.verification.telephone');
 
+Route::view('/stat', 'stats_bi');
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/compte/2fa/activer', [CompteController::class, 'activationdoublefacteur'])->name('2fa.enable');
+    Route::post('/compte/2fa/confirmer', [CompteController::class, 'confirmerdoublefacteurs'])->name('2fa.confirm');
+    Route::post('/compte/2fa/desactiver', [CompteController::class, 'desactiverdoublefacteur'])->name('2fa.disable');
+});
+Route::get('/login/2fa', [Google2FAController::class, 'index'])->name('2fa.index');
+Route::post('/login/2fa', [Google2FAController::class, 'verify'])->name('2fa.verify');
+Route::get('/login/2fa', [Google2FAController::class, 'index'])->name('2fa.index');
+Route::post('/login/2fa', [Google2FAController::class, 'verify'])->name('2fa.verify');
