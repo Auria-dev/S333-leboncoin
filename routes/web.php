@@ -19,6 +19,8 @@ use App\Http\Controllers\Google2FAController;
 use BotMan\BotMan\BotManFactory;
 use BotMan\BotMan\Drivers\DriverManager;
 use App\Http\Controllers\BotManController;
+use App\Http\Controllers\StatsController;
+use App\Http\Controllers\LegalController;
 
 
 /*
@@ -102,7 +104,7 @@ Route::post('/reservation/save_incident', [ReservationController::class, 'save_i
 Route::post('/reservation/clore_incident', [ReservationController::class, 'clore_incident'])->middleware('auth');
 Route::post('/reservation/justifier_incident', [ReservationController::class, 'justifier_incident'])->middleware('auth');
 
-Route::get('/admin/gerer_incident', [ServiceComptableController::class, 'view_gerer_incident'])->middleware('auth');
+Route::get('/admin/gerer_incident', [ServiceComptableController::class, 'view_gerer_incident'])->middleware('auth')->name('admin/gerer_LES_incidents');
 Route::post('/enregistrer_remboursement_incident', [ServiceComptableController::class, 'save_remboursement_incident'])->middleware('auth');
 
 
@@ -159,7 +161,7 @@ Route::post('/verification/telephone', [AnnonceController::class, 'traiterVerifi
     ->middleware('auth')
     ->name('traiter.verification.telephone');
 
-Route::view('/stat', 'stats_bi');
+
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/compte/2fa/activer', [CompteController::class, 'activationdoublefacteur'])->name('2fa.enable');
@@ -170,3 +172,20 @@ Route::get('/login/2fa', [Google2FAController::class, 'index'])->name('2fa.index
 Route::post('/login/2fa', [Google2FAController::class, 'verify'])->name('2fa.verify');
 Route::get('/login/2fa', [Google2FAController::class, 'index'])->name('2fa.index');
 Route::post('/login/2fa', [Google2FAController::class, 'verify'])->name('2fa.verify');
+
+
+
+Route::get('/stat', [StatsController::class, 'afficher']);
+Route::post('/check-stat-login', [StatsController::class, 'verifier']);
+
+Route::prefix('infos')->name('legal.')->group(function () {
+    Route::get('/politique-confidentialite', [LegalController::class, 'privacy'])->name('privacy');
+    Route::get('/gestion-cookies', [LegalController::class, 'cookies'])->name('cookies');
+    Route::get('/mentions-legales', [LegalController::class, 'mentions'])->name('mentions');
+    Route::get('/cgu-cgv', [LegalController::class, 'cgu'])->name('cgu');
+    Route::get('/a-propos', [LegalController::class, 'about'])->name('about');
+    Route::get('/contact', [LegalController::class, 'contact'])->name('contact');
+    Route::get('/regles-diffusion', [LegalController::class, 'regles'])->name('regles');
+    Route::get('/nos-engagements', [LegalController::class, 'engagements'])->name('engagements');
+    Route::get('/securite-confiance', [LegalController::class, 'securite'])->name('securite');
+});
