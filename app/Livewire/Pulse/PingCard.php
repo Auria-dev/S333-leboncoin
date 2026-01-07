@@ -3,35 +3,38 @@
 namespace App\Livewire\Pulse;
 
 use Livewire\Component;
-use Illuminate\Support\Facades\View;
 
 class PingCard extends Component
 {
-    public $pingTime;
-    public $host = '51.83.36.122'; 
+    
+    public $host = '51.83.36.122';
+    public $pingTime = '---';
 
-    public function mount(): void
+    // On supprime la fonction mount() qui ne s'exécute qu'une seule fois
+    // et on met la logique directement dans render() pour que ça s'actualise
+    public function render()
     {
         $this->pingTime = $this->getPingTime($this->host);
+        return view('livewire.pulse.ping-card');
     }
 
     private function getPingTime($host): string
     {
-        // Exécute la commande ping (commande système)
-        // Sur Windows remplacez "-c 1" par "-n 1"
-        $output = shell_exec("ping -n 1 " . $host); 
-
-        // Analyse le résultat pour trouver le temps 
-        
-        if (preg_match('/temps=([\d\.]+)/', $output, $matches)) {
-            return $matches[1] . ' ms';
+        // Commande adaptée automatiquement pour Windows (-n) ou Linux/Mac (-c)
+        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+            $cmd = "ping -n 1 " . $host;
+        } else {
+            $cmd = "ping -c 1 " . $host;
         }
 
-        return 'N/A';
-    }
+        $output = shell_exec($cmd);
 
-    public function render()
-    {
-        return view('livewire.pulse.ping-card');
+        // Regex améliorée pour capturer "temps=" (FR) ou "time=" (EN) ou "<1ms"
+        // Exemple Windows FR : "Réponse de 8.8.8.8 : octets=32 temps=14 ms TTL=116"
+        if (preg_match('/(time|temps)[=<]\s*([\d\.,]+)/i', $output, $matches)) {
+            return $matches[2] . ' ms';
+        }
+
+        return 'Erreur'; // Si le ping échoue
     }
 }

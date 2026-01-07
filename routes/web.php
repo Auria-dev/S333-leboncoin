@@ -17,7 +17,7 @@ use App\Http\Controllers\MsgController;
 use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\Google2FAController;
 use App\Http\Controllers\StatsController;
-
+use App\Http\Controllers\LegalController;
 
 
 /*
@@ -172,3 +172,15 @@ Route::post('/login/2fa', [Google2FAController::class, 'verify'])->name('2fa.ver
 
 Route::get('/stat', [StatsController::class, 'afficher']);
 Route::post('/check-stat-login', [StatsController::class, 'verifier']);
+
+Route::prefix('infos')->name('legal.')->group(function () {
+    Route::get('/politique-confidentialite', [LegalController::class, 'privacy'])->name('privacy');
+    Route::get('/gestion-cookies', [LegalController::class, 'cookies'])->name('cookies');
+    Route::get('/mentions-legales', [LegalController::class, 'mentions'])->name('mentions');
+    Route::get('/cgu-cgv', [LegalController::class, 'cgu'])->name('cgu');
+    Route::get('/a-propos', [LegalController::class, 'about'])->name('about');
+    Route::get('/contact', [LegalController::class, 'contact'])->name('contact');
+    Route::get('/regles-diffusion', [LegalController::class, 'regles'])->name('regles');
+    Route::get('/nos-engagements', [LegalController::class, 'engagements'])->name('engagements');
+    Route::get('/securite-confiance', [LegalController::class, 'securite'])->name('securite');
+});

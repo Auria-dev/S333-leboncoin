@@ -1,24 +1,26 @@
-<div class="bg-gray-800 shadow-lg rounded-lg p-8 border border-gray-700 flex flex-col h-full w-full">
+<div wire:poll.5s 
+     class="shadow-lg rounded-lg p-6 h-full w-full" 
+     style="background-color: #1f2937; color: white;">
     
-    <div class="flex items-center justify-between mb-6">
-        <h2 class="text-2xl font-bold text-white">Ping vers {{ $host }}</h2>
-        {{-- <span class="text-lg text-white">Last updated: {{ now()->diffForHumans() }}</span> --}}
+    <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold" style="color: white;">Ping </h2>
+        <div wire:loading class="text-xs text-yellow-400">
+            Actualisation...
+        </div>
     </div>
 
-    <div class="text-2xl font-semibold text-center text-white mb-6">
-        <span>Ping Time</span>
+    <div class="text-center mb-2" style="color: #d1d5db;"> <span>Temps de réponse</span>
     </div>
 
-    <div class="text-4xl text-center font-mono text-white mb-4">
-        @if($pingTime == 'N/A')
-            <span class="text-red-500">Unable to fetch ping. Please check the server.</span>
-        @else
-            <span class="text-green-500">{{ $pingTime }}</span>
+    <div class="text-4xl text-center font-mono font-bold mb-4">
+        @if($pingTime == 'Erreur' || $pingTime == 'N/A')
+            <span style="color: #ef4444;">Erreur</span> @else
+            <span style="color: #22c55e;">{{ $pingTime }}</span> 
         @endif
     </div>
 
-    <div wire:poll.5s class="bg-gray-800 shadow-lg rounded-lg p-8 border border-gray-700 flex flex-col h-full w-full">
-        <span>Fetching ping...</span>
+    <div class="text-center text-xs text-gray-400">
+        Vers IP : {{ $host }}
     </div>
-    
+
 </div>
