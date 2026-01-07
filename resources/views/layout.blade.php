@@ -16,9 +16,76 @@
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!--map -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; 
+        }
+        main {
+            flex: 1; 
+        }
+
+        .lbc-footer {
+            background-color: #2b323e; 
+            color: white;
+            padding: 50px 0 20px 0;
+            margin-top: 60px; 
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+        }
+        
+        .footer-content {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 40px;
+        }
+
+        .footer-col h3 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #4a5568;
+            color: #fff;
+        }
+
+        .footer-col ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .footer-col li {
+            margin-bottom: 10px;
+        }
+
+        .footer-col a {
+            color: #cbd5e0;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-col a:hover {
+            color: #ec5a13; 
+        }
+
+        .footer-bottom {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #4a5568;
+            text-align: center;
+            color: #a0aec0;
+            font-size: 12px;
+        }
+    </style>
 </head>
 
 <body class="container">
@@ -33,8 +100,7 @@
             <ul>
                 <li><a href="{{ url('/') }}" class="{{ Request::is('/') ? 'active' : '' }}" wire:navigate>Accueil</a></li>
                 <li><a href="{{ url('/recherche') }}" class="{{ Request::is('recherche') ? 'active' : '' }}" wire:navigate>Rechercher</a></li>
-                <li><a href="{{ url('/creer_annonce') }}" class="{{ Request::is('creer_annonce') ? 'active' : '' }}" id="btn-deposer-annonce">Déposer une annonce</a>
-
+                <li><a href="{{ url('/creer_annonce') }}" class="{{ Request::is('creer_annonce') ? 'active' : '' }}" id="btn-deposer-annonce">Déposer une annonce</a></li>
             </ul>
             <div>
                 @auth
@@ -54,8 +120,49 @@
         @yield('content')
     </main>
     
-    <footer>
-        &copy; {{ date('Y') }} Leboncoin (ScoobyFoo)
+    <footer class="lbc-footer">
+        <div class="footer-content">
+            <div class="footer-col">
+                <h3>À propos du Boncoin</h3>
+                <ul>
+                    <li><a href="{{ route('legal.about') }}">Qui sommes-nous ?</a></li>
+                    <li><a href="{{ route('legal.engagements') }}">Nos engagements RSE</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h3>Informations Légales</h3>
+                <ul>
+                    <li><a href="{{ route('legal.cgu') }}">Conditions Générales d'Utilisation</a></li>
+                    <li><a href="{{ route('legal.regles') }}">Règles de diffusion</a></li>
+                    <li><a href="{{ route('legal.mentions') }}">Mentions Légales</a></li>
+                    <li><a href="{{ route('legal.privacy') }}">Politique de Confidentialité</a></li>
+                    <li><a href="{{ route('legal.cookies') }}">Gestion des cookies</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h3>Des questions ?</h3>
+                <ul>
+                    <li><a href="{{ route('legal.securite') }}">Centre de sécurité</a></li>
+                    <li><a href="{{ route('legal.contact') }}">Nous contacter</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h3>Projet SAE 3.01</h3>
+                <p style="color: #a0aec0; margin-bottom: 10px;">
+                    Application développée par le Groupe 1 - IUT Annecy.
+                </p>
+                <p style="color: #a0aec0;">
+                    Hébergé par <strong style="color: #ec5a13;">OVHcloud</strong>.
+                </p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            &copy; {{ date('Y') }} Leboncoin (ScoobyFoo). Tous droits réservés.
+        </div>
     </footer>
 
     @stack('scripts')
