@@ -170,7 +170,7 @@
 
     @if ($utilisateur->getTypeParticulier() == 'Propriétaire' || $utilisateur->getTypeParticulier() == 'Locataire & Propriétaire' || $utilisateur->getTypeParticulier() == 'Entreprise')
         <div class="res-section">
-            <h2 class="section-title">Mes annonces réservées</h2>
+            <h2 class="section-title">Mes locations</h2>
             <div class="res-grid">
                 @forelse($utilisateur->demandesReservations as $demande)
                     @php
