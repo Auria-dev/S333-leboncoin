@@ -18,10 +18,14 @@
 
     <!--map -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
 
 </head>
 
+
 <body class="container">
+
+
     <nav>
         @section('nav')
             <div>
@@ -260,5 +264,22 @@
 });
 </script>
 <script src="{{ asset('js/calendrier.js') }}" defer></script>
+
+
+<script>
+    var botmanWidget = {
+        title: 'Assistant Immo',
+        aboutText: 'Guide de navigation',
+        introMessage: "Bonjour ! Je suis votre guide. Comment puis-je vous aider à utiliser le site ?",
+        placeholderText: "Posez votre question...",
+        desktopHeight: 450,
+        desktopWidth: 370
+    };
+</script>
+<script src='https://cdn.jsdelivr.net/npm/botman-web-widget@0/build/js/widget.js'></script>
+
+<link rel="preload" href="{{ asset('css/app.css') }}" as="style">
+<link rel="stylesheet" href="{{ asset('css/app.css') }}">
+
 </body>
 </html>

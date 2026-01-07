@@ -16,7 +16,9 @@ use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\MsgController;
 use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\Google2FAController;
-
+use BotMan\BotMan\BotManFactory;
+use BotMan\BotMan\Drivers\DriverManager;
+use App\Http\Controllers\BotManController;
 
 
 /*
@@ -107,6 +109,8 @@ Route::post('/enregistrer_remboursement_incident', [ServiceComptableController::
 Route::get('/admin/gerer_incidents', [IncidentController::class, 'view_gerer_incidents'])->middleware('auth')->name('admin/gerer_incidents');
 Route::get('/admin/incidents_attente', [IncidentController::class, 'afficher_incidents_attente'])->middleware('auth')->name('admin/incidents_attente');
 Route::post('/enregistrer_statut_incident', [IncidentController::class, 'enregistrer_statut_incident'])->middleware('auth');
+
+Route::match(['get', 'post'], '/botman', [BotManController::class, 'handle']);
 
 
 
