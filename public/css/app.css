@@ -2516,3 +2516,12 @@ tr:last-child td {
     margin-top: 1rem;
     font-size: 11px;
 }
+
+
+.desktop-closed-message-avatar {
+    background-color: rgb(var(--primary-rgb)) !important;
+}
+
+#botmanWidgetRoot > div > div {
+    background-color: rgb(var(--primary-rgb)) !important;
+}
