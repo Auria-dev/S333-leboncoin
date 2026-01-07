@@ -76,18 +76,19 @@
         outline: none;
     }
     .btn-validate {
-        background-color: #28a745; 
+        background-color: var(--primary); 
         color: white;
         font-weight: 600;
         padding: 12px 30px;
         border-radius: 6px;
         border: none;
         transition: 0.3s;
+        max-width: 250px;
         width: 100%;
-        max-width: 300px;
+        margin-top: 1rem;
     }
     .btn-validate:hover {
-        background-color: #218838;
+        background-color:var(--primary-hover); 
         cursor: pointer;
     }
     .link-cancel {
@@ -103,8 +104,8 @@
     }
 </style>
 
-<div class="container">
-    <div class="row justify-content-center">
+<div class="container justify-content-center" style="width: 100%; display:flex; align-items:center; justify-content:center;" >
+    <div class="row justify-content-center max-w-650">
         <div class="col-lg-8">
             <div class="card activation-card">
                 
@@ -158,7 +159,7 @@
                                     <input type="text" name="code" class="form-control code-input" placeholder="XXX XXX" required maxlength="6">
                                 </div>
 
-                                <button type="submit" class="btn-validate">
+                                <button type="submit" class="btn-validate form-group mb-4">
                                     Activer maintenant
                                 </button>
                                 <br>

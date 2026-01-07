@@ -19,11 +19,33 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     
 
+    <!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>@yield('title', 'LeMauvaisCoin')</title>
+    
+    <link rel="icon" href="{{ asset('assets/favicon.ico') }}" type="image/x-icon">
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/inter-ui/3.19.3/inter.css" rel="stylesheet">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <link rel="preload" href="{{ asset('css/app.css') }}" as="style">
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+
     <style>
         body {
+            min-height: 100vh; 
+            margin: 0;
             display: flex;
             flex-direction: column;
-            min-height: 100vh; 
         }
         main {
             flex: 1; 
@@ -36,6 +58,7 @@
             margin-top: 60px; 
             font-family: 'Inter', sans-serif;
             font-size: 14px;
+            width: 100%;
         }
         
         .footer-content {
@@ -46,6 +69,7 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 40px;
+            box-sizing: border-box;
         }
 
         .footer-col h3 {
@@ -124,51 +148,6 @@
         @yield('content')
     </main>
     
-    <footer class="lbc-footer">
-        <div class="footer-content">
-            <div class="footer-col">
-                <h3>À propos du Boncoin</h3>
-                <ul>
-                    <li><a href="{{ route('legal.about') }}">Qui sommes-nous ?</a></li>
-                    <li><a href="{{ route('legal.engagements') }}">Nos engagements RSE</a></li>
-                </ul>
-            </div>
-
-            <div class="footer-col">
-                <h3>Informations Légales</h3>
-                <ul>
-                    <li><a href="{{ route('legal.cgu') }}">Conditions Générales d'Utilisation</a></li>
-                    <li><a href="{{ route('legal.regles') }}">Règles de diffusion</a></li>
-                    <li><a href="{{ route('legal.mentions') }}">Mentions Légales</a></li>
-                    <li><a href="{{ route('legal.privacy') }}">Politique de Confidentialité</a></li>
-                    <li><a href="{{ route('legal.cookies') }}">Gestion des cookies</a></li>
-                </ul>
-            </div>
-
-            <div class="footer-col">
-                <h3>Des questions ?</h3>
-                <ul>
-                    <li><a href="{{ route('legal.securite') }}">Centre de sécurité</a></li>
-                    <li><a href="{{ route('legal.contact') }}">Nous contacter</a></li>
-                </ul>
-            </div>
-
-            <div class="footer-col">
-                <h3>Projet SAE 3.01</h3>
-                <p style="color: #a0aec0; margin-bottom: 10px;">
-                    Application développée par le Groupe 1 - IUT Annecy.
-                </p>
-                <p style="color: #a0aec0;">
-                    Hébergé par <strong style="color: #ec5a13;">OVHcloud</strong>.
-                </p>
-            </div>
-        </div>
-
-        <div class="footer-bottom">
-            &copy; {{ date('Y') }} Leboncoin (ScoobyFoo). Tous droits réservés.
-        </div>
-    </footer>
-
     @stack('scripts')
     @include('cookie-banniere')
 
@@ -387,6 +366,49 @@
 
 <link rel="preload" href="{{ asset('css/app.css') }}" as="style">
 <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+<footer class="lbc-footer">
+        <div class="footer-content">
+            <div class="footer-col">
+                <h3>À propos du Boncoin</h3>
+                <ul>
+                    <li><a href="{{ route('legal.about') }}">Qui sommes-nous ?</a></li>
+                    <li><a href="{{ route('legal.engagements') }}">Nos engagements RSE</a></li>
+                </ul>
+            </div>
 
+            <div class="footer-col">
+                <h3>Informations Légales</h3>
+                <ul>
+                    <li><a href="{{ route('legal.cgu') }}">Conditions Générales d'Utilisation</a></li>
+                    <li><a href="{{ route('legal.regles') }}">Règles de diffusion</a></li>
+                    <li><a href="{{ route('legal.mentions') }}">Mentions Légales</a></li>
+                    <li><a href="{{ route('legal.privacy') }}">Politique de Confidentialité</a></li>
+                    <li><a href="{{ route('legal.cookies') }}">Gestion des cookies</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h3>Des questions ?</h3>
+                <ul>
+                    <li><a href="{{ route('legal.securite') }}">Centre de sécurité</a></li>
+                    <li><a href="{{ route('legal.contact') }}">Nous contacter</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h3>Projet SAE 3.01</h3>
+                <p style="color: #a0aec0; margin-bottom: 10px;">
+                    Application développée par le Groupe 1 - IUT Annecy.
+                </p>
+                <p style="color: #a0aec0;">
+                    Hébergé par <strong style="color: #ec5a13;">OVHcloud</strong>.
+                </p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            &copy; {{ date('Y') }} Leboncoin (ScoobyFoo). Tous droits réservés.
+        </div>
+    </footer>
 </body>
 </html>
