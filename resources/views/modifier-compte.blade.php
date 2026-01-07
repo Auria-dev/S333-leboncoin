@@ -255,6 +255,62 @@
         </div>
 
     </form>
+
+    
+<div class="container" style="margin-top: 30px; margin-bottom: 50px;">
+    <div class="row">
+        <div class="col-md-12">
+            
+            <div class="card security-card">
+                <div class="security-header">
+                    <h5 class="mb-0" style="font-weight: 700;">Sécurité du compte</h5>
+                </div>
+
+                <div class="security-body">
+                    <div class="row align-items-center">
+                        
+                        <div class="col-md-8">
+                            <div>
+                                <h5 style="font-weight: bold; margin-bottom: 8px;">Authentification à deux facteurs (2FA)</h5>
+                                <p class="text-muted mb-0" style="line-height: 1.6;">
+                                    Protégez votre compte contre le piratage. Une fois activée, un code temporaire sera requis à chaque connexion.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4 text-right d-flex flex-column align-items-end justify-content-center mt-4 mt-md-0">
+                            
+                            @if(auth()->user()->google2fa_secret)
+                                <div class="status-active mb-2">
+                                    Protection Active
+                                </div>
+                                
+                                <form action="{{ route('2fa.disable') }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="btn-danger-link" onclick="return confirm('Attention : Votre compte sera moins sécurisé. Continuer ?')">
+                                        Désactiver
+                                    </button>
+                                </form>
+
+                            @else
+                                <div style="text-align: right;">
+                                    <span class="d-block text-muted small mb-2" style="margin-right: 1rem;">
+                                        Recommandé
+                                    </span>
+                                    <a href="{{ route('2fa.enable') }}" class="btn-action-orange">
+                                        Configurer la 2FA
+                                    </a>
+                                </div>
+                            @endif
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
     </div>
     </div>
 
@@ -513,60 +569,4 @@
         border-color: #dc3545;
     }
 </style>
-
-{{-- BLOC CONTENEUR --}}
-<div class="container" style="margin-top: 30px; margin-bottom: 50px;">
-    <div class="row">
-        <div class="col-md-12">
-            
-            <div class="card security-card">
-                <div class="security-header">
-                    <h5 class="mb-0" style="font-weight: 700;">Sécurité du compte</h5>
-                </div>
-
-                <div class="security-body">
-                    <div class="row align-items-center">
-                        
-                        <div class="col-md-8">
-                            <div>
-                                <h5 style="font-weight: bold; margin-bottom: 8px;">Authentification à deux facteurs (2FA)</h5>
-                                <p class="text-muted mb-0" style="line-height: 1.6;">
-                                    Protégez votre compte contre le piratage. Une fois activée, un code temporaire sera requis à chaque connexion.
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="col-md-4 text-right d-flex flex-column align-items-end justify-content-center mt-4 mt-md-0">
-                            
-                            @if(auth()->user()->google2fa_secret)
-                                <div class="status-active mb-2">
-                                    Protection Active
-                                </div>
-                                
-                                <form action="{{ route('2fa.disable') }}" method="POST">
-                                    @csrf
-                                    <button type="submit" class="btn-danger-link" onclick="return confirm('Attention : Votre compte sera moins sécurisé. Continuer ?')">
-                                        Désactiver
-                                    </button>
-                                </form>
-
-                            @else
-                                <div style="text-align: right;">
-                                    <span class="d-block text-muted small mb-2">
-                                        Recommandé
-                                    </span>
-                                    <a href="{{ route('2fa.enable') }}" class="btn-action-orange">
-                                        Configurer la 2FA
-                                    </a>
-                                </div>
-                            @endif
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</div>
 @endsection

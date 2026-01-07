@@ -2,14 +2,14 @@
 
 @section('content')
 <div class="container" style="max-width: 500px; margin: 100px auto; text-align: center;">
-    <div class="card shadow">
-        <div class="card-header text-white" style="background-color: #ff6e14;">
+    <div class="card shadow" style="display:flex; flex-direction: column; gap:1rem;">
+        <div class="card-header text-white">
             <h3 class="mb-0">Vérification de sécurité</h3>
         </div>
-        <div class="card-body p-4">
+        <div class="card-body p-4" style="display:flex; flex-direction: column; gap:1rem;">
             <p class="mb-4">Ouvrez votre application <strong>Google Authenticator</strong> et entrez le code temporaire.</p>
 
-            <form action="{{ route('2fa.verify') }}" method="POST">
+            <form action="{{ route('2fa.verify') }}" method="POST" style="display:flex; flex-direction: column; gap:1rem;">
                 @csrf
                 
                 <div class="form-group mb-4">
@@ -23,7 +23,7 @@
                     </div>
                 @endif
 
-                <button class="btn btn-primary btn-lg btn-block w-100" style="background-color: #ff6e14; border: none;">
+                <button class="submit-btn">
                     Valider la connexion
                 </button>
             </form>
@@ -73,49 +73,4 @@
     }
 </style>
 
-<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
-    <div class="col-md-5">
-        <div class="card auth-card">
-            <div class="auth-header">
-                <i class="fas fa-shield-alt fa-3x mb-3"></i>
-                <h4 class="mb-0">Double Authentification</h4>
-                <p class="mb-0" style="opacity: 0.9; font-size: 0.9em;">Sécurité renforcée</p>
-            </div>
-            
-            <div class="card-body p-4 text-center">
-                <p class="text-muted mb-4">
-                    Pour continuer, veuillez entrer le code à 6 chiffres généré par votre application <strong>Google Authenticator</strong>.
-                </p>
-
-                <form action="{{ route('2fa.verify') }}" method="POST">
-                    @csrf
-                    
-                    <div class="form-group mb-4">
-                        <input type="text" 
-                               name="code" 
-                               class="form-control otp-input @if(session('error')) is-invalid @endif" 
-                               placeholder="123 456" 
-                               maxlength="6"
-                               autocomplete="off"
-                               required autofocus>
-                        
-                        @if(session('error'))
-                            <div class="text-danger mt-2 small">
-                                <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
-                            </div>
-                        @endif
-                    </div>
-
-                    <button class="btn btn-orange btn-block w-100">
-                        Vérifier et Connexion
-                    </button>
-                </form>
-                
-                <div class="mt-4 text-muted small">
-                    Code perdu ? Contactez le support.
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 @endsection
