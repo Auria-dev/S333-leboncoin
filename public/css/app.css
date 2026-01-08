@@ -2396,26 +2396,6 @@ input.date-custom-input {
     color: var(--text-main);
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 .upload-container {
     max-width: 500px;
     display: flex;
@@ -2527,3 +2507,18 @@ tr:last-child td {
 #botmanWidgetRoot > div > div {
     background-color: rgb(var(--primary-rgb)) !important;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
