@@ -2040,6 +2040,14 @@ input.date-custom-input {
     width: fit-content;
 }
 
+.card-desc {
+    height: 60px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;      /* number of lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
 .card-icon {
     width: 16px;
     height: 16px;
