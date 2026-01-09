@@ -1,10 +1,8 @@
+@extends('layout')
 
-<!doctype html>
-<html lang="fr">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title></title>
+@section('title', 'Besoin d\'aide ?')
+
+@section('content')
 
 <style>
     :root {
@@ -14,26 +12,6 @@
   --primary-hover: #F27A55;
   --input-placeholder: #ccc;
   --bg-body: #FFF8F5;
-}
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-html {
-    text-rendering: optimizeLegibility;
-    font-family: 'Outfit', system-ui, -apple-system, sans-serif;
-}
-
-body {
-  display: flex;
-  justify-content: center; 
-  align-items: center;     
-  height: 100vh;
-  margin: 0;
-  background-color: var(--bg-body);
 }
 
 .aide-menu {
@@ -65,14 +43,15 @@ body {
   letter-spacing: 0.02em;
 }
 
-.aide-menu nav > ul > li > a {
+.aide-menu section > ul > li > a {
   line-height: 60px;
   border-bottom: 1px solid var(--input-placeholder);
   padding-left: 30px;
   position: relative;
 }
 
-.aide-menu nav > ul > li > a:hover {
+
+.aide-menu section > ul > li > a:hover {
   background-color: var(--primary-hover);
   color: var(--bg-card) !important;
 }
@@ -188,8 +167,7 @@ h3 {
     display: flex;
     gap: 30px; 
     align-items: flex-start;
-    padding: 20px;
-    width: 100vw;
+    width: 100%;
 	cursor: pointer;
 }
 
@@ -216,7 +194,7 @@ h3 {
 <div class="ensemble">
 <div class="aide-questions"></div>
   <div class="aide-menu">
-	<nav>
+	<section id="nav-aide">
 		<ul>
 			<li>
 				<a>Mon compte</a>
@@ -865,6 +843,17 @@ h3 {
 							<p>Attention : si vous modifiez votre recherche, il est nécessaire que vous re-cliquiez sur le bouton « Filtrer ».</p>
 						</div>
 					</li>
+					<li><a>Comment utiliser la carte ?</a>
+						<div class="aide-text">
+							<h2>Comment utiliser la carte ?</h2>
+							<p>1. Cliquez sur l'un des points bleus sur la carte à droite, là où l'emplacement vous intéresse ;</p>
+							<img src="/Leboncoin/Rechercher/carte-point.png" alt="point localisation carte">
+							<p>Vous pouvez zoomer et dézoomer en utilisant les boutons « + » et « - » en haut de la carte, ou en utilisant la molette de votre souris ;<p>
+							<img src="/Leboncoin/Rechercher/carte-btn.png" alt="bouton zoom carte">
+							<p>2. Cliquez sur « Voir l'annonce », pour voir l'annonce en détail.</p>
+							<img src="/Leboncoin/Rechercher/carte-annonce.png" alt="lien vers annonce carte">
+						</div>
+					</li>
 					<li><a>Comment sauvegarder une recherche ?</a>
 						<div class="aide-text">
 							<h2>Comment sauvegarder une recherche ?</h2>
@@ -938,7 +927,7 @@ h3 {
 					</li>
 				</ul>
 			</li>
-      <li>
+      	<li>
 				<a>Incident</a>
 				<ul class="last">
 					<li class="aide-freq"><a>Locataire : comment déclarer un incident ?</a>
@@ -1006,17 +995,17 @@ h3 {
 				</ul>
 			</li>
 		</ul>
-	</nav>
+</section>
 </div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script>
 $(document).ready(function() {
-    $('.aide-menu nav > ul > li > a').on('click', function(e) {
+    $('.aide-menu section > ul > li > a').on('click', function(e) {
         e.stopPropagation();
         const nextSubMenu = $(this).next('ul');
-        $('.aide-menu nav ul ul').not(nextSubMenu).slideUp();
+        $('.aide-menu section ul ul').not(nextSubMenu).slideUp();
         if (nextSubMenu.length > 0) {
             e.preventDefault();
             nextSubMenu.slideToggle();
@@ -1122,3 +1111,5 @@ $(window).on('hashchange', openFromHash);
 </script>
 </body>
 </html>
+
+@endsection

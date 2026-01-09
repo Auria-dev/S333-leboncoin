@@ -107,6 +107,8 @@
                 <li><a href="{{ url('/') }}" class="{{ Request::is('/') ? 'active' : '' }}" wire:navigate>Accueil</a></li>
                 <li><a href="{{ url('/recherche') }}" class="{{ Request::is('recherche') ? 'active' : '' }}" wire:navigate>Rechercher</a></li>
                 <li><a href="{{ url('/creer_annonce') }}" class="{{ Request::is('creer_annonce') ? 'active' : '' }}" id="btn-deposer-annonce">Déposer une annonce</a></li>
+                <li><a href="{{ url('/messagerie') }}"  class="{{ Request::is('/messagerie') ? 'active' : '' }}"  >Messagerie</a></li>
+                <li><a href="{{ url('/infos/aide') }}"  class="{{ Request::is('/infos/aide') ? 'active' : '' }}"  >Besoin d'aide ?</a></li>
             </ul>
             <div>
                 @auth
@@ -377,7 +379,7 @@
             <div class="footer-col">
                 <h3>Projet SAE 3.01</h3>
                 <p style="color: #a0aec0; margin-bottom: 10px;">
-                    Application développée par le Groupe 1 - IUT Annecy.
+                    Application développée par ScoobyFoo, Groupe 3.
                 </p>
                 <p style="color: #a0aec0;">
                     Hébergé par <strong style="color: #ec5a13;">OVHcloud</strong>.

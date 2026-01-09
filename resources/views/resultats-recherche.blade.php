@@ -38,6 +38,7 @@
                             x-model="query"
                             value="{{ old('search', request('search')) }}"
                             @input.debounce.300ms="search()"
+                            @keydown.enter.prevent="$el.form.submit()"
                             placeholder="Paris, Haute-Savoie, Rhône-Alpes..." 
                             required autocomplete="off"
                         />

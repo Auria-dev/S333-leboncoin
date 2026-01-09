@@ -62,7 +62,7 @@ class Annonce extends Model
     }
 
     public function photo() {
-        return $this->hasMany(Photo::class, "idannonce");
+        return $this->hasMany(Photo::class, "idannonce")->orderBy('nomphoto', 'desc');
     }
 
     public function calendrier() {
