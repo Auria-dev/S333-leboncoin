@@ -10,6 +10,7 @@ use App\Models\Ville;
 use App\Models\Annonce;
 use App\Models\Favoris;
 use App\Models\Calendrier;
+use App\Models\Particulier;
 use App\Models\TypeHebergement;
 use App\Models\Photo;
 use App\Models\Equipement;

@@ -7,6 +7,7 @@ use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\Encoders\JpegEncoder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File; 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -20,10 +21,17 @@ use PragmaRX\Google2FAQRCode\Google2FA;
 class CompteController extends Controller {
 
     function login() {
+        if (!session()->has('url.intended')) {
+            $prev = url()->previous();
+            $current = url()->current();
+            
+            if ($prev !== $current && $prev !== route('login') && $prev !== route('logout')) {
+                session(['url.intended' => $prev]);
+            }
+        }
         return view("login");
     }
 
-    // --- FONCTION DE CONNEXION MODIFIÉE (2FA) ---
     function authenticate(Request $req) {
         $credentials = $req->validate([
             'email' => ['required', 'email'],
@@ -36,22 +44,14 @@ class CompteController extends Controller {
         ])) {
             $req->session()->regenerate();
 
-            // --- DEBUT BLOC 2FA ---
             $user = Auth::user();
 
-            // Si l'utilisateur a un secret enregistré (donc il a activé la 2FA)
             if (!empty($user->google2fa_secret)) {
                 
-                // 1. On le déconnecte temporairement (sécurité)
                 Auth::logout();
-
-                // 2. On garde son ID en mémoire pour la page suivante
                 $req->session()->put('2fa:user:id', $user->idutilisateur);
-
-                // 3. On le redirige vers la page de saisie du code
                 return redirect()->route('2fa.index');
             }
-            // --- FIN BLOC 2FA ---
 
             return redirect()->intended(RouteServiceProvider::HOME);
         }
@@ -62,6 +62,15 @@ class CompteController extends Controller {
     }
 
     function create() {
+        if (!session()->has('url.intended')) {
+            $prev = url()->previous();
+            $current = url()->current();
+    
+            if ($prev !== $current && $prev !== route('login') && $prev !== url('/register')) {
+                session(['url.intended' => $prev]);
+            }
+        }
+    
         $secteurs = SecteurActivite::All();
         return view("creation-compte", ['secteurs' => $secteurs]);
     }
@@ -142,7 +151,7 @@ class CompteController extends Controller {
             );
         }
 
-        return redirect(RouteServiceProvider::HOME);
+        return redirect()->intended(RouteServiceProvider::HOME);
     }
 
     function destroy(Request $request) { 
@@ -367,7 +376,7 @@ class CompteController extends Controller {
         $id = $user->idutilisateur;
 
         $userData = [
-            'nom_utilisateur' => "Utilisateur supprimer " . $id,
+            'nom_utilisateur' => "Utilisateur ".$id,
             'prenom_utilisateur' => "X",
             'mail' => null,
             'telephone' => null,
@@ -376,14 +385,21 @@ class CompteController extends Controller {
             'mot_de_passe' => ''
         ];
 
-        DB::table('utilisateur')
-            ->where('idutilisateur', $id)
-            ->update($userData);
 
+        // TODO: mettre le code_verif en 'supprimée' pour chaque annonces
+        foreach ($user->annonce as $a) {
+            DB::table('annonce')->where('idannonce', $a->idannonce)->update(['code_verif' => 'supprimée']);
+        }
+
+        $imgDestination = public_path('images');
+
+        File::delete($imgDestination . '/' . $user->photo_profil);
+        
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
+        DB::table('utilisateur')->where('idutilisateur', $id)->update($userData);
         return redirect('/')->with('success', 'Compte supprimé.');
     }
 }
