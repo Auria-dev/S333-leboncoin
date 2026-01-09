@@ -201,6 +201,7 @@ input:checked + .slider:before { transform: translateX(20px); }
 }
 
 </style>
+
 <div id="cookie-container">
 
     <div id="cookie-banner" style="display:none;">
@@ -208,6 +209,7 @@ input:checked + .slider:before { transform: translateX(20px); }
             Votre vie privée est notre priorité
         </div>
         <div class="banner-text">
+
             Nous utilisons des cookies strictement nécessaires au fonctionnement du site et à la sécurité.
             <br>
             Avec votre accord, des cookies de mesure d’audience peuvent être déposés afin d’améliorer nos services.
@@ -221,22 +223,26 @@ input:checked + .slider:before { transform: translateX(20px); }
         </div>
     </div>
 
+
     <div id="cookie-modal" style="display:none;">
         <div class="modal-content">
             <div class="modal-header">
                 <h3>Paramètres de confidentialité</h3>
                 <span class="close-icon" onclick="CookieManager.closeModal()">
+
                     ✕
                 </span>
             </div>
 
             <div class="modal-body">
                 <p style="margin-bottom: 20px; font-size: 0.9rem; color: #666;">
+
                     Les cookies techniques sont indispensables au fonctionnement du site et ne peuvent pas être désactivés.
                 </p>
 
                 <div class="cookie-card">
                     <div class="card-top">
+
                         <span class="card-title">Cookies techniques (essentiels)</span>
                         <span class="badge-required">Toujours actif</span>
                     </div>
@@ -247,6 +253,7 @@ input:checked + .slider:before { transform: translateX(20px); }
 
                 <div class="cookie-card">
                     <div class="card-top">
+
                         <span class="card-title">Mesure d’audience</span>
                         <label class="switch">
                             <input type="checkbox" id="chk-analytics">
@@ -254,6 +261,7 @@ input:checked + .slider:before { transform: translateX(20px); }
                         </label>
                     </div>
                     <p class="card-desc">
+
                         Permet de mesurer l’audience du site de manière agrégée (google analytics 4, ip masquée).
                     </p>
                 </div>
@@ -261,6 +269,7 @@ input:checked + .slider:before { transform: translateX(20px); }
 
             <div class="modal-footer">
                 <button class="btn-cookie btn-secondary" onclick="CookieManager.denyAll()">Tout refuser</button>
+
                 <button class="btn-cookie btn-primary" onclick="CookieManager.savePreferences()">Enregistrer</button>
             </div>
         </div>
@@ -268,6 +277,7 @@ input:checked + .slider:before { transform: translateX(20px); }
 </div>
 
 <script>
+
 const CookieManager = {
 
     consent: {

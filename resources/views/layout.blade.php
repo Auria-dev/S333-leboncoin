@@ -17,29 +17,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    
-
-    <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>@yield('title', 'LeMauvaisCoin')</title>
-    
-    <link rel="icon" href="{{ asset('assets/favicon.ico') }}" type="image/x-icon">
-
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/inter-ui/3.19.3/inter.css" rel="stylesheet">
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    
-    <link rel="preload" href="{{ asset('css/app.css') }}" as="style">
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    
-
+    @stack('styles')
     <style>
         body {
             min-height: 100vh; 
@@ -390,6 +368,7 @@
             <div class="footer-col">
                 <h3>Des questions ?</h3>
                 <ul>
+                    <li><a href="{{ route('legal.aide') }}">Aide</a></li>
                     <li><a href="{{ route('legal.securite') }}">Centre de sécurité</a></li>
                     <li><a href="{{ route('legal.contact') }}">Nous contacter</a></li>
                 </ul>

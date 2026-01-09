@@ -189,4 +189,5 @@ Route::prefix('infos')->name('legal.')->group(function () {
     Route::get('/regles-diffusion', [LegalController::class, 'regles'])->name('regles');
     Route::get('/nos-engagements', [LegalController::class, 'engagements'])->name('engagements');
     Route::get('/securite-confiance', [LegalController::class, 'securite'])->name('securite');
+    Route::get('/aide', [LegalController::class, 'aide'])->name('aide');
 });

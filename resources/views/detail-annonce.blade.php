@@ -64,7 +64,19 @@
                     <div id="cal-error" class="cal-error-msg" style="color: rgb(231, 76, 60); font-size: 0.85em; text-align: center; padding: 5px; display: none;"></div>
 
                     <div class="cal-footer" style="display: flex; justify-content: space-between; gap: 5px; margin-top: 15px;">
-                        <h3>Prix du séjour : <span id="display-price">0</span> € <span style="font-size:0.6em; color:#666">({{ $annonce->prix_nuit }}€ / nuit)</span></h3>
+                        <h3> Prix du séjour : <span id="display-price">0</span> € <span style="font-size:0.6em; color:#666">({{ $annonce->prix_nuit }}€ / nuit)</span>
+                            <div class="tooltip-container" id="myTooltip">
+                                <span class="tooltip-trigger">
+                                    <svg fill="#4A3B32" width="20px" height="20px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M11.188 4.781c6.188 0 11.219 5.031 11.219 11.219s-5.031 11.188-11.219 11.188-11.188-5-11.188-11.188 5-11.219 11.188-11.219zM11.063 8.906c-0.313 0.375-0.469 0.813-0.469 1.281 0 0.375 0.125 0.688 0.313 0.906 0.219 0.219 0.531 0.344 0.844 0.344 0.438 0 0.844-0.188 1.156-0.563 0.281-0.344 0.438-0.844 0.438-1.375 0-0.313-0.094-0.594-0.313-0.813s-0.531-0.344-0.844-0.344c-0.406 0-0.813 0.188-1.125 0.563zM8.219 15.375l0.375 0.406c0.281-0.313 0.563-0.563 0.75-0.719 0.188-0.125 0.344-0.188 0.469-0.188 0.094 0 0.188 0.031 0.25 0.094 0.031 0.094 0.063 0.188 0.063 0.344 0 0.781-0.094 1.281-0.5 3.156s-0.625 3.25-0.625 4.156c0 0.344 0.063 0.594 0.188 0.75 0.094 0.156 0.281 0.281 0.531 0.281 0.406 0 1-0.313 1.688-0.844 0.688-0.563 1.375-1.344 2.125-2.344l-0.406-0.344c-0.25 0.313-0.5 0.531-0.688 0.688-0.188 0.125-0.344 0.25-0.469 0.25-0.094 0-0.188-0.094-0.25-0.156-0.031-0.094-0.063-0.219-0.063-0.406 0-0.125 0.031-0.531 0.156-1.25 0.094-0.719 0.063-0.719 0.25-1.781 0.031-0.313 0.125-0.75 0.219-1.281 0.25-1.594 0.406-2.563 0.406-2.875 0-0.281-0.094-0.531-0.188-0.688-0.125-0.156-0.313-0.219-0.531-0.219-0.375 0-0.875 0.281-1.563 0.781-0.688 0.531-1.375 1.25-2.188 2.188z"></path> </g></svg>
+                                </span>
+                        
+                                <div class="tooltip-box">
+                                    <p>Prix calculé en fonction du nombre de personnes, du montant de la location et des frais supplémentaires (frais de services, taxe de séjour).</p>
+                                    <a href="{{ route('legal.aide') }}#aide-choose-date">En savoir plus</a>
+                                    <div class="arrow"></div>
+                                </div>
+                            </div>
+                        </h3>
                     </div>
                     <div class="cal-footer" style="display: flex; justify-content: space-between; gap: 5px;">
                         <button type="button" id="btn-today" class="cal-btn" style="flex: 0 0 auto;">Auj.</button>
@@ -314,7 +326,19 @@
 </div>
 
 <div class="res-section" style="margin-top: 2rem;">
-    <p class="section-title">Annonce(s) similaire(s)</p>
+    <p class="section-title">Annonce(s) similaire(s)  
+        <div class="tooltip-container" id="myTooltip">
+            <span class="tooltip-trigger">
+                <svg fill="#4A3B32" width="20px" height="20px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M11.188 4.781c6.188 0 11.219 5.031 11.219 11.219s-5.031 11.188-11.219 11.188-11.188-5-11.188-11.188 5-11.219 11.188-11.219zM11.063 8.906c-0.313 0.375-0.469 0.813-0.469 1.281 0 0.375 0.125 0.688 0.313 0.906 0.219 0.219 0.531 0.344 0.844 0.344 0.438 0 0.844-0.188 1.156-0.563 0.281-0.344 0.438-0.844 0.438-1.375 0-0.313-0.094-0.594-0.313-0.813s-0.531-0.344-0.844-0.344c-0.406 0-0.813 0.188-1.125 0.563zM8.219 15.375l0.375 0.406c0.281-0.313 0.563-0.563 0.75-0.719 0.188-0.125 0.344-0.188 0.469-0.188 0.094 0 0.188 0.031 0.25 0.094 0.031 0.094 0.063 0.188 0.063 0.344 0 0.781-0.094 1.281-0.5 3.156s-0.625 3.25-0.625 4.156c0 0.344 0.063 0.594 0.188 0.75 0.094 0.156 0.281 0.281 0.531 0.281 0.406 0 1-0.313 1.688-0.844 0.688-0.563 1.375-1.344 2.125-2.344l-0.406-0.344c-0.25 0.313-0.5 0.531-0.688 0.688-0.188 0.125-0.344 0.25-0.469 0.25-0.094 0-0.188-0.094-0.25-0.156-0.031-0.094-0.063-0.219-0.063-0.406 0-0.125 0.031-0.531 0.156-1.25 0.094-0.719 0.063-0.719 0.25-1.781 0.031-0.313 0.125-0.75 0.219-1.281 0.25-1.594 0.406-2.563 0.406-2.875 0-0.281-0.094-0.531-0.188-0.688-0.125-0.156-0.313-0.219-0.531-0.219-0.375 0-0.875 0.281-1.563 0.781-0.688 0.531-1.375 1.25-2.188 2.188z"></path> </g></svg>
+            </span>
+    
+            <div class="tooltip-box">
+                <p>Annonces basées sur les critères de l'annonce principale.</p>
+                <a href="{{ route('legal.aide') }}#aide-similaire">En savoir plus</a>
+                <div class="arrow"></div>
+            </div>
+        </div>
+    </p>
     <div class="res-scroller">
         @forelse($annonce->similaires as $similaire)
         <a class="similaire-card" href="{{ url('annonce/'.strval($similaire->idannonce)) }}">
@@ -750,7 +774,22 @@
         
         initMapAnnonce('maCarte', annoncesData);
     });
-
 </script>
 
+<script defer>
+    const tooltip = document.getElementById('myTooltip');
+
+    tooltip.addEventListener('click', (e) => {
+    e.stopPropagation();
+    tooltip.classList.toggle('active');
+    });
+
+    document.addEventListener('click', () => {
+    tooltip.classList.remove('active');
+    });
+
+    tooltip.querySelector('.tooltip-box').addEventListener('click', (e) => {
+    e.stopPropagation();
+    });
+</script>
 @endpush

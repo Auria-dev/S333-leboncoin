@@ -60,7 +60,6 @@
         @endif
 
         <span>Vous avez créé votre compte {{ \Carbon\Carbon::parse($user->date_creation)->format('d/m/Y') }}</span>
-
         <div class="row-group">
             <div class="field-group" x-data="inputField()">
                 <label class="font-bold">Prénom</label>
@@ -246,7 +245,6 @@
             </div>
         @endif
 
-
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
@@ -306,7 +304,6 @@
             Demander la suppression de mes données personnelles
         </a>
 
-
         <div class="row-group flex-between-center mt-md">
             <a href="{{ url('/') }}" class="text-gray-500 hover:text-gray-800">Annuler</a>
             
@@ -318,8 +315,6 @@
         </div>
 
     </form>
-
-    
     </div>
     </div>
 
