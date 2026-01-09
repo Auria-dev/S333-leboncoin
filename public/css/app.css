@@ -1725,6 +1725,9 @@ input.date-custom-input {
 .alert-success { background: var(--success-bg); color: var(--success-text); padding:1rem; border-radius:6px; }
 .submit-btn-custom { padding: 10px 20px; background: var(--primary); color: white; border-radius: 6px; border: none; }
 
+.btn-danger { width: 100%; border: 2px solid var(--danger); padding: 0.5rem 1rem; border-radius: 0.5rem; color: var(--danger); text-align: center;}
+.btn-danger:hover {color:white; background-color: var(--danger);}
+
 .mt-sm { margin-top: 0.625rem; }
 .mt-md { margin-top: 1rem; }
 .block { display: block; }
