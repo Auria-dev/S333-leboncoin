@@ -2511,6 +2511,57 @@ tr:last-child td {
 
 
 
+.tooltip-container {
+  position: relative;
+  display: inline-block;
+  margin: 10px;
+  vertical-align: middle;
+}
+
+.tooltip-box {
+  visibility: hidden;
+  opacity: 0;
+  width: 300px;
+  background-color: var(--bg-card);
+  color: var(--text-main);
+  text-align: left;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0px 10px 20px rgba(0,0,0,0.15);
+  border: 1px solid var(--primary-hover);
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 110%; 
+  transform: translateY(-50%);
+  transition: opacity 0.3s;
+  font-size: 15px;
+}
+
+.arrow {
+  position: absolute;
+  top: 50%;
+  right: 100%;
+  margin-top: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent var(--primary-hover) transparent transparent;
+}
+
+.tooltip-container:hover .tooltip-box,
+.tooltip-container.active .tooltip-box {
+  visibility: visible;
+  opacity: 1;
+}
+
+.tooltip-box a {
+  color: var(--primary-hover);
+  text-decoration: none;
+  font-weight: bold;
+  display: block;
+  margin-top: 10px;
+}
+
 
 
 

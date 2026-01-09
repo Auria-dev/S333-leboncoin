@@ -37,7 +37,7 @@ body {
 }
 
 .aide-menu {
-  width: 80vw;            
+  width: 60vw;            
   height: auto;            
   max-height: 90vh;        
   background: var(--bg-card);
@@ -45,7 +45,7 @@ body {
   display: flex;
   flex-direction: column;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); 
-  border-radius: 8px;
+  border-radius: 20px;
 }
 
 .aide-menu ul {
@@ -59,6 +59,7 @@ body {
   display: block; 
   color: var(--text-main);
   transition: var(--transition-aide);
+  background: var(--bg-card);
   font-weight: 600;
   font-size: 20px;
   letter-spacing: 0.02em;
@@ -94,7 +95,7 @@ body {
   font-weight: 400;
 }
 
-.aide-menu ul ul li > a:hover, 
+.aide-menu ul ul li > a:hover,  
 .aide-menu ul ul li a.active-link {
   background-color: var(--primary-hover);
   color: var(--bg-card);
@@ -107,7 +108,7 @@ body {
   color: var(--text-main);
   font-size: 18px;
   line-height: 1.6;
-  font-weight: 400;
+  font-weight: 600;
 }
 
 .aide-menu .aide-text a {
@@ -122,7 +123,7 @@ body {
   transition: color 0.2s;
 }
 
-.aide-menu .aide-text a:hover {
+.aide-menu .aide-text a:hover, .question-item:hover {
   color: var(--primary-hover) !important;
   text-decoration: none !important;
 }
@@ -169,7 +170,7 @@ body {
 
 h2 {
     margin-bottom: 10px;
-    font-size: 30px;
+    font-size: 25px;
 }
 
 h3 {
@@ -183,16 +184,44 @@ h3 {
     font-weight: 600;
 }
 
+.ensemble {
+    display: flex;
+    gap: 30px; 
+    align-items: flex-start;
+    padding: 20px;
+    width: 100vw;
+	cursor: pointer;
+}
+
+.aide-questions {
+    flex: 1; 
+	background: var(--bg-card);
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    max-height: 90vh;
+    overflow-y: auto;
+	border-radius: 20px;
+}
+
+.question-item {
+  color: var(--text-main);
+  font-size: 16px;
+  line-height: 2;
+  font-weight: 500;
+}
+
 </style>
 </head>
 <body>
+<div class="ensemble">
+<div class="aide-questions"></div>
   <div class="aide-menu">
 	<nav>
 		<ul>
 			<li>
 				<a>Mon compte</a>
 				<ul>
-					<li><a>Comment s’inscrire sur le site leboncoin ?</a>
+					<li class="aide-freq"><a>Comment s’inscrire sur le site leboncoin ?</a>
 						<div class="aide-text">
 							<h2>Comment s’inscrire sur le site leboncoin ?</h2>
 							<p class="gras">Vous avez le choix entre 2 options :</p>
@@ -227,7 +256,7 @@ h3 {
 							<img src="/Leboncoin/Compte/mdp-google.png" alt="champ saisie mot de passe compte Google">
 						</div>
           			</li>
-					<li><a>Comment me connecter à mon compte ?</a>
+					<li class="aide-freq"><a>Comment me connecter à mon compte ?</a>
 						<div class="aide-text">
 							<h2>Comment me connecter à mon compte ?</h2>
 							<p>Si vous avez créé votre compte à partir d’une adresse mail, suivez ces étapes :</p>
@@ -262,7 +291,7 @@ h3 {
 							<img src="/Leboncoin/Compte/btn-compte.png" alt="bouton espace compte">
 						</div>
 					</li>
-					<li><a>Je souhaite modifier mon mot de passe que dois-je faire ?</a>
+					<li class="aide-freq"><a>Je souhaite modifier mon mot de passe que dois-je faire ?</a>
 						<div class="aide-text">
 							<h2>Je souhaite modifier mon mot de passe que dois-je faire ?</h2>
 							<p>1. Connectez-vous à votre compte leboncoin ;</p>
@@ -300,7 +329,7 @@ h3 {
 							<img src="/Leboncoin/Compte/modif-pdp.png" alt="bouton modifier photo de profil">
 						</div>
 					</li>
-					<li><a>Dois-je m’inscrire pour utiliser leboncoin ?</a>
+					<li class="aide-freq"><a>Dois-je m’inscrire pour utiliser leboncoin ?</a>
 						<div class="aide-text">
 							<h2>Dois-je m’inscrire pour utiliser leboncoin ?</h2>
 							<p class="gras">Vous êtes un particulier et vous souhaitez :</p>
@@ -361,7 +390,7 @@ h3 {
 							<p>5. Pour finaliser, cliquez sur le bouton « Valider la connexion » ;</p>
 						</div>
 					</li>
-					<li><a>Comment utiliser ma messagerie ?</a>
+					<li class="aide-freq"><a>Comment utiliser ma messagerie ?</a>
 						<div class="aide-text">
 							<h2>Comment utiliser ma messagerie ?</h2>
 							<p class="gras">Vous avez 3 options :</p>
@@ -400,7 +429,7 @@ h3 {
 			<li>
 				<a>Mes annonces</a>
 				<ul>
-					<li><a>Propriétaire Particulier & Entreprise : comment déposer une annonce ?</a>
+					<li class="aide-freq"><a>Propriétaire Particulier & Entreprise : comment déposer une annonce ?</a>
 						<div class="aide-text">
 							<h2>Propriétaire Particulier & Entreprise : comment déposer une annonce ?</h2>
 							<p>1. Connectez-vous à votre compte leboncoin ;</p>
@@ -431,7 +460,14 @@ h3 {
 							<p>9. Si votre numéro de téléphone n’est pas encore vérifié, une vérification vous sera envoyée par SMS à cette étape-là.  </p>
 						</div>
 					</li>
-					<li><a>Propriétaire Particulier : comment vérifier mon identité ?</a>
+					<li class="aide-freq"><a>Propriétaire Particulier & Entreprise : Où trouver le statut de mon annonce ?</a>
+						<div class="aide-text">
+							<h2>Propriétaire Particulier & Entreprise : Où trouver le statut de mon annonce ?</h2>
+							<p>Veuillez consulter régulièrement vos mails afin de suivre le statut de votre annonce.</p>
+							<p>Un mail vous sera envoyé par nos services à chaque changement.</p>
+						</div>
+					</li>
+					<li class="aide-freq"><a>Propriétaire Particulier : comment vérifier mon identité ?</a>
 						<div class="aide-text">
 							<h2>Propriétaire Particulier : comment vérifier mon identité ?</h2>
 							<p class="gras">Vous avez le choix entre 3 options :</p>
@@ -551,11 +587,11 @@ h3 {
 					<li><a>Propriétaire Particulier & Entreprise : mon annonce a été refusée, que faire ?</a>
 					<div class="aide-text">
 							<h2>Propriétaire Particulier & Entreprise : mon annonce a été refusée, que faire ?</h2>
-							<p>Suite à votre dépôt d’annonce, nos services ont refusé votre annonce. Nous vous invitons à prendre connaissance des <a href="#aide-regle">règles de diffusion</a> afin de comprendre les raisons du refus de publication de votre annonce.</p>
+							<p>Suite à votre dépôt d’annonce, vos avez reçu un mail de refus de nos services. Nous vous invitons à prendre connaissance des <a href="#aide-regle">règles de diffusion</a> afin de comprendre les raisons du refus de publication de votre annonce.</p>
 							<p>Si votre annonce a été refusée, vous pouvez la déposer à nouveau après avoir vérifié qu’elle respecte bien nos <a href="#aide-regle">règles de diffusion</a>.</p>
 							<p>Pour ce faire, vous pouvez :</p>
 							<p>- <a href="#aide-modif-annonce">Modifier votre annonce</a></p>
-							<p>- <a href="#aide-supp-annonce">Supprimer votre et la recréer</a></p>							
+							<p>- <a href="#aide-supp-annonce">Supprimer votre annonce et la recréer</a></p>							
 						</div>
 					</li>
 				</ul>
@@ -571,6 +607,16 @@ h3 {
 							<p>3. Défilez la page vers le bas jusqu’à l'espace « Mes locations » ;</p>
 							<img src="/Leboncoin/Location/espace-location.png" alt="espace location"/>
 							<p>4. Pour voir plus de détails, cliquez sur la location qui vous intéresse.</p>
+						</div>
+					</li>
+					<li class="aide-freq"><a>Propriétaire Particulier & Entreprise : Où trouver le statut d'une location ?</a>
+						<div class="aide-text">
+							<h2>Propriétaire Particulier & Entreprise : Où trouver le statut d'une location ?</h2>
+							<p>1. Connectez-vous à votre compte leboncoin ;</p>
+							<p>2. Accédez à votre espace compte ;</p>
+							<p>3. Défilez la page vers le bas jusqu’à l'espace « Mes locations » ;</p>
+							<p>2. Vous trouverez en haut à droite le statut de la location.</p>
+							<img src="/Leboncoin/Location/statut-loc.png" alt="badge statut espace location">
 						</div>
 					</li>
 					<li><a>Propriétaire Particulier & Entreprise : comment accepter ou refuser une demande de location ?</a>
@@ -611,7 +657,17 @@ h3 {
 							<p>4. Pour voir plus de détails, cliquez sur la réservation qui vous intéresse.</p>
 						</div>
 					</li>
-					<li><a>Locataire : comment modifier ma réservation ?</a>
+					<li class="aide-freq"><a>Où trouver le statut de ma réservation ?</a>
+						<div class="aide-text">
+							<h2>Où trouver le statut de ma réservation ?</h2>
+							<p>1. Connectez-vous à votre compte leboncoin ;</p>
+							<p>2. Accédez à votre espace compte ;</p>
+							<p>3. Défilez la page vers le bas jusqu’à l'espace « Mes réservations » ;</p>
+							<p>2. Vous trouverez en haut à droite le statut de votre réservation.</p>
+							<img src="/Leboncoin/Reservation/statut-resa.png" alt="badge statut espace réservation">
+						</div>
+					</li>
+					<li class="aide-freq"><a>Locataire : comment modifier ma réservation ?</a>
 						<div class="aide-text">
 							<h2>Locataire : comment modifier ma réservation ?</h2>
 							<p>Vous pouvez modifier votre réservation uniquement si elle est en attente.</p>
@@ -675,7 +731,7 @@ h3 {
       <li>
 				<a>Réserver un séjour</a>
 				<ul>
-					<li><a>Locataire : comment réserver une annonce ?</a>
+					<li class="aide-freq"><a>Locataire : comment réserver une annonce ?</a>
 						<div class="aide-text">
 							<h2>Locataire : comment réserver une annonce ?</h2>
 							<p>1. Connectez-vous à votre compte leboncoin ;</p>
@@ -691,7 +747,7 @@ h3 {
 							<p>Le propriétaire se chargera d'accepter ou de refuser votre demande.</p>
 						</div>
 					</li>
-					<li><a>Locataire : comment choisir les dates pour la réservation ?</a>
+					<li><a id="aide-choose-date">Locataire : comment choisir les dates pour la réservation ?</a>
 						<div class="aide-text" id="aide-date">
 							<h2>Locataire : comment choisir les dates pour la réservation ?</h2>
 							<p>1. Connectez-vous à votre compte leboncoin ;</p>
@@ -728,12 +784,19 @@ h3 {
 							<p>5. Pour fianliser le paiement, cliquez sur le bouton « Payer et envoyer la demande ».</p>
 						</div>
 					</li>
+					<li><a>Comment est calculé le prix du séjour ?</a>
+						<div class="aide-text" id="aide-sejour">
+							<h2>Comment est calculé le prix du séjour ?</h2>
+							<p>Le prix du séjour est calculé en fonction du nombre de personnes, du montant de la location, des frais de services et de la taxe de séjour.</p>
+							<p>Le calcul est : montant de la location + frais de services + nombre de personnes * taxe de séjour.</p>
+						</div>
+					</li>
 				</ul>
 			</li>
       <li>
 				<a>Paiement</a>
 				<ul>
-					<li><a>Locataire : quels sont les moyens de paiements acceptés ?</a>
+					<li class="aide-freq"><a>Locataire : quels sont les moyens de paiements acceptés ?</a>
 					<div class="aide-text" id="aide-cb">
 							<h2>Locataire : quels sont les moyens de paiements acceptés ?</h2>
 							<p>Dans le cadre des réservations en ligne, voici les moyens de paiement acceptés sur leboncoin :</p>
@@ -851,12 +914,22 @@ h3 {
 							<img src="/Leboncoin/Rechercher/supp-fav.png" alt="bouton supprimer favoris">
 						</div>
 					</li>
+					<li><a id="aide-similaire">Que sont les annonces similaires ?</a>
+						<div class="aide-text">
+							<h2>Que sont les annonces similaires ?</h2>
+							<p>Notre système analyse automatiquement chaque annonce pour vous proposer des suggestions pertinentes.</p>
+							<p>Pour qu'une annonce soit considérée comme similaire, elle doit répondre à 3 critères précis, basés sur l'annonce que vous consultez actuellement :</p>
+							<p>- Être située dans le même département ;</p>
+							<p>- Être du même type d'hébergement ;</p>
+							<p>- Avoir la même capacité d'accueil ou plus.</p>
+						</div>
+					</li>
 				</ul>
 			</li>
       <li>
 				<a>Incident</a>
 				<ul class="last">
-					<li><a>Locataire : comment déclarer un incident ?</a>
+					<li class="aide-freq"><a>Locataire : comment déclarer un incident ?</a>
 						<div class="aide-text">
 							<h2>Locataire : comment déclarer un incident ?</h2>
 							<p>1. Cliquez sur la réservation sur laquelle a lieu l'incident ;</p>
@@ -864,6 +937,22 @@ h3 {
 							<img src="/Leboncoin/Incident/declarer.png" alt="bouton déclarer incident">
 							<p>3. Une page s'ouvre, décrivez précisément l'incident ;</p>
 							<p>4. Pour finaliser, cliquez sur le bouton « Déclarer » en bas à droite.</p>
+						</div>
+					</li>
+					<li class="aide-freq"><a>Où trouver le statut d'un incident ?</a>
+						<div class="aide-text">
+							<h2>Où trouver le statut d'un incident ?</h2>
+							<p class="gras">Vous avez 2 options :</p>
+							<p>- <a href="#aide-stat-inc-resa">Option 1 : Visualiser depuis une réservation / location</a></p>
+							<p>- <a href="#aide-stat-inc-esp">Option 2 : Visualiser depuis l'espace incident</a></p>
+							<h3 id="aide-stat-inc-resa">Option 1 : Visualiser depuis une réservation / location</h3>
+							<p>1. Cliquez sur la réservation, ou la location pour les propriétaires, sur laquelle a lieu l'incident ;</p>
+							<p>2. Dans l'espace dédié à l'incident, vous trouverez en haut à droite le statut de l'incident.</p>
+							<img src="/Leboncoin/Incident/statut-incident.png" alt="badge statut incident">
+							<h3 id="aide-stat-inc-esp">Option 2 : Visualiser depuis l'espace incident</h3>
+							<p>1. Défilez la page vers le bas jusqu’à l'espace « Mes Incidents » ;</p>
+							<p>2. Vous trouverez en haut à droite le statut de l'incident.</p>
+							<img src="/Leboncoin/Incident/espace-incident-statut.webp" alt="badge statut espace incident">
 						</div>
 					</li>
 					<li><a>Propriétaire Particulier & Entreprise : que faire si le locataire déclare un incident ?</a>
@@ -907,9 +996,11 @@ h3 {
 		</ul>
 	</nav>
 </div>
+</div>
+
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script>
-    $(document).ready(function() {
+$(document).ready(function() {
     $('.aide-menu nav > ul > li > a').on('click', function(e) {
         e.stopPropagation();
         const nextSubMenu = $(this).next('ul');
@@ -963,7 +1054,59 @@ h3 {
     });
 
     $('.aide-menu li').has('ul').find('> a').addClass('caret');
+
+	$('.aide-questions').html('<h2>Questions fréquentes</h2><div id="liste-questions"></div>');
+
+	$('.aide-freq > a').each(function() {
+		const texteQuestion = "> " + $(this).text();
+		const $sourceLink = $(this);
+
+		const $item = $('<div class="question-item"></div>').text(texteQuestion);
+
+		$item.on('click', function() {
+			$sourceLink.trigger('click');
+			
+			const $parentMenu = $sourceLink.closest('ul');
+			if (!$parentMenu.is(':visible')) {
+				$sourceLink.closest('li').parent().prev('a').trigger('click');
+			}
+		});
+
+		$('#liste-questions').append($item);
+	});
+
+	openFromHash();
 });
+
+function openFromHash() {
+    var hash = window.location.hash;
+    if (hash) {
+        var $target = $(hash);
+
+        if ($target.length > 0) {
+            var $parentMenuUl = $target.closest('ul');
+            var $parentLink = $parentMenuUl.prev('a');
+
+            if (!$parentMenuUl.is(':visible')) {
+                $parentLink.trigger('click');
+            }
+
+            setTimeout(function() {
+                var $textBlock = $target.next('.aide-text');
+                if (!$textBlock.is(':visible')) {
+                    $target.trigger('click');
+                }
+
+                var container = $('.aide-menu');
+                var scrollTo = $target.offset().top - container.offset().top + container.scrollTop();
+                container.animate({ scrollTop: scrollTo - 10 }, 600);
+            }, 500); 
+        }
+    }
+}
+
+
+$(window).on('hashchange', openFromHash);
 </script>
 </body>
 </html>
