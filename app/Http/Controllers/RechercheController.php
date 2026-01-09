@@ -22,7 +22,7 @@ class RechercheController extends Controller {
 
 	function results(Request  $request) {
 		// Doc : Eloquent
-		$annonces = Annonce::with('ville')->get();
+		$annonces = Annonce::with('ville')->where('code_verif', '=', 'acceptée')->get();
 		$filteredAnnonces = $annonces->filter(function(Annonce $a) use ($request) {
 			$ville = levenshtein(
 				strtolower($a->ville->nom_ville),
