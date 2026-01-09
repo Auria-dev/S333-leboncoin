@@ -51,7 +51,7 @@ Route::post('/login', [CompteController::class, 'authenticate']);
 Route::get('/register', [CompteController::class, 'create']);
 Route::post('/register', [CompteController::class, 'store']);
 
-Route::post('/logout', [CompteController::class, 'destroy']);
+Route::post('/logout', [CompteController::class, 'destroy'])->name('logout');
 
 Route::get('/locations/search', [LocationController::class, 'search'])->name('locations.search');
 
@@ -93,6 +93,7 @@ Route::get('/messagerie/{id?}', [MsgController::class, 'afficher_messagerie'])->
 Route::post('/messagerie/envoyer', [MsgController::class, 'envoyer_message'])->middleware('auth')->name('messagerie.envoyer');
 Route::post('/contact/creer', [MsgController::class, 'creer_contact'])->middleware('auth')->name('contact.create');
 
+Route::get('suppression_compte', [CompteController::class, 'suppression_compte'])->middleware('auth')->name('suppression_compte');
 
 Route::get('/reservation/{id}', [ReservationController::class, 'view_modifier'])->middleware('auth');
 Route::put('/reservation/update/{id}', [ReservationController::class, 'modifier_reservation'])->middleware('auth');

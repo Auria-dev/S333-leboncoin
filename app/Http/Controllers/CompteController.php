@@ -360,4 +360,30 @@ class CompteController extends Controller {
 
         return back()->with('success', 'Double authentification désactivée.');
     }
+
+    public function suppression_compte(Request $request)
+    {
+        $user = Auth::user();
+        $id = $user->idutilisateur;
+
+        $userData = [
+            'nom_utilisateur' => "Utilisateur supprimer " . $id,
+            'prenom_utilisateur' => "X",
+            'mail' => null,
+            'telephone' => null,
+            'adresse_utilisateur' => "X",
+            'idville' => 29195, // paris
+            'mot_de_passe' => ''
+        ];
+
+        DB::table('utilisateur')
+            ->where('idutilisateur', $id)
+            ->update($userData);
+
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/')->with('success', 'Compte supprimé.');
+    }
 }

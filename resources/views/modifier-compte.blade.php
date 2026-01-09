@@ -300,7 +300,7 @@
                 </div>
             </div>
         </div>
-        <a href=""
+        <a href="{{ route('suppression_compte') }}"
             class="btn-danger"
             onclick="return confirm('ATTENTION\n\nCette action est IRRÉVERSIBLE.\n\nLa suppression de vos données personnelles entraînera :\n- La suppression définitive de votre compte\n- L’effacement de toutes vos données associées\n- L’impossibilité de récupérer ces informations ultérieurement\n\nSouhaitez-vous vraiment continuer ?');">
             Demander la suppression de mes données personnelles
