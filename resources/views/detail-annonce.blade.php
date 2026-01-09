@@ -77,7 +77,6 @@
                                 </div>
                             </div>
                         </h3>
-                        <h3>Prix du séjour : <span id="display-price">0</span> € <span style="font-size:0.6em; color:#666">({{ $annonce->prix_nuit }}€ / nuit)</span></h3>
                     </div>
                     <div class="cal-footer" style="display: flex; justify-content: space-between; gap: 5px;">
                         <button type="button" id="btn-today" class="cal-btn" style="flex: 0 0 auto;">Auj.</button>

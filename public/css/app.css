@@ -1725,12 +1725,9 @@ input.date-custom-input {
 .alert-success { background: var(--success-bg); color: var(--success-text); padding:1rem; border-radius:6px; }
 .submit-btn-custom { padding: 10px 20px; background: var(--primary); color: white; border-radius: 6px; border: none; }
 
-<<<<<<< HEAD
-=======
 .btn-danger { width: 100%; border: 2px solid var(--danger); padding: 0.5rem 1rem; border-radius: 0.5rem; color: var(--danger); text-align: center;}
 .btn-danger:hover {color:white; background-color: var(--danger);}
 
->>>>>>> c68ee3b91cd1f0146e5067d46b7133de1a4aa8e5
 .mt-sm { margin-top: 0.625rem; }
 .mt-md { margin-top: 1rem; }
 .block { display: block; }
@@ -2046,8 +2043,6 @@ input.date-custom-input {
     width: fit-content;
 }
 
-<<<<<<< HEAD
-=======
 .card-desc {
     height: 60px;
     display: -webkit-box;
@@ -2056,7 +2051,6 @@ input.date-custom-input {
     overflow: hidden;
 }
 
->>>>>>> c68ee3b91cd1f0146e5067d46b7133de1a4aa8e5
 .card-icon {
     width: 16px;
     height: 16px;
@@ -2413,29 +2407,6 @@ input.date-custom-input {
     color: var(--text-main);
 }
 
-<<<<<<< HEAD
-=======
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
->>>>>>> c68ee3b91cd1f0146e5067d46b7133de1a4aa8e5
 .upload-container {
     max-width: 500px;
     display: flex;
@@ -2546,11 +2517,7 @@ tr:last-child td {
 
 #botmanWidgetRoot > div > div {
     background-color: rgb(var(--primary-rgb)) !important;
-<<<<<<< HEAD
 }
-
-
-
 
 .tooltip-container {
   position: relative;
@@ -2602,18 +2569,3 @@ tr:last-child td {
   display: block;
   margin-top: 10px;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-=======
-}
->>>>>>> c68ee3b91cd1f0146e5067d46b7133de1a4aa8e5
