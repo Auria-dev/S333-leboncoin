@@ -231,6 +231,62 @@
     @endif
 
     <div class="res-section">
+        <p class="section-title">Incidents déclarés</p>
+        <div class="res-scroller">
+            @forelse($utilisateur->reservation as $r)
+                @if ($r->incident)
+                    @php
+                        $s = strtolower($r->incident->statut_incident);
+                        $st_class_i = 'st-default';
+                        
+                        if(Str::contains($s, ['remboursé'])) {
+                            $st_class_i = 'st-accepted';
+                        } elseif(Str::contains($s, ['au contentieux', 'sans suite'])) {
+                            $st_class_i = 'st-rejected';
+                        } elseif(Str::contains($s, ['déclaré'])) {
+                            $st_class_i = 'st-pending';
+                        }
+                    @endphp
+                    
+                    <a href="{{ url('reservation/'.strval($r->incident->idreservation)) }}" class="compact-card" style="min-width: 300px;">
+                        <div class="card-top">
+                            <h3 class="card-title">{{ $r->annonce->titre_annonce }}</h3>
+                            <span class="status-dot {{ $st_class_i }}">
+                                {{ $r->incident->statut_incident }}
+                            </span>
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <p class="card-desc">
+                                {{ $r->incident->description_incident; }}
+                            </p>
+                        </div>
+                        
+                        <div class="card-footer">
+                            <div class="user-info">
+                                @if($r->annonce->utilisateur->photo_pofil)
+                                    <img src="{{ $r->annonce->utilisateur->photo_pofil }}" class="user-pfp" alt="User">
+                                @else
+                                    <img src="/images/photo-profil.jpg" class="user-pfp" alt="User">
+                                @endif
+                                <div class="user-text-col">
+                                    <span class="user-label">Propriétaire</span>
+                                    <span class="user-name">{{ $r->annonce->utilisateur->prenom_utilisateur }}</span>
+                                </div>
+                            </div>
+                            
+                            <span class="card-icon" style="width: 24; height: 24; margin-right:1rem;"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up-right-icon lucide-arrow-up-right"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span>
+                        </div>
+                    </a>
+                @endif
+            @empty
+                <div class="res-empty">
+                    <p>Aucun favoris.</p>
+                </div>
+            @endforelse
+        </div>
+    </div>
+
+    <div class="res-section">
         <p class="section-title">Mes favoris</p>
     
         <div class="res-scroller">

@@ -203,148 +203,154 @@ input:checked + .slider:before { transform: translateX(20px); }
 </style>
 
 <div id="cookie-container">
-    
-    <div id="cookie-banner">
+
+    <div id="cookie-banner" style="display:none;">
         <div class="banner-header">
             Votre vie privée est notre priorité
         </div>
         <div class="banner-text">
-            Nous utilisons des cookies pour assurer le bon fonctionnement du site et la sécurité de votre compte. 
-            Avec votre accord, nous utilisons également des traceurs pour vous proposer une carte interactive et un support via Chatbot.
-            <br>Conformément au RGPD, vous pouvez retirer votre consentement à tout moment.
+
+            Nous utilisons des cookies strictement nécessaires au fonctionnement du site et à la sécurité.
+            <br>
+            Avec votre accord, des cookies de mesure d’audience peuvent être déposés afin d’améliorer nos services.
+            <br>
+            Conformément au rgpd, vous pouvez modifier votre choix à tout moment.
         </div>
         <div class="banner-actions">
-            <button class="btn-cookie btn-link" onclick="CookieManager.openModal()">Paramétrer les cookies</button>
-            <button class="btn-cookie btn-secondary" onclick="CookieManager.denyAll()">Continuer sans accepter</button>
+            <button class="btn-cookie btn-link" onclick="CookieManager.openModal()">Paramétrer</button>
+            <button class="btn-cookie btn-primary" onclick="CookieManager.denyAll()">Tout refuser</button>
             <button class="btn-cookie btn-primary" onclick="CookieManager.acceptAll()">Tout accepter</button>
         </div>
     </div>
 
-    <div id="cookie-modal">
+
+    <div id="cookie-modal" style="display:none;">
         <div class="modal-content">
             <div class="modal-header">
                 <h3>Paramètres de confidentialité</h3>
                 <span class="close-icon" onclick="CookieManager.closeModal()">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+
+                    ✕
                 </span>
             </div>
 
             <div class="modal-body">
                 <p style="margin-bottom: 20px; font-size: 0.9rem; color: #666;">
-                    Gérez vos préférences ci-dessous. Les cookies techniques sont nécessaires au fonctionnement du site et ne peuvent être désactivés.
+
+                    Les cookies techniques sont indispensables au fonctionnement du site et ne peuvent pas être désactivés.
                 </p>
 
                 <div class="cookie-card">
                     <div class="card-top">
-                        <span class="card-title">Cookies techniques (Essentiels)</span>
+
+                        <span class="card-title">Cookies techniques (essentiels)</span>
                         <span class="badge-required">Toujours actif</span>
                     </div>
                     <p class="card-desc">
-                        Nécessaires pour l'authentification, la sécurité (protection CSRF) et le paiement. Sans eux, le site ne peut pas fonctionner.
+                        Nécessaires pour la gestion de session, l’authentification, la sécurité et la protection contre les attaques.
                     </p>
                 </div>
 
                 <div class="cookie-card">
                     <div class="card-top">
-                        <span class="card-title">Fonctionnalités avancées</span>
-                        <label class="switch">
-                            <input type="checkbox" id="chk-functional" onchange="CookieManager.updateState()">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                    <p class="card-desc">
-                        Autorise l'affichage de la <strong>Carte Interactive (Google Maps)</strong> pour localiser les biens et active notre <strong>Chatbot</strong> d'assistance technique.
-                    </p>
-                </div>
 
-                <div class="cookie-card">
-                    <div class="card-top">
-                        <span class="card-title">Mesure d'audience</span>
+                        <span class="card-title">Mesure d’audience</span>
                         <label class="switch">
-                            <input type="checkbox" id="chk-analytics" onchange="CookieManager.updateState()">
+                            <input type="checkbox" id="chk-analytics">
                             <span class="slider"></span>
                         </label>
                     </div>
                     <p class="card-desc">
-                        Nous permet d'analyser le trafic de manière anonyme (Google Analytics 4 avec masquage IP) pour améliorer nos services.
+
+                        Permet de mesurer l’audience du site de manière agrégée (google analytics 4, ip masquée).
                     </p>
                 </div>
             </div>
 
             <div class="modal-footer">
                 <button class="btn-cookie btn-secondary" onclick="CookieManager.denyAll()">Tout refuser</button>
-                <button class="btn-cookie btn-primary" onclick="CookieManager.savePreferences()">Enregistrer mes choix</button>
+
+                <button class="btn-cookie btn-primary" onclick="CookieManager.savePreferences()">Enregistrer</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    const CookieManager = {
-        consent: { functional: false, analytics: false },
 
-        init: function() {
-            const stored = localStorage.getItem('sae_cookie_consent');
-            if (!stored) {
-                document.getElementById('cookie-banner').style.display = 'block';
-            } else {
-                this.consent = JSON.parse(stored);
-                this.applyConsent();
-            }
-        },
+const CookieManager = {
 
-        openModal: function() {
-            document.getElementById('cookie-banner').style.display = 'none';
-            document.getElementById('cookie-modal').style.display = 'flex';
-            document.getElementById('chk-functional').checked = this.consent.functional;
-            document.getElementById('chk-analytics').checked = this.consent.analytics;
-        },
+    consent: {
+        analytics: false
+    },
 
-        closeModal: function() {
-            document.getElementById('cookie-modal').style.display = 'none';
-            if (!localStorage.getItem('sae_cookie_consent')) {
-                document.getElementById('cookie-banner').style.display = 'block';
-            }
-        },
-
-        updateState: function() {
-            this.consent.functional = document.getElementById('chk-functional').checked;
-            this.consent.analytics = document.getElementById('chk-analytics').checked;
-        },
-
-        acceptAll: function() {
-            this.consent = { functional: true, analytics: true };
-            this.savePreferences();
-        },
-
-        denyAll: function() {
-            this.consent = { functional: false, analytics: false };
-            this.savePreferences();
-        },
-
-        savePreferences: function() {
-            localStorage.setItem('sae_cookie_consent', JSON.stringify(this.consent));
-            localStorage.setItem('sae_consent_date', new Date().toISOString());
-            document.getElementById('cookie-modal').style.display = 'none';
-            document.getElementById('cookie-banner').style.display = 'none';
-            this.applyConsent();
-        },
-
-        applyConsent: function() {
-            console.log("Application des consentements RGPD :", this.consent);
-            
-
-            if (this.consent.functional) {
-                console.log("--> Chargement Modules Fonctionnels");
-            }
-            
-            if (this.consent.analytics) {
-                console.log("--> Chargement Analytics");
-            }
+    init: function () {
+        const stored = localStorage.getItem('cookie_consent');
+        if (!stored) {
+            document.getElementById('cookie-banner').style.display = 'block';
+            return;
         }
-    };
 
-    document.addEventListener('DOMContentLoaded', () => CookieManager.init());
+        this.consent = JSON.parse(stored);
+        this.applyConsent();
+    },
 
-    
+    openModal: function () {
+        document.getElementById('cookie-banner').style.display = 'none';
+        document.getElementById('cookie-modal').style.display = 'flex';
+        document.getElementById('chk-analytics').checked = !!this.consent.analytics;
+    },
+
+    closeModal: function () {
+        document.getElementById('cookie-modal').style.display = 'none';
+        if (!localStorage.getItem('cookie_consent')) {
+            document.getElementById('cookie-banner').style.display = 'block';
+        }
+    },
+
+    acceptAll: function () {
+        this.consent.analytics = true;
+        this.savePreferences();
+    },
+
+    denyAll: function () {
+        this.consent.analytics = false;
+        this.savePreferences();
+    },
+
+    savePreferences: function () {
+        localStorage.setItem('cookie_consent', JSON.stringify(this.consent));
+        localStorage.setItem('cookie_consent_date', new Date().toISOString());
+        document.getElementById('cookie-banner').style.display = 'none';
+        document.getElementById('cookie-modal').style.display = 'none';
+        this.applyConsent();
+    },
+
+    applyConsent: function () {
+        if (this.consent.analytics) {
+            this.loadAnalytics();
+        }
+    },
+
+    loadAnalytics: function () {
+        if (window.gtag) return;
+        /*
+        const script = document.createElement('script');
+        script.async = true;
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX';
+        document.head.appendChild(script);
+
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        window.gtag = gtag;
+
+        gtag('js', new Date());
+        gtag('config', 'G-XXXXXXXXXX', {
+            anonymize_ip: true
+        });
+        */
+    }
+};
+
+document.addEventListener('DOMContentLoaded', () => CookieManager.init());
 </script>

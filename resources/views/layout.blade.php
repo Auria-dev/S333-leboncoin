@@ -126,6 +126,7 @@
         @yield('content')
     </main>
     
+    @stack('scripts')
     @include('cookie-banniere')
 
     <div class="light-box-save-search" id="modal-premiere-annonce" style="display: none;">
