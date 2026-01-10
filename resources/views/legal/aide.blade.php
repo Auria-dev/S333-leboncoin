@@ -215,7 +215,7 @@ h3 {
 							<p>1. Vérifiez que le type de compte est « particulier », si ce n’est pas le cas, cliquez sur le bouton « Particulier » ;</p>
 							<img src="/Leboncoin/Compte/compte-particulier.png" alt="bouton type de compte particulier">
 							<p>2. Entrez les informations obligatoires (prénom, nom, email, numéro de téléphone, adresse et mot de passe).</p>
-							<p>3. Optionnel : vous pouvez transmettre votre pièce d’identité dès la création de votre compte afin de faire vérifier votre identité et pouvoir déposer des annonces. Pour transmettre votre pièce d’identité ultérieurement, suivez les étapes <a href="aide-verif-id">« comment vérifier mon identité ? »</a>.</p>
+							<p>3. Optionnel : vous pouvez transmettre votre pièce d’identité dès la création de votre compte afin de faire vérifier votre identité et pouvoir déposer des annonces. Pour transmettre votre pièce d’identité ultérieurement, suivez les étapes « <a href="#aide-verif-id">comment vérifier mon identité ?</a> ».</p>
 							<p>4. Pour finaliser la création de votre compte, cliquez sur le bouton « S’inscrire » en bas.</p>
 							<p class="gras" style="margin-top: 15px;">Si vous êtes une entreprise :</p>
 							<p>1. Cliquez sur le bouton « Entreprise » </p>
@@ -450,15 +450,15 @@ h3 {
 							<p>9. Si votre numéro de téléphone n’est pas encore vérifié, une vérification vous sera envoyée par SMS à cette étape-là.  </p>
 						</div>
 					</li>
-					<li class="aide-freq"><a>Propriétaire Particulier & Entreprise : Où trouver le statut de mon annonce ?</a>
+					<li class="aide-freq"><a>Propriétaire Particulier & Entreprise : où trouver le statut de mon annonce ?</a>
 						<div class="aide-text">
-							<h2>Propriétaire Particulier & Entreprise : Où trouver le statut de mon annonce ?</h2>
+							<h2>Propriétaire Particulier & Entreprise : où trouver le statut de mon annonce ?</h2>
 							<p>Veuillez consulter régulièrement vos mails afin de suivre le statut de votre annonce.</p>
 							<p>Un mail vous sera envoyé par nos services à chaque changement.</p>
 						</div>
 					</li>
 					<li class="aide-freq"><a>Propriétaire Particulier : comment vérifier mon identité ?</a>
-						<div class="aide-text">
+						<div class="aide-text" id="aide-verif-id">
 							<h2>Propriétaire Particulier : comment vérifier mon identité ?</h2>
 							<p class="gras">Vous avez le choix entre 3 options :</p>
 							<p>- <a href="#aide-cni-creation">Option 1 : transmettre votre pièce d’identité dès la création de votre compte</a></p>
@@ -599,9 +599,9 @@ h3 {
 							<p>4. Pour voir plus de détails, cliquez sur la location qui vous intéresse.</p>
 						</div>
 					</li>
-					<li class="aide-freq"><a>Propriétaire Particulier & Entreprise : Où trouver le statut d'une location ?</a>
+					<li class="aide-freq"><a>Propriétaire Particulier & Entreprise : où trouver le statut d'une location ?</a>
 						<div class="aide-text">
-							<h2>Propriétaire Particulier & Entreprise : Où trouver le statut d'une location ?</h2>
+							<h2>Propriétaire Particulier & Entreprise : où trouver le statut d'une location ?</h2>
 							<p>1. Connectez-vous à votre compte leboncoin ;</p>
 							<p>2. Accédez à votre espace compte ;</p>
 							<p>3. Défilez la page vers le bas jusqu’à l'espace « Mes locations » ;</p>
