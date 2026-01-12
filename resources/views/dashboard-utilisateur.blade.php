@@ -6,6 +6,7 @@
 <div class="center-container">
 <div class="dashboard-container">
 
+    {{-- EN-TÊTE PROFIL --}}
     <div class="side-by-side dashboard-header">
         @if($utilisateur->photo_profil === null)
             <img src="/images/photo-profil.jpg" class="profile-img">
@@ -19,31 +20,38 @@
         </div>
     </div>
 
-
+    {{-- ================================================================= --}}
+    {{-- BLOC CONSOLE DPO (Intégré comme une section standard)             --}}
+    {{-- ================================================================= --}}
     @if($utilisateur->mail === 'muneretjarod@gmail.com')
-    <div class="res-section" style="border: 2px solid #ec5a13; border-radius: 12px; overflow: hidden; background: white; margin-top: 30px; margin-bottom: 30px;">
-        <div style="background: #ec5a13; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;">
-            <h3 style="margin:0; font-size:16px; font-weight:bold; color:white;">🛡️ Console DPO - Anonymisation RGPD</h3>
-            <span style="background:rgba(255,255,255,0.2); font-size:11px; padding:4px 8px; border-radius:4px;">ACCÈS RÉSERVÉ</span>
-        </div>
+    <div class="res-section">
+        <p class="section-title" style="display: flex; justify-content: space-between; align-items: center;">
+            Console DPO - RGPD
+            <span style="background: #f1f5f9; color: #64748b; font-size: 11px; padding: 4px 8px; border-radius: 4px; font-weight: normal;">ADMIN</span>
+        </p>
 
-        <div style="padding: 25px;">
-            <p style="color:#4a4a4a; margin-bottom:20px; font-size:14px; line-height:1.5;">
-                Conformément à l'article 5.1.e du RGPD (Limitation de la conservation), cet outil permet d'anonymiser définitivement les comptes inactifs depuis une certaine date.
+        <div style="padding: 0 20px 20px 20px;">
+            <p style="color: #64748b; font-size: 14px; margin-bottom: 20px; line-height: 1.5;">
+                Outil d'anonymisation des comptes inactifs (Droit à l'oubli).<br>
+                <span style="color: #ef4444;">Attention : action irréversible.</span>
             </p>
 
-            <form action="{{ route('dpo.process') }}" method="POST" style="display:flex; align-items:end; gap:20px; flex-wrap:wrap;">
+            <form action="{{ route('dpo.process') }}" method="POST" style="display: flex; gap: 15px; align-items: flex-end;">
                 @csrf
-                <div style="flex:1; min-width:250px;">
-                    <label style="display:block; font-weight:bold; color:#2b323e; margin-bottom:8px; font-size:13px;">Date limite d'inactivité</label>
-                    <input type="date" name="date_limite" required 
-                           style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; font-family:inherit;">
-                    <span style="font-size:12px; color:#64748b; margin-top:5px; display:block;">Les comptes non modifiés avant cette date seront effacés.</span>
-                </div>
                 
-                <button type="submit" onclick="return confirm('⚠️ ATTENTION : Cette action est irréversible.\n\nToutes les données personnelles (Nom, Email, Téléphone, CNI) des utilisateurs concernés seront remplacées par des données anonymes.\n\nConfirmer l\'anonymisation ?');"
-                        style="background:#c53030; color:white; border:none; padding:12px 24px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:14px; transition: background 0.2s;">
-                    Lancer l'anonymisation massive
+                <div style="flex: 1;">
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 6px;">
+                        Date limite d'inactivité
+                    </label>
+                    <input type="date" name="date_limite" required 
+                           style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px; font-family: inherit; background-color: #f8fafc;">
+                </div>
+
+                <button type="submit" onclick="return confirm('⚠️ CONFIRMATION REQUISE\n\nVous êtes sur le point d\'anonymiser définitivement les comptes sélectionnés.\nLes noms, emails, téléphones et documents d\'identité seront supprimés.\n\nContinuer ?');"
+                        style="background-color: #ef4444; color: white; border: none; padding: 0 24px; border-radius: 6px; font-weight: 600; font-size: 14px; cursor: pointer; height: 42px; display: flex; align-items: center; justify-content: center; transition: background 0.2s;"
+                        onmouseover="this.style.backgroundColor='#dc2626';"
+                        onmouseout="this.style.backgroundColor='#ef4444';">
+                    Anonymiser
                 </button>
             </form>
         </div>
@@ -51,7 +59,7 @@
     @endif
     {{-- FIN BLOC DPO --}}
 
-
+    {{-- SECTION ANNONCES (Propriétaires) --}}
     @if ($utilisateur->getTypeParticulier() == 'Propriétaire' || $utilisateur->getTypeParticulier() == 'Locataire & Propriétaire' || $utilisateur->getTypeParticulier() == 'Entreprise')
     <div class="res-section">
         <p class="section-title">Mes annonces</p>
@@ -98,6 +106,7 @@
     </div>
     @endif
 
+    {{-- SECTION RÉSERVATIONS (Locataires) --}}
     @if ($utilisateur->getTypeParticulier() == 'Locataire' || $utilisateur->getTypeParticulier() == 'Locataire & Propriétaire' || $utilisateur->getTypeParticulier() == 'Entreprise')
     <div class="res-section">
         <p class="section-title">Mes réservations</p>
@@ -201,6 +210,7 @@
             @endforelse
         </div>
     </div>
+    @endif
 
     @if ($utilisateur->getTypeParticulier() == 'Propriétaire' || $utilisateur->getTypeParticulier() == 'Locataire & Propriétaire' || $utilisateur->getTypeParticulier() == 'Entreprise')
         <div class="res-section">
@@ -308,8 +318,6 @@
             </div>
         </div>
 
-
-
         <div class="res-section">
         <p class="section-title">Mes recherches sauvegardées</p>
 
@@ -378,7 +386,6 @@
             @endforelse
         </div>
     </div>
-    @endif
 
     <form method="POST" action="{{ url('logout') }}" class="w-fit">
         @csrf
