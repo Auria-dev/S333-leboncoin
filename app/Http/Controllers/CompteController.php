@@ -451,4 +451,11 @@ class CompteController extends Controller {
         return redirect('/')->with('success', 'Compte supprimé.');
 
     }
+    public function supprimerFavori($idAnnonce)
+{
+
+    $user = auth()->user();
+    $user->favoris()->detach($idAnnonce);
+    return back()->with('success', 'Annonce retirée des favoris.');
+}
 }
