@@ -15,9 +15,9 @@ class Reversement extends Model
     protected $fillable = [
         'idreservation',
         'montant_reverse',
-        'date_reversement',
-        'iban_beneficiaire',
-        'statut_virement'
+        'date_reverse',
+        'idbeneficiaire',
+        'statut_reverse'
     ];
 
     function reservation()

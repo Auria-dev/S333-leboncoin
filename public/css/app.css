@@ -1573,6 +1573,9 @@ input.date-custom-input {
     width: 16px;
     height: 16px;
 }
+.btn-delete-annonce {
+    box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);
+}
 
 .btn-modifier-annonce {
     background: var(--bg-card);
@@ -1585,6 +1588,7 @@ input.date-custom-input {
     justify-content: center;
     cursor: pointer;
     transition: all 0.2s;
+    box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);
 }
 .btn-modifier-annonce:hover {
     border-color: var(--text-main);
@@ -2602,7 +2606,7 @@ tr:last-child td {
 .card-global {
     position: relative; 
     display: inline-block; 
-    width: 100%; 
+    /* width: 100%;  */
 }
 
 .img-depot-annonce {
