@@ -370,7 +370,7 @@ class CompteController extends Controller {
 
         return back()->with('success', 'Double authentification désactivée.');
     }
-    
+
     public function anonymiserDpo(Request $request)
     {
         $user = Auth::user();
@@ -416,6 +416,7 @@ class CompteController extends Controller {
         }
 
         return back()->with('success', "RGPD : $count comptes inactifs ont été anonymisés avec succès.");
+    }
 
     public function suppression_compte(Request $request)
     {
