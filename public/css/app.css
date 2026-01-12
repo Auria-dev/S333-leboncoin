@@ -1543,6 +1543,14 @@ input.date-custom-input {
     right: 1.2rem;
     z-index: 10;
 }
+
+.modifier-annonce-form {
+    position: absolute;
+    top: 1.2rem;
+    left: 1.2rem;
+    z-index: 10;
+}
+
 .btn-delete-search {
     background: var(--bg-card);
     border: 1px solid var(--border-default);
@@ -1562,6 +1570,27 @@ input.date-custom-input {
     transform: scale(1.1);
 }
 .btn-delete-search svg {
+    width: 16px;
+    height: 16px;
+}
+
+.btn-modifier-annonce {
+    background: var(--bg-card);
+    border: 1px solid var(--border-default);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.btn-modifier-annonce:hover {
+    border-color: var(--text-main);
+    transform: scale(1.1);
+}
+.btn-modifier-annonce svg {
     width: 16px;
     height: 16px;
 }
@@ -2568,4 +2597,17 @@ tr:last-child td {
   font-weight: bold;
   display: block;
   margin-top: 10px;
+}
+
+.card-global {
+    position: relative; 
+    display: inline-block; 
+    width: 100%; 
+}
+
+.img-depot-annonce {
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 10px;
+    margin-bottom: 1rem;
 }

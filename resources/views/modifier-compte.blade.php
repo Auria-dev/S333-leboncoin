@@ -507,7 +507,6 @@
         });
     }
     </script>
-    {{-- STYLE --}}
 <style>
     .security-card {
         border: none;

@@ -63,7 +63,8 @@ Route::post('/sauvegarder_recherche', [RechercheController::class, 'sauvegarderR
 Route::delete('/recherche/{id}', [RechercheController::class, 'destroy'])->name('recherche.destroy')->middleware('auth');
 
 Route::get('/modifier_compte', [CompteController::class, 'view_modifier'])->middleware('auth');
-Route::get('/modifier_compte', [App\Http\Controllers\CompteController::class, 'view_modifier'])->name('view_modifier_compte');
+// DOUBLON
+Route::get('/modifier_compte', [CompteController::class, 'view_modifier'])->name('view_modifier_compte');
 Route::put('/modifier_compte/update', [CompteController::class, 'modifier'])->middleware('auth');
 Route::post('/modifier_compte/upload', [CompteController::class, 'upload'])->middleware('auth');
 
@@ -114,9 +115,9 @@ Route::get('/admin/incidents_attente', [IncidentController::class, 'afficher_inc
 Route::post('/enregistrer_statut_incident', [IncidentController::class, 'enregistrer_statut_incident'])->middleware('auth');
 
 Route::match(['get', 'post'], '/botman', [BotManController::class, 'handle']);
-
-
-
+Route::post('/supprimer_annonce', [AnnonceController::class, 'supprimer_annonce'])->middleware('auth');
+Route::get('/modifier_annonce', [AnnonceController::class, 'view_modifier_annonce'])->middleware('auth');
+Route::put('/modifier_annonce/update/{id}', [AnnonceController::class, 'modifier_annonce'])->middleware('auth');
 
 
 // TODO : Revoir toutes ces routes
