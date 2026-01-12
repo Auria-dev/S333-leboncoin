@@ -13,5 +13,5 @@ class LegalController extends Controller
     public function regles() { return view('legal.regles'); }
     public function engagements() { return view('legal.engagements'); }
     public function securite() { return view('legal.securite'); }
-     
+    public function aide() { return view('legal.aide'); }
 }

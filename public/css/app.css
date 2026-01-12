@@ -117,7 +117,7 @@ html {
     background-attachment: fixed;
     background-size: cover;
     height: 100%;
-    padding: 2rem;
+    /* padding: 2rem; */
     text-rendering: optimizeLegibility;
     user-select: none;
 }
@@ -135,10 +135,11 @@ body.container {
     font-family: 'Outfit', system-ui, -apple-system, sans-serif;
     color: var(--text-main);
     height: calc(100vh - 4rem);
-    margin: 0 auto;
+    margin: 0;
+    padding: 0;
     display: flex;
     flex-direction: column;
-    padding: var(--spacing);
+    padding-top: var(--spacing);
 }
 a {
     color: inherit;
@@ -216,6 +217,7 @@ main {
     width: 100%;
     display: flex;
     flex-direction: column;
+    padding: var(--spacing);
 }
 footer {
     margin-top: 4rem;
@@ -1541,6 +1543,14 @@ input.date-custom-input {
     right: 1.2rem;
     z-index: 10;
 }
+
+.modifier-annonce-form {
+    position: absolute;
+    top: 1.2rem;
+    left: 1.2rem;
+    z-index: 10;
+}
+
 .btn-delete-search {
     background: var(--bg-card);
     border: 1px solid var(--border-default);
@@ -1560,6 +1570,27 @@ input.date-custom-input {
     transform: scale(1.1);
 }
 .btn-delete-search svg {
+    width: 16px;
+    height: 16px;
+}
+
+.btn-modifier-annonce {
+    background: var(--bg-card);
+    border: 1px solid var(--border-default);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.btn-modifier-annonce:hover {
+    border-color: var(--text-main);
+    transform: scale(1.1);
+}
+.btn-modifier-annonce svg {
     width: 16px;
     height: 16px;
 }
@@ -1722,6 +1753,9 @@ input.date-custom-input {
 .alert-error { background: var(--danger-bg); color: var(--danger-text); padding:1rem; border-radius:6px; }
 .alert-success { background: var(--success-bg); color: var(--success-text); padding:1rem; border-radius:6px; }
 .submit-btn-custom { padding: 10px 20px; background: var(--primary); color: white; border-radius: 6px; border: none; }
+
+.btn-danger { width: 100%; border: 2px solid var(--danger); padding: 0.5rem 1rem; border-radius: 0.5rem; color: var(--danger); text-align: center;}
+.btn-danger:hover {color:white; background-color: var(--danger);}
 
 .mt-sm { margin-top: 0.625rem; }
 .mt-md { margin-top: 1rem; }
@@ -2036,6 +2070,14 @@ input.date-custom-input {
     padding: 8px 12px;
     border-radius: var(--radius-input);
     width: fit-content;
+}
+
+.card-desc {
+    height: 60px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;      /* number of lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .card-icon {
@@ -2394,26 +2436,6 @@ input.date-custom-input {
     color: var(--text-main);
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 .upload-container {
     max-width: 500px;
     display: flex;
@@ -2515,4 +2537,77 @@ tr:last-child td {
     gap: 10px;
     margin-top: 1rem;
     font-size: 11px;
+}
+
+
+.desktop-closed-message-avatar {
+    background-color: rgb(var(--primary-rgb)) !important;
+}
+
+#botmanWidgetRoot > div > div {
+    background-color: rgb(var(--primary-rgb)) !important;
+}
+
+.tooltip-container {
+  position: relative;
+  display: inline-block;
+  margin: 10px;
+  vertical-align: middle;
+}
+
+.tooltip-box {
+  visibility: hidden;
+  opacity: 0;
+  width: 300px;
+  background-color: var(--bg-card);
+  color: var(--text-main);
+  text-align: left;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0px 10px 20px rgba(0,0,0,0.15);
+  border: 1px solid var(--primary-hover);
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 110%; 
+  transform: translateY(-50%);
+  transition: opacity 0.3s;
+  font-size: 15px;
+}
+
+.arrow {
+  position: absolute;
+  top: 50%;
+  right: 100%;
+  margin-top: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent var(--primary-hover) transparent transparent;
+}
+
+.tooltip-container:hover .tooltip-box,
+.tooltip-container.active .tooltip-box {
+  visibility: visible;
+  opacity: 1;
+}
+
+.tooltip-box a {
+  color: var(--primary-hover);
+  text-decoration: none;
+  font-weight: bold;
+  display: block;
+  margin-top: 10px;
+}
+
+.card-global {
+    position: relative; 
+    display: inline-block; 
+    width: 100%; 
+}
+
+.img-depot-annonce {
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 10px;
+    margin-bottom: 1rem;
 }

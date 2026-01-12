@@ -31,7 +31,7 @@ class ServiceComptableController extends Controller
                 $incident = Incident::where('idincident', $idincident)->first();
                 if(!empty($value)) {
                     Reservation::where("idreservation", $incident->reservation->idreservation)->update(["statut_reservation" => $value]);
-                    Paiement::where("idreservation", $incident->reservation->idreservation)->update(["statut_paiement" => 'Annulé']);
+                    Paiement::where("idreservation", $incident->reservation->idreservation)->update(["statut_paiement" => 'Remboursé']);
                     Incident::where('idincident', $idincident)->update(["statut_incident" => 'remboursé']);
                 }
             }

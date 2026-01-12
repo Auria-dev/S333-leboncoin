@@ -11,7 +11,6 @@ class IncidentController extends Controller
 
     public function view_gerer_incidents()
     {
-
         $user = Auth::user();
         if (!$user->administrateur) { 
             return redirect()->back()->with('error', 'Vous n\'avez pas accès à cette page.');

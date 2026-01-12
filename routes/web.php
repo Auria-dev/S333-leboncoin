@@ -16,6 +16,9 @@ use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\MsgController;
 use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\Google2FAController;
+use BotMan\BotMan\BotManFactory;
+use BotMan\BotMan\Drivers\DriverManager;
+use App\Http\Controllers\BotManController;
 use App\Http\Controllers\StatsController;
 use App\Http\Controllers\LegalController;
 
@@ -48,7 +51,7 @@ Route::post('/login', [CompteController::class, 'authenticate']);
 Route::get('/register', [CompteController::class, 'create']);
 Route::post('/register', [CompteController::class, 'store']);
 
-Route::post('/logout', [CompteController::class, 'destroy']);
+Route::post('/logout', [CompteController::class, 'destroy'])->name('logout');
 
 Route::get('/locations/search', [LocationController::class, 'search'])->name('locations.search');
 
@@ -60,7 +63,8 @@ Route::post('/sauvegarder_recherche', [RechercheController::class, 'sauvegarderR
 Route::delete('/recherche/{id}', [RechercheController::class, 'destroy'])->name('recherche.destroy')->middleware('auth');
 
 Route::get('/modifier_compte', [CompteController::class, 'view_modifier'])->middleware('auth');
-Route::get('/modifier_compte', [App\Http\Controllers\CompteController::class, 'view_modifier'])->name('view_modifier_compte');
+// DOUBLON
+Route::get('/modifier_compte', [CompteController::class, 'view_modifier'])->name('view_modifier_compte');
 Route::put('/modifier_compte/update', [CompteController::class, 'modifier'])->middleware('auth');
 Route::post('/modifier_compte/upload', [CompteController::class, 'upload'])->middleware('auth');
 
@@ -90,6 +94,7 @@ Route::get('/messagerie/{id?}', [MsgController::class, 'afficher_messagerie'])->
 Route::post('/messagerie/envoyer', [MsgController::class, 'envoyer_message'])->middleware('auth')->name('messagerie.envoyer');
 Route::post('/contact/creer', [MsgController::class, 'creer_contact'])->middleware('auth')->name('contact.create');
 
+Route::get('suppression_compte', [CompteController::class, 'suppression_compte'])->middleware('auth')->name('suppression_compte');
 
 Route::get('/reservation/{id}', [ReservationController::class, 'view_modifier'])->middleware('auth');
 Route::put('/reservation/update/{id}', [ReservationController::class, 'modifier_reservation'])->middleware('auth');
@@ -109,8 +114,10 @@ Route::get('/admin/gerer_incidents', [IncidentController::class, 'view_gerer_inc
 Route::get('/admin/incidents_attente', [IncidentController::class, 'afficher_incidents_attente'])->middleware('auth')->name('admin/incidents_attente');
 Route::post('/enregistrer_statut_incident', [IncidentController::class, 'enregistrer_statut_incident'])->middleware('auth');
 
-
-
+Route::match(['get', 'post'], '/botman', [BotManController::class, 'handle']);
+Route::post('/supprimer_annonce', [AnnonceController::class, 'supprimer_annonce'])->middleware('auth');
+Route::get('/modifier_annonce', [AnnonceController::class, 'view_modifier_annonce'])->middleware('auth');
+Route::put('/modifier_annonce/update/{id}', [AnnonceController::class, 'modifier_annonce'])->middleware('auth');
 
 
 // TODO : Revoir toutes ces routes
@@ -183,6 +190,7 @@ Route::prefix('infos')->name('legal.')->group(function () {
     Route::get('/regles-diffusion', [LegalController::class, 'regles'])->name('regles');
     Route::get('/nos-engagements', [LegalController::class, 'engagements'])->name('engagements');
     Route::get('/securite-confiance', [LegalController::class, 'securite'])->name('securite');
+    Route::get('/aide', [LegalController::class, 'aide'])->name('aide');
 });
 
 Route::middleware(['auth'])->post('/dpo/anonymiser', [App\Http\Controllers\CompteController::class, 'anonymiserDpo'])->name('dpo.process');

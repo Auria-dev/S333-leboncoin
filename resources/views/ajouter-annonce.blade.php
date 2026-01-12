@@ -140,7 +140,7 @@
 
             <div class="annonce-group">
                 <div>
-                    <label>Nombre de nuits minimum</label>
+                    <label>Minimum de nuits</label>
                     <input type="number" id="nb_nuits" name="nb_nuits" placeholder="2" min="1" required>
                 </div>
 

@@ -17,12 +17,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-
+    @stack('styles')
     <style>
         body {
+            min-height: 100vh; 
+            margin: 0;
             display: flex;
             flex-direction: column;
-            min-height: 100vh; 
         }
         main {
             flex: 1; 
@@ -35,6 +36,7 @@
             margin-top: 60px; 
             font-family: 'Inter', sans-serif;
             font-size: 14px;
+            width: 100%;
         }
         
         .footer-content {
@@ -45,6 +47,7 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 40px;
+            box-sizing: border-box;
         }
 
         .footer-col h3 {
@@ -88,7 +91,10 @@
     </style>
 </head>
 
+
 <body class="container">
+
+
     <nav>
         @section('nav')
             <div>
@@ -101,6 +107,8 @@
                 <li><a href="{{ url('/') }}" class="{{ Request::is('/') ? 'active' : '' }}" wire:navigate>Accueil</a></li>
                 <li><a href="{{ url('/recherche') }}" class="{{ Request::is('recherche') ? 'active' : '' }}" wire:navigate>Rechercher</a></li>
                 <li><a href="{{ url('/creer_annonce') }}" class="{{ Request::is('creer_annonce') ? 'active' : '' }}" id="btn-deposer-annonce">Déposer une annonce</a></li>
+                <li><a href="{{ url('/messagerie') }}"  class="{{ Request::is('/messagerie') ? 'active' : '' }}"  >Messagerie</a></li>
+                <li><a href="{{ url('/infos/aide') }}"  class="{{ Request::is('/infos/aide') ? 'active' : '' }}"  >Besoin d'aide ?</a></li>
             </ul>
             <div>
                 @auth
@@ -120,51 +128,6 @@
         @yield('content')
     </main>
     
-    <footer class="lbc-footer">
-        <div class="footer-content">
-            <div class="footer-col">
-                <h3>À propos du Boncoin</h3>
-                <ul>
-                    <li><a href="{{ route('legal.about') }}">Qui sommes-nous ?</a></li>
-                    <li><a href="{{ route('legal.engagements') }}">Nos engagements RSE</a></li>
-                </ul>
-            </div>
-
-            <div class="footer-col">
-                <h3>Informations Légales</h3>
-                <ul>
-                    <li><a href="{{ route('legal.cgu') }}">Conditions Générales d'Utilisation</a></li>
-                    <li><a href="{{ route('legal.regles') }}">Règles de diffusion</a></li>
-                    <li><a href="{{ route('legal.mentions') }}">Mentions Légales</a></li>
-                    <li><a href="{{ route('legal.privacy') }}">Politique de Confidentialité</a></li>
-                    <li><a href="{{ route('legal.cookies') }}">Gestion des cookies</a></li>
-                </ul>
-            </div>
-
-            <div class="footer-col">
-                <h3>Des questions ?</h3>
-                <ul>
-                    <li><a href="{{ route('legal.securite') }}">Centre de sécurité</a></li>
-                    <li><a href="{{ route('legal.contact') }}">Nous contacter</a></li>
-                </ul>
-            </div>
-
-            <div class="footer-col">
-                <h3>Projet SAE 3.01</h3>
-                <p style="color: #a0aec0; margin-bottom: 10px;">
-                    Application développée par le Groupe 1 - IUT Annecy.
-                </p>
-                <p style="color: #a0aec0;">
-                    Hébergé par <strong style="color: #ec5a13;">OVHcloud</strong>.
-                </p>
-            </div>
-        </div>
-
-        <div class="footer-bottom">
-            &copy; {{ date('Y') }} Leboncoin (ScoobyFoo). Tous droits réservés.
-        </div>
-    </footer>
-
     @stack('scripts')
     @include('cookie-banniere')
 
@@ -367,5 +330,66 @@
 });
 </script>
 <script src="{{ asset('js/calendrier.js') }}" defer></script>
+
+
+<script>
+    var botmanWidget = {
+        title: 'Assistant Immo',
+        aboutText: 'Guide de navigation',
+        introMessage: "Bonjour ! Je suis votre guide. Comment puis-je vous aider à utiliser le site ?",
+        placeholderText: "Posez votre question...",
+        desktopHeight: 450,
+        desktopWidth: 370
+    };
+</script>
+<script src='https://cdn.jsdelivr.net/npm/botman-web-widget@0/build/js/widget.js'></script>
+
+<link rel="preload" href="{{ asset('css/app.css') }}" as="style">
+<link rel="stylesheet" href="{{ asset('css/app.css') }}">
+<footer class="lbc-footer">
+        <div class="footer-content">
+            <div class="footer-col">
+                <h3>À propos du Boncoin</h3>
+                <ul>
+                    <li><a href="{{ route('legal.about') }}">Qui sommes-nous ?</a></li>
+                    <li><a href="{{ route('legal.engagements') }}">Nos engagements RSE</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h3>Informations Légales</h3>
+                <ul>
+                    <li><a href="{{ route('legal.cgu') }}">Conditions Générales d'Utilisation</a></li>
+                    <li><a href="{{ route('legal.regles') }}">Règles de diffusion</a></li>
+                    <li><a href="{{ route('legal.mentions') }}">Mentions Légales</a></li>
+                    <li><a href="{{ route('legal.privacy') }}">Politique de Confidentialité</a></li>
+                    <li><a href="{{ route('legal.cookies') }}">Gestion des cookies</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h3>Des questions ?</h3>
+                <ul>
+                    <li><a href="{{ route('legal.aide') }}">Aide</a></li>
+                    <li><a href="{{ route('legal.securite') }}">Centre de sécurité</a></li>
+                    <li><a href="{{ route('legal.contact') }}">Nous contacter</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h3>Projet SAE 3.01</h3>
+                <p style="color: #a0aec0; margin-bottom: 10px;">
+                    Application développée par ScoobyFoo, Groupe 3.
+                </p>
+                <p style="color: #a0aec0;">
+                    Hébergé par <strong style="color: #ec5a13;">OVHcloud</strong>.
+                </p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            &copy; {{ date('Y') }} Leboncoin (ScoobyFoo). Tous droits réservés.
+        </div>
+    </footer>
 </body>
 </html>

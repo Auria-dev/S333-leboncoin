@@ -20,9 +20,6 @@
         </div>
     </div>
 
-    {{-- ================================================================= --}}
-    {{-- BLOC CONSOLE DPO (Intégré comme une section standard)             --}}
-    {{-- ================================================================= --}}
     @if($utilisateur->mail === 'muneretjarod@gmail.com')
     <div class="res-section">
         <p class="section-title" style="display: flex; justify-content: space-between; align-items: center;">
@@ -57,9 +54,9 @@
         </div>
     </div>
     @endif
-    {{-- FIN BLOC DPO --}}
 
-    {{-- SECTION ANNONCES (Propriétaires) --}}
+
+
     @if ($utilisateur->getTypeParticulier() == 'Propriétaire' || $utilisateur->getTypeParticulier() == 'Locataire & Propriétaire' || $utilisateur->getTypeParticulier() == 'Entreprise')
     <div class="res-section">
         <p class="section-title">Mes annonces</p>
@@ -106,7 +103,7 @@
     </div>
     @endif
 
-    {{-- SECTION RÉSERVATIONS (Locataires) --}}
+
     @if ($utilisateur->getTypeParticulier() == 'Locataire' || $utilisateur->getTypeParticulier() == 'Locataire & Propriétaire' || $utilisateur->getTypeParticulier() == 'Entreprise')
     <div class="res-section">
         <p class="section-title">Mes réservations</p>

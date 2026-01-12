@@ -10,12 +10,14 @@ use App\Models\Ville;
 use App\Models\Annonce;
 use App\Models\Favoris;
 use App\Models\Calendrier;
+use App\Models\Particulier;
 use App\Models\TypeHebergement;
 use App\Models\Photo;
 use App\Models\Equipement;
 use App\Models\AnnonceSimilaire;
 use App\Models\CategorieEquipement;
 use App\Models\Service;
+use App\Models\Reservation;
 use App\Services\GeoapifyService;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
@@ -71,7 +73,7 @@ class AnnonceController extends Controller
             'heure_dep' => 'required|date_format:H:i',
             'desc' => 'required|string|max:2000',
             'file' => 'required|array',
-            'file*' => 'image|mimes:jpg,png,jpeg|max:2048',
+            'file.*' => 'image|mimes:jpg,png,jpeg|max:2048',
         ]);
 
         $codeville = Ville::where('nom_ville', $req->ville)->first();
@@ -537,4 +539,133 @@ class AnnonceController extends Controller
         }
         return redirect()->back()->with('info', 'Aucun statut modifié.');
     }
+
+    public function supprimer_annonce(Request $req)
+    {
+        $idannonce = $req->annonce_supp;
+
+        Annonce::where("idannonce", $idannonce)->update(["code_verif" => 'supprimée']);
+
+        $reservations = Reservation::where("idannonce", $idannonce)->get();
+        foreach($reservations as $resa) {
+            if($resa->date_debut_resa >= now()) {
+                $resa->update(["statut_reservation" => 'annulée']);
+            }
+        }
+
+        return redirect()->back()->with('success', 'Annonce supprimée !');
+    }
+
+    function view_modifier_annonce(Request $req) {
+        $annonce = Annonce::where('idannonce', $req->annonce_modif)->first();
+        $equipements = Equipement::all(); 
+        $services = Service::all();
+        $types = TypeHebergement::all();
+        $ville = Ville::find($annonce->ville->idville);
+
+        return view("modifier-annonce", [
+            'annonce' => $annonce,
+            'equipements' => $equipements,
+            'services' => $services,
+            'types' => $types,
+            'ville' => $ville
+        ]);  
+    }
+
+    function modifier_annonce(Request $req, $idannonce) {
+        $annonce = Annonce::find($idannonce);
+        $req->validate([
+            'titre' => 'required|string|max:128',
+            'adresse' => 'required|string',
+            'ville' => 'required|string',
+            'DepotTypeHebergement' => 'required',
+            'prix_nuit' => 'required|numeric|min:0.01',
+            'nb_nuits' => 'required|integer|min:1',
+            'nb_pers' => 'required|integer|min:1',
+            'nb_bebes' => 'nullable|integer|min:0',
+            'nb_animaux' => 'nullable|integer|min:0',
+            'nb_chambres' => 'required|integer|min:1',
+            'heure_arr' => 'required|date_format:H:i',
+            'heure_dep' => 'required|date_format:H:i',
+            'desc' => 'required|string|max:2000',
+            'file' => 'nullable|array',
+            'file.*' => 'image|mimes:jpg,png,jpeg|max:2048',
+        ]);
+
+        $codeville = Ville::where('nom_ville', $req->ville)->first();
+        $type_heb = TypeHebergement::where('nom_type_hebergement', $req->DepotTypeHebergement)->first();
+
+        $adresseComplete = $req->adresse . ', ' . $req->ville . ', France';
+        $coordonnees = $this->geoService->geocode($adresseComplete);
+        $latitude = $coordonnees ? $coordonnees['lat'] : null;
+        $longitude = $coordonnees ? $coordonnees['lon'] : null;
+
+        $annonce->update([
+            'idtypehebergement' => $type_heb->idtypehebergement,
+            'idville' => $codeville->idville,
+            'titre_annonce' => $req->titre,
+            'prix_nuit' => $req->prix_nuit,
+            'nb_nuit_min' => $req->nb_nuits,
+            'nb_bebe_max' => $req->nb_bebes,
+            'nb_personnes_max' => $req->nb_pers,
+            'nb_animaux_max' => $req->nb_animaux,
+            'adresse_annonce' => $req->adresse,
+            'description_annonce' => $req->desc,
+            'date_publication' => now(),
+            'heure_arrivee' => $req->heure_arr,
+            'heure_depart' => $req->heure_dep,
+            'nombre_chambre' => $req->nb_chambres,
+            'longitude' => $longitude,
+            'latitude' => $latitude,
+        ]);
+
+        $num_photo = Photo::where('idannonce', $annonce->idannonce)->count() + 1;
+        if ($req->hasFile('file')) {
+            $manager = new ImageManager(new Driver());
+            foreach ($req->file('file') as $file) {
+                $fileName = 'photo_annonce_' . $annonce->idannonce . '_' . $num_photo . '.jpg';
+                $fileNameDB = '/images/photo_annonce_' . $annonce->idannonce . '_' . $num_photo . '.jpg';
+                $imgDestination = public_path('images');
+
+                $img = $manager->read($file);
+                $img->scaleDown(width: 1000, height: 1000);
+                $img->toJpeg(90)->save($imgDestination . '/' . $fileName);
+
+                Photo::create([
+                    'idannonce' => $annonce->idannonce,
+                    'nomphoto' => $fileNameDB,
+                    'legende' => null,
+                ]);
+                $num_photo++;
+            }
+        } 
+
+        $equipements = $req->DepotEquipement;
+        $annonce->equipement()->sync($equipements);
+        $services = $req->DepotService;        
+        $annonce->service()->sync($services);
+
+        $annonce->load('ville.departement');
+        AnnonceSimilaire::where('idannonce', $idannonce)
+            ->orWhere('idsimilaire', $idannonce)
+            ->delete();
+
+        $similaires = Annonce::whereHas('ville.departement', function ($query) use ($annonce) {
+            $query->where('iddepartement', $annonce->ville->departement->iddepartement);
+        })
+        ->where('idtypehebergement', $annonce->idtypehebergement)
+        ->where('nb_personnes_max', '>=', $annonce->nb_personnes_max)
+        ->where('idannonce', '!=', $annonce->idannonce)
+        ->get();
+
+        foreach ($similaires as $s) {
+            AnnonceSimilaire::create([
+                'idannonce' => $annonce->idannonce,
+                'idsimilaire' => $s->idannonce,
+            ]);
+        }
+
+        return redirect('/profile')->with('success', 'Annonce modifiée avec succès !');
+    }
+
 }

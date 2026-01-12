@@ -8,42 +8,41 @@
 
     <div class="center-container">
 
-    <form action="{{ url('register') }}" method="POST" class="register-form"
-          x-data="registerForm()"
-          @submit.prevent="submitForm" enctype="multipart/form-data">
-            
+        <form action="{{ url('register') }}" method="POST" class="register-form"
+            x-data="registerForm()"
+            enctype="multipart/form-data">
             @csrf
             <p class="subtitle">Les champs obligatoires sont marqués d'un astérisque (*) </p>
             
             @if ($errors->any())
                 <div class="alert-error">
                     <strong>Oups !</strong> Il y a des problèmes avec votre saisie.
+                    <ul style="margin-left: 20px; list-style-type: disc;">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
                 </div>
             @endif
 
-            {{-- 1. Choix du type de compte --}}
             <div class="input-groupe">
                 <label>Type de compte</label>
                 <div class="radio-group-container">
                     <div class="radio-option">
                         <input type="radio" id="compteParticulier" name="typeCompte" value="particulier" 
                         onclick="toggleEntreprise(false)" {{ old('typeCompte') == 'entreprise' ? 'checked' : '' }}
-                               x-model="accountType">
+                                x-model="accountType">
                         <label for="compteParticulier">Particulier</label>
                     </div>
                     <div class="radio-option">
                         <input type="radio" id="compteEntreprise" name="typeCompte" value="entreprise" 
                         onclick="toggleEntreprise(true)" {{ old('typeCompte') == 'entreprise' ? 'checked' : '' }}
-                               x-model="accountType">
+                                x-model="accountType">
                         <label for="compteEntreprise">Entreprise</label>
                     </div>
                 </div>
             </div>
 
-            {{-- ========================================== --}}
-            {{--   BOUTON GOOGLE PLACÉ EN HAUT (UX)     --}}
-            {{-- ========================================== --}}
-            
             <div style="margin-top: 20px;">
                 <a href="{{ route('login.google') }}" class="google-btn">
                     <svg style="width:18px; height:18px; margin-right:10px;" viewBox="0 0 48 48">
@@ -66,16 +65,16 @@
                 <div class="input-groupe flex-1" x-data="inputField()">
                     <label for="prenom">Prénom*</label>
                     <input type="text" id="prenom" name="prenom" value="{{ old('prenom') }}" 
-                           placeholder="Votre prénom" required autofocus
-                           class="@error('prenom') is-invalid @enderror">
+                            placeholder="Votre prénom" required autofocus
+                            class="@error('prenom') is-invalid @enderror">
                     @error('prenom') <div class="text-error">{{ $message }}</div> @enderror
                 </div>
                 
                 <div class="input-groupe flex-1" x-data="inputField()">
                     <label for="nom">Nom*</label>
                     <input type="text" id="nom" name="nom" value="{{ old('nom') }}" 
-                           placeholder="Votre nom" required
-                           class="@error('nom') is-invalid @enderror">
+                            placeholder="Votre nom" required
+                            class="@error('nom') is-invalid @enderror">
                     @error('nom') <div class="text-error">{{ $message }}</div> @enderror
                 </div>
             </div>
@@ -84,9 +83,9 @@
                 <label for="email">Email*</label>
                 <div class="text-error" x-show="error" x-text="error"></div>
                 <input type="email" id="email" name="email" value="{{ old('email') }}" 
-                       placeholder="exemple@email.com" required
-                       @input="validateEmail($el.value)"
-                       :class="{ 'is-invalid': error, '@error('email') is-invalid @enderror': !error }">
+                        placeholder="exemple@email.com" required
+                        @input="validateEmail($el.value)"
+                        :class="{ 'is-invalid': error, '@error('email') is-invalid @enderror': !error }">
                 
                 @error('email') <div class="text-error">{{ $message }}</div> @enderror
             </div>
@@ -95,23 +94,23 @@
                 <label for="telephone">Téléphone*</label>
                 <div class="text-error" x-show="error" x-text="error"></div>
                 <input type="tel" id="telephone" name="telephone" value="{{ old('telephone') }}" 
-                       placeholder="06 12 34 56 78" required maxlength="10"
-                       @input="validatePhone($el.value)"
-                       :class="{ 'is-invalid': error, '@error('telephone') is-invalid @enderror': !error }">
+                        placeholder="06 12 34 56 78" required maxlength="10"
+                        @input="validatePhone($el.value)"
+                        :class="{ 'is-invalid': error, '@error('telephone') is-invalid @enderror': !error }">
                 
                 @error('telephone') <div class="text-error">{{ $message }}</div> @enderror
             </div>
 
             <div class="input-groupe relative" 
-                 x-data="addressField('{{ old('adresse') }}', '{{ old('ville') }}', '{{ old('code_postal') }}')"
-                 @click.outside="closeDropdown()">
-                 
-                 <label for="adresse">Adresse*</label>
-                 @error('adresse') <div class="text-error">{{ $message }}</div> @enderror
+                    x-data="addressField('{{ old('adresse') }}', '{{ old('ville') }}', '{{ old('code_postal') }}')"
+                    @click.outside="closeDropdown()">
+                    
+                    <label for="adresse">Adresse*</label>
+                    @error('adresse') <div class="text-error">{{ $message }}</div> @enderror
                 <input type="text" id="adresse" name="adresse" x-model="display"
-                       placeholder="9 Rue de l'Arc en Ciel, 74940 Annecy" required autocomplete="off"
-                       @input="search()"
-                       class="@error('adresse') is-invalid @enderror">
+                        placeholder="9 Rue de l'Arc en Ciel, 74940 Annecy" required autocomplete="off"
+                        @input="search()"
+                        class="@error('adresse') is-invalid @enderror">
 
                 <input type="hidden" name="ville" x-model="city">
                 <input type="hidden" name="code_postal" x-model="zip">
@@ -136,9 +135,9 @@
                     <label for="siret">Numéro SIRET</label>
                     <div class="text-error" x-show="error" x-text="error"></div>
                     <input type="text" id="siret" name="siret" value="{{ old('siret') }}" placeholder="14 chiffres"
-                           :required="accountType === 'entreprise'"
+                            :required="accountType === 'entreprise'"
                             @input="validateSiret($el.value)"
-                           :class="{ 'is-invalid': error, '@error('siret') is-invalid @enderror': !error }">
+                            :class="{ 'is-invalid': error, '@error('siret') is-invalid @enderror': !error }">
                     @error('siret') <div class="text-error">{{ $message }}</div> @enderror
                 </div>
                 
@@ -163,13 +162,13 @@
             <div x-data="passwordManager()" style="display: flex; flex-direction: column; gap: 1rem;">
                 <div class="input-groupe" style="flex: 1;">
                     <label for="password">Mot de passe*</label>
-                     <div class="text-error mt-sm" x-show="errorType === 'length'">
+                        <div class="text-error mt-sm" x-show="errorType === 'length'">
                         Le mot de passe doit contenir au moins 8 caractères.
                     </div>
                     @error('password') <div class="text-error">{{ $message }}</div> @enderror
                     <input type="password" id="password" name="password" placeholder="Votre mot de passe" required
-                           x-model="p1" @input="check()"
-                           :class="{ 'is-invalid': errorType === 'length', '@error('password') is-invalid @enderror': !errorType }">
+                            x-model="p1" @input="check()"
+                            :class="{ 'is-invalid': errorType === 'length', '@error('password') is-invalid @enderror': !errorType }">
                 </div>
 
                 <div class="input-groupe flex-1">
@@ -180,8 +179,8 @@
                     </div>
 
                     <input type="password" id="password_confirmation" name="password_confirmation" placeholder="Votre mot de passe" required
-                           x-model="p2" @input="check()"
-                           :class="{ 'is-invalid': errorType === 'match', '@error('password_confirmation') is-invalid @enderror': !errorType }">
+                            x-model="p2" @input="check()"
+                            :class="{ 'is-invalid': errorType === 'match', '@error('password_confirmation') is-invalid @enderror': !errorType }">
                     
                 </div>
             </div>
@@ -198,17 +197,17 @@
                             Sélectionner un fichier
                         </button>
                     </div>
-    
+
                     <span id="fileChosen">Aucun fichier sélectionné</span>
-    
+
                     <input type="file" name="file" id="realFileInput" accept=".pdf" hidden>
                 </div>
             </div>
 
             <div class="mt-md">
                 <input type="submit" value="S'inscrire" class="submit-btn"
-                       :disabled="globalErrors"
-                       :style="globalErrors ? 'opacity: 0.5; cursor: not-allowed' : ''">
+                        :disabled="globalErrors"
+                        :style="globalErrors ? 'opacity: 0.5; cursor: not-allowed' : ''">
             </div>
 
             <div class="login-link-container">
