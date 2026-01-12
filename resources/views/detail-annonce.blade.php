@@ -35,6 +35,49 @@
         </div>
 
         <div class="center flex-col w-full">
+            @if (auth()->check() && auth()->user()->idutilisateur == $annonce->idproprietaire)
+            <h3 class="mt-xl">modifier les  indisponibilités</h3>
+            <form action="{{ url('/ajouter_indisponibilité') }}" method="POST" style="display: flex; flex-direction: column; width: 100%; max-width: 400px; align-items: center; gap: 1rem;">
+                @csrf
+
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1rem;">
+                    <div>
+                        <label for="start_date">Date de début :</label>
+                        <input type="date" 
+                            id="start_date" 
+                            name="start_date" 
+                            required
+                            class="border p-2 rounded">
+                    </div>
+
+                    <div>
+                        <label for="end_date">Date de fin :</label>
+                        <input type="date" 
+                            id="end_date" 
+                            name="end_date" 
+                            required
+                            class="border p-2 rounded">
+                    </div>
+                </div>
+                <input type="hidden" name="id_annonce" value="{{ $annonce->idannonce }}">
+                <div class="toggle-wrapper">
+                    <span id="status-text">ajouter indisponibilité</span>
+
+                    <input type="checkbox" 
+                        id="mon-super-switch" 
+                        name="action_fermeture" 
+                        value="1" 
+                        class="custom-toggle-input" 
+                        checked />
+                        
+                    <label for="mon-super-switch" class="custom-toggle-label">Toggle</label>
+                </div>
+
+                <button type="submit" class="cal-btn cal-btn-valider">
+                    Valider
+                </button>
+            </form>
+            @endif
             <h3 class="mt-xl">Demander une réservation</h3>
             <form id="booking-form" method="GET" action="{{ url('/demander_reservation/' . $annonce->idannonce) }}">
                 @csrf
@@ -790,6 +833,27 @@
 
     tooltip.querySelector('.tooltip-box').addEventListener('click', (e) => {
     e.stopPropagation();
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggleInput = document.getElementById('mon-super-switch');
+        const statusText = document.getElementById('status-text');
+
+
+        function updateStatus() {
+            if (toggleInput.checked) {
+                statusText.textContent = "ajouter indisponibilité";
+                statusText.style.color = "rgb(255, 139, 102)";
+            } else {
+                statusText.textContent = "retirer indisponibilité";
+                statusText.style.color = "#4A3B32";
+            }
+        }
+        toggleInput.addEventListener('change', updateStatus);
+
+        updateStatus();
     });
 </script>
 @endpush

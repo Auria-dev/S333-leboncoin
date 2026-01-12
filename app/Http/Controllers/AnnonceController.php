@@ -420,6 +420,35 @@ class AnnonceController extends Controller
         }
     }
 
+    public function ajouter_indisponibilite(Request $req)
+    {
+
+        $validated = $req->validate([
+            'id_annonce' => 'required|integer|exists:annonce,idannonce',
+            'start_date' => 'required|date|after_or_equal:today',
+            'end_date'   => 'required|date|after:start_date',
+        ]);
+
+        $bool = $req->boolean('action_fermeture');
+
+
+        $annonce = Annonce::findOrFail($validated['id_annonce']);
+
+        $updatedRows = DB::table('calendrier')
+        ->join('date', 'calendrier.iddate', '=', 'date.iddate')
+        ->where('calendrier.idannonce', $annonce->idannonce)
+        ->where('date.date', '>=', $validated['start_date'])
+        ->where('date.date', '<', $validated['end_date'])
+        ->where('idutilisateur', null)
+        ->update([
+            'code_dispo'    => !$bool,
+            'idutilisateur' => null
+        ]);
+
+
+        return redirect()->back()->with('success', 'Indisponibilités modifiés avec succès !');
+    }
+
     public function showReviews($id)
     {
         $annonce = Annonce::with(['avisValides.utilisateur', 'ville'])->findOrFail($id);

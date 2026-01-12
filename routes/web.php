@@ -63,8 +63,7 @@ Route::post('/sauvegarder_recherche', [RechercheController::class, 'sauvegarderR
 Route::delete('/recherche/{id}', [RechercheController::class, 'destroy'])->name('recherche.destroy')->middleware('auth');
 
 Route::get('/modifier_compte', [CompteController::class, 'view_modifier'])->middleware('auth');
-// DOUBLON
-Route::get('/modifier_compte', [CompteController::class, 'view_modifier'])->name('view_modifier_compte');
+Route::get('/modifier_compte', [App\Http\Controllers\CompteController::class, 'view_modifier'])->name('view_modifier_compte');
 Route::put('/modifier_compte/update', [CompteController::class, 'modifier'])->middleware('auth');
 Route::post('/modifier_compte/upload', [CompteController::class, 'upload'])->middleware('auth');
 
@@ -89,6 +88,7 @@ Route::get('/afficher_attente', [AnnonceController::class, 'afficher_annonce_att
 Route::post('/enregistrer_statut_annonce', [AnnonceController::class, 'save_statut_annonce'])->middleware('auth');
 Route::post('/admin/equipement/store', [AnnonceController::class, 'store_equipement']);
 Route::post('/admin/equipement/link', [AnnonceController::class, 'lier_equipement_annonce']);
+Route::post('/ajouter_indisponibilité', [AnnonceController::class, 'ajouter_indisponibilite'])->middleware('auth');
 
 Route::get('/messagerie/{id?}', [MsgController::class, 'afficher_messagerie'])->middleware('auth')->name('messagerie');
 Route::post('/messagerie/envoyer', [MsgController::class, 'envoyer_message'])->middleware('auth')->name('messagerie.envoyer');
@@ -115,9 +115,9 @@ Route::get('/admin/incidents_attente', [IncidentController::class, 'afficher_inc
 Route::post('/enregistrer_statut_incident', [IncidentController::class, 'enregistrer_statut_incident'])->middleware('auth');
 
 Route::match(['get', 'post'], '/botman', [BotManController::class, 'handle']);
-Route::post('/supprimer_annonce', [AnnonceController::class, 'supprimer_annonce'])->middleware('auth');
-Route::get('/modifier_annonce', [AnnonceController::class, 'view_modifier_annonce'])->middleware('auth');
-Route::put('/modifier_annonce/update/{id}', [AnnonceController::class, 'modifier_annonce'])->middleware('auth');
+
+
+
 
 
 // TODO : Revoir toutes ces routes
@@ -192,5 +192,3 @@ Route::prefix('infos')->name('legal.')->group(function () {
     Route::get('/securite-confiance', [LegalController::class, 'securite'])->name('securite');
     Route::get('/aide', [LegalController::class, 'aide'])->name('aide');
 });
-
-Route::middleware(['auth'])->post('/dpo/anonymiser', [App\Http\Controllers\CompteController::class, 'anonymiserDpo'])->name('dpo.process');
