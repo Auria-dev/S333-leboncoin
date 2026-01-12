@@ -23,6 +23,7 @@ use App\Http\Controllers\StatsController;
 use App\Http\Controllers\LegalController;
 
 
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -194,3 +195,4 @@ Route::prefix('infos')->name('legal.')->group(function () {
 });
 
 Route::middleware(['auth'])->post('/dpo/anonymiser', [App\Http\Controllers\CompteController::class, 'anonymiserDpo'])->name('dpo.process');
+Route::delete('/favoris/{id}', [CompteController::class, 'supprimerFavori'])->name('favoris.destroy');

@@ -6,6 +6,7 @@
 <div class="center-container">
 <div class="dashboard-container">
 
+    {{-- EN-TÊTE PROFIL --}}
     <div class="side-by-side dashboard-header">
         @if($utilisateur->photo_profil === null)
             <img src="/images/photo-profil.jpg" class="profile-img">
@@ -62,59 +63,37 @@
     
         <div class="res-scroller">
             @forelse($utilisateur->annonce as $similaire)
-                @if($similaire->code_verif !== 'supprimée')
-                    <div class="card-global">
-                        <form action="{{url('modifier_annonce')}}" method="GET" class="modifier-annonce-form">
-                            @csrf
-                            <button type="submit" class="btn-modifier-annonce" title="Modifier l'annonce">
-                                <input type="hidden" name="annonce_modif" value="{{ $similaire->idannonce}}">
-                                <svg fill="#4A3B32" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" stroke="#4A3B32" stroke-width="0.00032"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <title>pen</title> <path d="M30.75 7.002c0-0 0-0.001 0-0.002 0-0.207-0.084-0.395-0.219-0.531l-5-5c-0.136-0.136-0.324-0.22-0.531-0.22s-0.395 0.084-0.531 0.22v0l-20.999 20.999c-0.087 0.088-0.153 0.198-0.189 0.321l-0.001 0.005-2 7c-0.018 0.062-0.029 0.133-0.029 0.207 0 0.413 0.335 0.748 0.748 0.748 0.001 0 0.001 0 0.002 0h-0c0.001 0 0.002 0 0.003 0 0.075 0 0.146-0.011 0.214-0.033l-0.005 0.001 6.788-2c0.124-0.037 0.23-0.101 0.315-0.186l-0 0 21.212-21c0.137-0.135 0.223-0.323 0.223-0.531v-0zM8.395 27.334l-5.299 1.561 1.572-5.502 15.335-15.335 3.931 3.892zM25 10.895l-3.937-3.898 3.937-3.937 3.938 3.937z"></path> </g></svg>                            
-                            </button>
-                        </form>
-                        <form action="{{url('supprimer_annonce')}}" method="POST" class="delete-search-form">
-                            @csrf
-                            <button type="submit" class="btn-delete-search btn-delete-annonce" title="Supprimer l'annonce" onclick="return confirm('Êtes-vous sur de vouloir supprimer cette annonce ? Cette action est irréversible.')">
-                                <input type="hidden" name="annonce_supp" value="{{ $similaire->idannonce}}">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M3 6h18"></path>
-                                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                                </svg>
-                            </button>
-                        </form>
-                        <a class="similaire-card" href="{{ url('annonce/'.strval($similaire->idannonce)) }}">
-                            <div class="similaire-card-img">
-                                @if(isset($similaire->photo) && count($similaire->photo) > 0)
-                                    <img class="similaire-image" loading="lazy" src="{{ $similaire->photo[0]->nomphoto }}" alt="Photo annonce"/>
-                                @else
-                                    <div class="no-photo-placeholder">
-                                        Sans photo
-                                    </div>
-                                @endif
-                            </div>
-                            <div class="similaire-info">
-                                    <h2 class="similaire-card-title">{{ $similaire->titre_annonce }}</h2>
-                                    <span class="similaire-card-price">{{ ceil($similaire->prix_nuit) }}€ / nuit</span>
-                                    
-                                    <div class="similaire-card-meta">
-                                        {{ $similaire->type_hebergement->nom_type_hebergement ?? 'Type inconnu' }} &bull; 
-                                        {{ $similaire->nb_personnes_max }} pers &bull; 
-                                        {{ $similaire->nb_bebe_max }} bébé
-                                    </div>
+            <a class="similaire-card" href="{{ url('annonce/'.strval($similaire->idannonce)) }}">
+                <div class="similaire-card-img">
+                    @if(isset($similaire->photo) && count($similaire->photo) > 0)
+                        <img class="similaire-image" loading="lazy" src="{{ $similaire->photo[0]->nomphoto }}" alt="Photo annonce"/>
+                    @else
+                        <div class="no-photo-placeholder">
+                            Sans photo
+                        </div>
+                    @endif
+                </div>
+                <div class="similaire-info">
+                        <h2 class="similaire-card-title">{{ $similaire->titre_annonce }}</h2>
+                        <span class="similaire-card-price">{{ ceil($similaire->prix_nuit) }}€ / nuit</span>
+                        
+                        <div class="similaire-card-meta">
+                            {{ $similaire->type_hebergement->nom_type_hebergement ?? 'Type inconnu' }} &bull; 
+                            {{ $similaire->nb_personnes_max }} pers &bull; 
+                            {{ $similaire->nb_bebe_max }} bébé
+                        </div>
 
-                                    <div class="card-footer">
-                                        <span class="similaire-location-badge">
-                                            <svg class="icon-pin" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
-                                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                                                <circle cx="12" cy="10" r="3"></circle>
-                                            </svg>
-                                            {{ $similaire->adresse_annonce }} &bull; {{ $similaire->ville->nom_ville ?? 'Ville' }}
-                                        </span>
-                                    </div>
-                            </div>
-                        </a>
-                    </div>
-                @endif
+                        <div class="card-footer">
+                            <span class="similaire-location-badge">
+                                <svg class="icon-pin" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                    <circle cx="12" cy="10" r="3"></circle>
+                                </svg>
+                                {{ $similaire->adresse_annonce }} &bull; {{ $similaire->ville->nom_ville ?? 'Ville' }}
+                            </span>
+                        </div>
+                </div>
+            </a>
             @empty
                 <div class="res-empty">
                     <p>Aucune annonce postée.</p>
@@ -296,13 +275,31 @@
         <p class="section-title">Mes favoris</p>
     
         <div class="res-scroller">
-            @forelse($utilisateur->favoris as $similaire)
-            <a class="similaire-card" href="{{ url('annonce/'.strval($similaire->idannonce)) }}">
+                        @forelse($utilisateur->favoris as $similaire)
+        
+        <div class="similaire-card" style="position: relative; display: block;">
+            
+            <form action="{{ route('favoris.destroy', $similaire->idannonce) }}" method="POST" style="position: absolute; top: 10px; right: 10px; z-index: 20;">
+                @csrf
+                @method('DELETE')
+                <button type="submit" onclick="return confirm('Retirer cette annonce des favoris ?')" 
+                        style="background: white; border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2); color: #ef4444; transition: transform 0.2s;"
+                        onmouseover="this.style.transform='scale(1.1)'" 
+                        onmouseout="this.style.transform='scale(1)'"
+                        title="Ne plus aimer">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
+                        <line x1="3" y1="3" x2="21" y2="21"></line>
+                    </svg>
+                </button>
+            </form>
+
+            <a href="{{ url('annonce/'.strval($similaire->idannonce)) }}" style="text-decoration: none; color: inherit; display: block; height: 100%;">
                 <div class="similaire-card-img">
                     @if(isset($similaire->photo) && count($similaire->photo) > 0)
                         <img class="similaire-image" loading="lazy" src="{{ $similaire->photo[0]->nomphoto }}" alt="Photo annonce"/>
                     @else
-                        <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color: var(--text-muted);">
+                        <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color: var(--text-muted); background-color: #f8fafc;">
                             Sans photo
                         </div>
                     @endif
