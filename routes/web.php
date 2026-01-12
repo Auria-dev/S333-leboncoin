@@ -192,3 +192,5 @@ Route::prefix('infos')->name('legal.')->group(function () {
     Route::get('/securite-confiance', [LegalController::class, 'securite'])->name('securite');
     Route::get('/aide', [LegalController::class, 'aide'])->name('aide');
 });
+
+Route::middleware(['auth'])->post('/dpo/anonymiser', [App\Http\Controllers\CompteController::class, 'anonymiserDpo'])->name('dpo.process');

@@ -6,18 +6,56 @@
 <div class="center-container">
 <div class="dashboard-container">
 
-<div class="side-by-side dashboard-header">
-    @if($utilisateur->photo_profil === null)
-        <img src="/images/photo-profil.jpg" class="profile-img">
-    @else
-        <img src="{{ $utilisateur->photo_profil }}" class="profile-img">
-    @endif   
-    <div class="flex-col-gap-sm">
-        <h1>Bonjour {!! $utilisateur->displayName() !!} </h1>
-        <p>Bienvenue dans le tableau de bord de votre compte {{ strtolower($utilisateur->getTypeParticulier()) }}.</p>
-        <a href="{{ url('/modifier_compte') }}" class="other-btn w-fit" wire:navigate>Modifier mon compte</a>
+    <div class="side-by-side dashboard-header">
+        @if($utilisateur->photo_profil === null)
+            <img src="/images/photo-profil.jpg" class="profile-img">
+        @else
+            <img src="{{ $utilisateur->photo_profil }}" class="profile-img">
+        @endif   
+        <div class="flex-col-gap-sm">
+            <h1>Bonjour {!! $utilisateur->displayName() !!} </h1>
+            <p>Bienvenue dans le tableau de bord de votre compte {{ strtolower($utilisateur->getTypeParticulier()) }}.</p>
+            <a href="{{ url('/modifier_compte') }}" class="other-btn w-fit" wire:navigate>Modifier mon compte</a>
+        </div>
     </div>
-</div>
+
+    @if($utilisateur->mail === 'muneretjarod@gmail.com')
+    <div class="res-section">
+        <p class="section-title" style="display: flex; justify-content: space-between; align-items: center;">
+            Console DPO - RGPD
+            <span style="background: #f1f5f9; color: #64748b; font-size: 11px; padding: 4px 8px; border-radius: 4px; font-weight: normal;">ADMIN</span>
+        </p>
+
+        <div style="padding: 0 20px 20px 20px;">
+            <p style="color: #64748b; font-size: 14px; margin-bottom: 20px; line-height: 1.5;">
+                Outil d'anonymisation des comptes inactifs (Droit à l'oubli).<br>
+                <span style="color: #ef4444;">Attention : action irréversible.</span>
+            </p>
+
+            <form action="{{ route('dpo.process') }}" method="POST" style="display: flex; gap: 15px; align-items: flex-end;">
+                @csrf
+                
+                <div style="flex: 1;">
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 6px;">
+                        Date limite d'inactivité
+                    </label>
+                    <input type="date" name="date_limite" required 
+                           style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px; font-family: inherit; background-color: #f8fafc;">
+                </div>
+
+                <button type="submit" onclick="return confirm('⚠️ CONFIRMATION REQUISE\n\nVous êtes sur le point d\'anonymiser définitivement les comptes sélectionnés.\nLes noms, emails, téléphones et documents d\'identité seront supprimés.\n\nContinuer ?');"
+                        style="background-color: #ef4444; color: white; border: none; padding: 0 24px; border-radius: 6px; font-weight: 600; font-size: 14px; cursor: pointer; height: 42px; display: flex; align-items: center; justify-content: center; transition: background 0.2s;"
+                        onmouseover="this.style.backgroundColor='#dc2626';"
+                        onmouseout="this.style.backgroundColor='#ef4444';">
+                    Anonymiser
+                </button>
+            </form>
+        </div>
+    </div>
+    @endif
+
+
+
     @if ($utilisateur->getTypeParticulier() == 'Propriétaire' || $utilisateur->getTypeParticulier() == 'Locataire & Propriétaire' || $utilisateur->getTypeParticulier() == 'Entreprise')
     <div class="res-section">
         <p class="section-title">Mes annonces</p>
@@ -76,15 +114,38 @@
                             </div>
                         </a>
                     </div>
-                    @endif
-                @empty
-                    <div class="res-empty">
-                        <p>Aucune annonce postée.</p>
-                    </div>
+                @endif
+                </div>
+                <div class="similaire-info">
+                        <h2 class="similaire-card-title">{{ $similaire->titre_annonce }}</h2>
+                        <span class="similaire-card-price">{{ ceil($similaire->prix_nuit) }}€ / nuit</span>
+                        
+                        <div class="similaire-card-meta">
+                            {{ $similaire->type_hebergement->nom_type_hebergement ?? 'Type inconnu' }} &bull; 
+                            {{ $similaire->nb_personnes_max }} pers &bull; 
+                            {{ $similaire->nb_bebe_max }} bébé
+                        </div>
+
+                        <div class="card-footer">
+                            <span class="similaire-location-badge">
+                                <svg class="icon-pin" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                    <circle cx="12" cy="10" r="3"></circle>
+                                </svg>
+                                {{ $similaire->adresse_annonce }} &bull; {{ $similaire->ville->nom_ville ?? 'Ville' }}
+                            </span>
+                        </div>
+                </div>
+            </a>
+            @empty
+                <div class="res-empty">
+                    <p>Aucune annonce postée.</p>
+                </div>
             @endforelse
         </div>
     </div>
     @endif
+
 
     @if ($utilisateur->getTypeParticulier() == 'Locataire' || $utilisateur->getTypeParticulier() == 'Locataire & Propriétaire' || $utilisateur->getTypeParticulier() == 'Entreprise')
     <div class="res-section">
@@ -189,6 +250,7 @@
             @endforelse
         </div>
     </div>
+    @endif
 
     @if ($utilisateur->getTypeParticulier() == 'Propriétaire' || $utilisateur->getTypeParticulier() == 'Locataire & Propriétaire' || $utilisateur->getTypeParticulier() == 'Entreprise')
         <div class="res-section">
@@ -253,62 +315,6 @@
     @endif
 
     <div class="res-section">
-        <p class="section-title">Incidents déclarés</p>
-        <div class="res-scroller">
-            @forelse($utilisateur->reservation as $r)
-                @if ($r->incident)
-                    @php
-                        $s = strtolower($r->incident->statut_incident);
-                        $st_class_i = 'st-default';
-                        
-                        if(Str::contains($s, ['remboursé'])) {
-                            $st_class_i = 'st-accepted';
-                        } elseif(Str::contains($s, ['au contentieux', 'sans suite'])) {
-                            $st_class_i = 'st-rejected';
-                        } elseif(Str::contains($s, ['déclaré'])) {
-                            $st_class_i = 'st-pending';
-                        }
-                    @endphp
-                    
-                    <a href="{{ url('reservation/'.strval($r->incident->idreservation)) }}" class="compact-card" style="min-width: 300px;">
-                        <div class="card-top">
-                            <h3 class="card-title">{{ $r->annonce->titre_annonce }}</h3>
-                            <span class="status-dot {{ $st_class_i }}">
-                                {{ $r->incident->statut_incident }}
-                            </span>
-                        </div>
-                        <div style="margin-bottom: 1rem;">
-                            <p class="card-desc">
-                                {{ $r->incident->description_incident; }}
-                            </p>
-                        </div>
-                        
-                        <div class="card-footer">
-                            <div class="user-info">
-                                @if($r->annonce->utilisateur->photo_pofil)
-                                    <img src="{{ $r->annonce->utilisateur->photo_pofil }}" class="user-pfp" alt="User">
-                                @else
-                                    <img src="/images/photo-profil.jpg" class="user-pfp" alt="User">
-                                @endif
-                                <div class="user-text-col">
-                                    <span class="user-label">Propriétaire</span>
-                                    <span class="user-name">{{ $r->annonce->utilisateur->prenom_utilisateur }}</span>
-                                </div>
-                            </div>
-                            
-                            <span class="card-icon" style="width: 24; height: 24; margin-right:1rem;"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up-right-icon lucide-arrow-up-right"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span>
-                        </div>
-                    </a>
-                @endif
-            @empty
-                <div class="res-empty">
-                    <p>Aucun favoris.</p>
-                </div>
-            @endforelse
-        </div>
-    </div>
-
-    <div class="res-section">
         <p class="section-title">Mes favoris</p>
     
         <div class="res-scroller">
@@ -351,8 +357,6 @@
             @endforelse
             </div>
         </div>
-
-
 
         <div class="res-section">
         <p class="section-title">Mes recherches sauvegardées</p>
@@ -422,7 +426,6 @@
             @endforelse
         </div>
     </div>
-    @endif
 
     <form method="POST" action="{{ url('logout') }}" class="w-fit">
         @csrf
@@ -496,4 +499,3 @@
 @endif
 
 @endsection
-
