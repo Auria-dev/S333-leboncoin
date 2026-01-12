@@ -6,18 +6,52 @@
 <div class="center-container">
 <div class="dashboard-container">
 
-<div class="side-by-side dashboard-header">
-    @if($utilisateur->photo_profil === null)
-        <img src="/images/photo-profil.jpg" class="profile-img">
-    @else
-        <img src="{{ $utilisateur->photo_profil }}" class="profile-img">
-    @endif   
-    <div class="flex-col-gap-sm">
-        <h1>Bonjour {!! $utilisateur->displayName() !!} </h1>
-        <p>Bienvenue dans le tableau de bord de votre compte {{ strtolower($utilisateur->getTypeParticulier()) }}.</p>
-        <a href="{{ url('/modifier_compte') }}" class="other-btn w-fit" wire:navigate>Modifier mon compte</a>
+    <div class="side-by-side dashboard-header">
+        @if($utilisateur->photo_profil === null)
+            <img src="/images/photo-profil.jpg" class="profile-img">
+        @else
+            <img src="{{ $utilisateur->photo_profil }}" class="profile-img">
+        @endif   
+        <div class="flex-col-gap-sm">
+            <h1>Bonjour {!! $utilisateur->displayName() !!} </h1>
+            <p>Bienvenue dans le tableau de bord de votre compte {{ strtolower($utilisateur->getTypeParticulier()) }}.</p>
+            <a href="{{ url('/modifier_compte') }}" class="other-btn w-fit" wire:navigate>Modifier mon compte</a>
+        </div>
     </div>
-</div>
+
+
+    @if($utilisateur->mail === 'muneretjarod@gmail.com')
+    <div class="res-section" style="border: 2px solid #ec5a13; border-radius: 12px; overflow: hidden; background: white; margin-top: 30px; margin-bottom: 30px;">
+        <div style="background: #ec5a13; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin:0; font-size:16px; font-weight:bold; color:white;">🛡️ Console DPO - Anonymisation RGPD</h3>
+            <span style="background:rgba(255,255,255,0.2); font-size:11px; padding:4px 8px; border-radius:4px;">ACCÈS RÉSERVÉ</span>
+        </div>
+
+        <div style="padding: 25px;">
+            <p style="color:#4a4a4a; margin-bottom:20px; font-size:14px; line-height:1.5;">
+                Conformément à l'article 5.1.e du RGPD (Limitation de la conservation), cet outil permet d'anonymiser définitivement les comptes inactifs depuis une certaine date.
+            </p>
+
+            <form action="{{ route('dpo.process') }}" method="POST" style="display:flex; align-items:end; gap:20px; flex-wrap:wrap;">
+                @csrf
+                <div style="flex:1; min-width:250px;">
+                    <label style="display:block; font-weight:bold; color:#2b323e; margin-bottom:8px; font-size:13px;">Date limite d'inactivité</label>
+                    <input type="date" name="date_limite" required 
+                           style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; font-family:inherit;">
+                    <span style="font-size:12px; color:#64748b; margin-top:5px; display:block;">Les comptes non modifiés avant cette date seront effacés.</span>
+                </div>
+                
+                <button type="submit" onclick="return confirm('⚠️ ATTENTION : Cette action est irréversible.\n\nToutes les données personnelles (Nom, Email, Téléphone, CNI) des utilisateurs concernés seront remplacées par des données anonymes.\n\nConfirmer l\'anonymisation ?');"
+                        style="background:#c53030; color:white; border:none; padding:12px 24px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:14px; transition: background 0.2s;">
+                    Lancer l'anonymisation massive
+                </button>
+            </form>
+        </div>
+    </div>
+    @endif
+    {{-- FIN BLOC DPO --}}
+
+
     @if ($utilisateur->getTypeParticulier() == 'Propriétaire' || $utilisateur->getTypeParticulier() == 'Locataire & Propriétaire' || $utilisateur->getTypeParticulier() == 'Entreprise')
     <div class="res-section">
         <p class="section-title">Mes annonces</p>
@@ -418,4 +452,3 @@
 @endif
 
 @endsection
-

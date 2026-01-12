@@ -16,6 +16,7 @@ use App\Models\Ville;
 use App\Models\SecteurActivite;
 use App\Models\Reservation; 
 use PragmaRX\Google2FAQRCode\Google2FA;
+use Illuminate\Support\Str;
 
 class CompteController extends Controller {
 
@@ -359,5 +360,52 @@ class CompteController extends Controller {
             ->update(['google2fa_secret' => null]);
 
         return back()->with('success', 'Double authentification désactivée.');
+    }
+
+    public function anonymiserDpo(Request $request)
+    {
+        $user = Auth::user();
+
+        if ($user->mail !== 'muneretjarod@gmail.com') {
+            return back()->with('error', 'Action non autorisée. Réservé au DPO.');
+        }
+
+        $request->validate(['date_limite' => 'required|date|before:today']);
+        $date = $request->input('date_limite');
+
+        $usersToAnonymize = Utilisateur::where('date_creation', '<', $date)
+                                       ->where('mail', '!=', 'muneretjarod@gmail.com')
+                                       ->get();
+
+        $count = 0;
+
+        foreach ($usersToAnonymize as $u) {
+            $u->nom_utilisateur = 'Anonyme_' . $u->idutilisateur;
+            $u->prenom_utilisateur = 'Utilisateur';
+
+            $u->mail = 'deleted_' . $u->idutilisateur . '_' . time() . '@anonyme.fr';
+
+            $u->telephone = null; 
+            
+            $u->adresse_utilisateur = 'Adresse supprimée';
+
+            $u->mot_de_passe = Hash::make(\Illuminate\Support\Str::random(16));
+            $u->photo_profil = '/images/photo-profil.jpg';
+
+            $particulier = DB::table('particulier')->where('idparticulier', $u->idutilisateur)->first();
+            if ($particulier && $particulier->piece_identite) {
+                $path = public_path($particulier->piece_identite);
+                if (file_exists($path)) { @unlink($path); }
+                
+                DB::table('particulier')
+                    ->where('idparticulier', $u->idutilisateur)
+                    ->update(['piece_identite' => null]);
+            }
+
+            $u->save();
+            $count++;
+        }
+
+        return back()->with('success', "RGPD : $count comptes inactifs ont été anonymisés avec succès.");
     }
 }
