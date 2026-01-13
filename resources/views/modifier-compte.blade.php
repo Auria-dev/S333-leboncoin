@@ -244,7 +244,6 @@
                 <input type="file" name="file" id="realFileInputPDF" accept=".pdf" hidden>
             </div>
         @endif
-
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
@@ -265,33 +264,34 @@
                                         </p>
                                     </div>
                                 </div>
-
-                                <div class="col-md-4 text-right d-flex flex-column align-items-end justify-content-center mt-4 mt-md-0">
-                                    
-                                    @if(auth()->user()->google2fa_secret)
-                                        <div class="status-active mb-2">
-                                            Protection Active
-                                        </div>
-                                        
-                                        <form action="{{ route('2fa.disable') }}" method="POST">
-                                            @csrf
-                                            <button type="submit" class="btn-danger-link" onclick="return confirm('Attention : Votre compte sera moins sécurisé. Continuer ?')">
-                                                Désactiver
-                                            </button>
-                                        </form>
-
-                                    @else
-                                        <div style="text-align: right;">
-                                            <span class="d-block text-muted small mb-2" style="margin-right: 1rem;">
-                                                Recommandé
-                                            </span>
-                                            <a href="{{ route('2fa.enable') }}" class="btn-action-orange">
-                                                Configurer la 2FA
-                                            </a>
-                                        </div>
-                                    @endif
-
+                                    <div class="col-md-4 text-right d-flex flex-column align-items-end justify-content-center mt-4 mt-md-0">
+                            @if(auth()->user()->google2fa_secret)
+                                <div class="status-active mb-2">
+                                    Protection Active
                                 </div>
+                                
+
+                                <button type="submit" 
+                                        form="form-desactiver-2fa" 
+                                        class="btn-danger-link" 
+                                        onclick="return confirm('Êtes-vous sûr de vouloir désactiver la double authentification ?')">
+                                    Désactiver
+                                </button>
+
+                            @else
+                                <div style="text-align: right;">
+                                    <span class="d-block text-muted small mb-2" style="margin-right: 1rem;">
+                                        Recommandé
+                                    </span>
+                                    <a href="{{ route('2fa.enable') }}" class="btn-action-orange">
+                                        Configurer la 2FA
+                                    </a>
+                                </div>
+                            @endif
+                        </div>
+                                
+
+
                             </div>
                         </div>
                     </div>
@@ -572,4 +572,9 @@
         border-color: #dc3545;
     }
 </style>
+@if(auth()->user()->google2fa_secret)
+        <form id="form-desactiver-2fa" action="{{ route('2fa.disable') }}" method="POST" style="display: none;">
+            @csrf
+        </form>
+    @endif
 @endsection

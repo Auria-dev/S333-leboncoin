@@ -27,7 +27,8 @@ class Utilisateur extends Authenticatable {
         'google_id',
         'adresse_utilisateur',
         'date_creation',
-        'photo_profil'
+        'photo_profil',
+
     ];
 
     public function getAuthPassword() {
