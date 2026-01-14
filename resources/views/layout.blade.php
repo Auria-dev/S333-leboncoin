@@ -108,7 +108,7 @@
                 <li><a href="{{ url('/recherche') }}" class="{{ Request::is('recherche') ? 'active' : '' }}" wire:navigate>Rechercher</a></li>
                 <li><a href="{{ url('/creer_annonce') }}" class="{{ Request::is('creer_annonce') ? 'active' : '' }}" id="btn-deposer-annonce">Déposer une annonce</a></li>
                 <li><a href="{{ url('/messagerie') }}"  class="{{ Request::is('messagerie') ? 'active' : '' }}"  >Messagerie</a></li>
-                <li><a href="{{ url('/infos/aide') }}"  class="{{ Request::is('infos/aide') ? 'active' : '' }}"  >Besoin d'aide ?</a></li>
+                <li><a href="{{ url('/notifications') }}"  class="{{ Request::is('notifications') ? 'active' : '' }}"  >Notifications</a></li>
             </ul>
             <div>
                 @auth

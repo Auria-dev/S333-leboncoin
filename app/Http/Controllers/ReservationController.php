@@ -9,6 +9,8 @@ use App\Models\Paiement;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
+use App\Notifications\CustomNotification;
+
 class ReservationController extends Controller
 {
     public function view_modifier($idreservation)
@@ -123,6 +125,11 @@ class ReservationController extends Controller
 
             DB::commit();
 
+            $reservation->annonce->proprietaire->notify(new CustomNotification(
+                "La réservation #{$reservation->idreservation} de votre annonce a été mise à jour.",
+                url('reservation/'.strval($reservation->idReservation))
+            ));
+
             return back()->with('success', 'Réservation mise à jour avec succès.');
 
         } catch (\Exception $e) {
@@ -142,9 +149,12 @@ class ReservationController extends Controller
         $paiement = Paiement::where('idreservation', intval($idreservation))->firstOrFail();
         $paiement->update(['statut_paiement' => 'annulé']);
 
-         $datesToUpdate = DB::table('date')
-         ->whereBetween('date', [$reservation->date_debut_resa, $reservation->date_fin_resa])
-         ->pluck('iddate');
+        $datesToUpdate = DB::table('date')->whereBetween('date', [$reservation->date_debut_resa, $reservation->date_fin_resa])->pluck('iddate');
+
+        $reservation->annonce->utilisateur->notify(new CustomNotification(
+            "La réservation #{$reservation->idreservation} de votre annonce a été annulée par le locataire.",
+            url('reservation/'.strval($reservation->idReservation))
+        ));
 
         return redirect()->route('profile')->with('success', 'Réservation annulée avec succès.');
     }
@@ -172,6 +182,12 @@ class ReservationController extends Controller
                 ]);
         });
 
+        $reservation->particulier->utilisateur->notify(new CustomNotification(
+            "Votre réservation #{$reservation->idreservation} a été acceptée !",
+            url('reservation/'.strval($reservation->idReservation))
+        ));
+
+
         return back()->with('success','Réservation acceptée avec succès.');
     }
 
@@ -183,6 +199,12 @@ class ReservationController extends Controller
         }
 
         $reservation->update(['statut_reservation'=> 'refusée']);
+
+        $reservation->particulier->utilisateur->notify(new CustomNotification(
+            "Votre réservation #{$reservation->idreservation} a été refusée.",
+            url('reservation/'.strval($reservation->idReservation))
+        ));
+
         return back()->with('success','Réservation refusée avec succès.');
     }
 
@@ -204,6 +226,12 @@ class ReservationController extends Controller
             'statut_incident' => "déclaré",
         ]);
 
+        $reservation = Reservation::findOrFailt($id);
+
+        $reservation->annonce->proprietaire->notify(new CustomNotification(
+            "Un incident a été déclaré pour la réservation #{$reservation->idreservation}.",
+            url('reservation/'.strval($reservation->idReservation))
+        ));
         
         return redirect()->route('profile')->with('success','Incident déclaré, nous vous recontacterons.');
     }
@@ -217,7 +245,12 @@ class ReservationController extends Controller
         if($req->has('justif_incident') && $req->justif_incident != null) {
             $incident->update(['reponse_incident' => $req->justif_incident]);
         }
- 
+
+        $incident->reservation->particulier->utilisateur->notify(new CustomNotification(
+            "Votre incident #{$incident->idincident} a été clos.",
+            route('voir_reservation', $incident->idreservation)
+        ));
+
         return redirect()->route('profile')->with('success','Incident clos.');
     }
 
@@ -226,6 +259,11 @@ class ReservationController extends Controller
         $id = $req->idincident;
         $incident = Incident::findOrFail($id);
         $incident->update(['reponse_incident' => $req->justif_incident]);
+
+        $incident->reservation->particulier->utilisateur->notify(new CustomNotification(
+            "Votre incident #{$incident->idincident} a été justifié.",
+            route('voir_reservation', $incident->idreservation)
+        ));
 
         return redirect()->route('profile')->with('success','Incident justifié.');
     }

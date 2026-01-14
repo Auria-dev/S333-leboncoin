@@ -26,6 +26,7 @@ use Vonage\Client;
 use Vonage\Client\Credentials\Basic;
 use Vonage\SMS\Message\SMS;
 use GuzzleHttp\Client as GuzzleClient;
+use App\Notifications\CustomNotification;
 
 class AnnonceController extends Controller
 {
@@ -311,12 +312,23 @@ class AnnonceController extends Controller
             'carte_id' => 'required',
         ]);
 
+        if ($req->carte_id === 'new') {
+            $req->merge(['numcarte' => str_replace(' ', '', $req->input('numcarte'))]);
+            
+            $req->validate([
+                'numcarte' => 'required|numeric|digits_between:15,16',
+                'dateexpiration' => 'required|string|size:5',
+                'titulairecarte' => 'required|string',
+                'cvv' => 'required|numeric'
+            ]);
+        }
+
         $user = auth()->user();
         $idCarteUtilisee = null;
 
         try {
             DB::beginTransaction();
-
+            
             if ($req->carte_id === 'new') {
                 $req->merge(['numcarte' => str_replace(' ', '', $req->input('numcarte'))]);
                 $req->validate([
@@ -324,12 +336,15 @@ class AnnonceController extends Controller
                     'dateexpiration' => 'required|string|size:5',
                     'titulairecarte' => 'required|string',
                     'cvv' => 'required|numeric'
-
                 ]);
         
                 $cleanNum = $req->numcarte;
                 $parts = explode('/', $req->dateexpiration);
-                $expireDate = Carbon::createFromDate(date("Y")[0] . date("Y")[1] . $parts[1], $parts[0], 1)->toDateString();
+                if(count($parts) === 2) {
+                    $expireDate = Carbon::createFromDate(date("Y")[0] . date("Y")[1] . $parts[1], $parts[0], 1)->toDateString();
+                } else {
+                    throw new \Exception("Format de date invalide");
+                }
                 $isSaved = $req->has('est_sauvegardee') ? true : false;
 
                 $idCarteUtilisee = DB::table('carte_bancaire')->insertGetId([
@@ -355,23 +370,35 @@ class AnnonceController extends Controller
             $start = Carbon::parse($req->date_debut_resa);
             $end = Carbon::parse($req->date_fin_resa);
             $nb_nuits = $start->diffInDays($end);
+            
+            $nb_adultes = (int) $req->input('nb_adultes', 1);
+            $nb_enfants = (int) $req->input('nb_enfants', 0);
+            $nb_bebes   = (int) $req->input('nb_bebes', 0);
+            $nb_animaux = (int) $req->input('nb_animaux', 0);
+            $total_clean = (float) $req->input('total');
+            $frais_clean = (float) $req->input('frais_service');
+            $taxe_clean  = (float) $req->input('taxe_sejour');
 
             $idReservation = DB::table('reservation')->insertGetId([
-                'idannonce' => $req->idannonce,
-                'idlocataire' => $user->idutilisateur,
-                'idtypepaiement' => $req->typepaiement,
+                'idannonce'          => $req->idannonce,
+                'idlocataire'        => $user->idutilisateur,
+                'idtypepaiement'     => $req->typepaiement,
                 'statut_reservation' => 'en attente',
-                'date_debut_resa' => $req->date_debut_resa,
-                'date_fin_resa' => $req->date_fin_resa,
-                'date_demande' => now(),
-                'nb_nuits' => $nb_nuits,
-                'montant_total' => $req->total,
-                'frais_services' => $req->frais_service,
-                'taxe_sejour' => $req->taxe_sejour,
-                'nb_adultes' => $req->nb_adultes,
-                'nb_enfants' => $req->nb_enfants,
-                'nb_bebes' => $req->nb_bebes,
-                'nb_animaux' => $req->nb_animaux,
+                
+                'date_debut_resa'    => $start->toDateString(),
+                'date_fin_resa'      => $end->toDateString(),
+                
+                'date_demande'       => now(),
+                'nb_nuits'           => $nb_nuits,
+                
+                'montant_total'      => $total_clean,
+                'frais_services'     => $frais_clean,
+                'taxe_sejour'        => $taxe_clean,
+                
+                'nb_adultes'         => $nb_adultes,
+                'nb_enfants'         => $nb_enfants,
+                'nb_bebes'           => $nb_bebes,
+                'nb_animaux'         => $nb_animaux,
             ], 'idreservation');
 
             DB::table('paiement')->insert([
@@ -391,12 +418,17 @@ class AnnonceController extends Controller
 
             DB::commit();
 
-            return redirect()->route('profile')
-                ->with('success', 'Réservation envoyée !');
+            $proprietaire = DB::table('annonce')->where('idannonce', $req->idannonce)->value('idproprietaire');
+            Utilisateur::findOrFail($proprietaire)->notify(new CustomNotification(
+                "Nouvelle réservation pour votre annonce #{$req->idannonce}",
+                url('reservation/'.strval($idReservation))
+            ));
+            
+            return redirect()->route('profile')->with('success', 'Réservation envoyée !');
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withErrors(['error' => "Erreur paiement: " . $e->getMessage()]);
+            return back()->withErrors(['error' => "Erreur lors de la réservation: " . $e->getMessage()]);
         }
     }
 

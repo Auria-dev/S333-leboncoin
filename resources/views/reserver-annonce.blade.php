@@ -348,22 +348,22 @@
             
             <div class="price-row">
                 <span>Montant de la location</span>
-                <span>{{ $montant_location }} €</span>
+                <span>{{ round($montant_location, 2) }} €</span>
             </div>
             
             <div class="price-row">
                 <span>Frais de service</span>
-                <span>{{ $frais_service }} €</span>
+                <span>{{ round($frais_service, 2) }} €</span>
             </div>
 
             <div class="price-row bordered">
                 <span>Taxe de séjour</span>
-                <span id="displayTaxs">{{ $taxe_sejour }} €</span>
+                <span id="displayTaxs">{{ round($taxe_sejour, 2) }} €</span>
             </div>
 
             <div class="total-row">
                 <span>Total</span>
-                <span id="displayTotal">{{ $total }} €</span>
+                <span id="displayTotal">{{ round($total, 2) }} €</span>
             </div>
 
         </div>
@@ -443,8 +443,8 @@
                 let dts = document.querySelector("#displayTaxs");
                 let dtt = document.querySelector("#displayTotal");
 
-                dts.innerHTML = taxeSejour + " €";
-                dtt.innerHTML = this.prices.total + " €";
+                dts.innerHTML = taxeSejour.toFixed(2) + " €";
+                dtt.innerHTML = this.prices.total.toFixed(2) + " €";
             },
 
             formatCardNumber() {

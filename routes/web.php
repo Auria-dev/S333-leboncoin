@@ -16,6 +16,7 @@ use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\MsgController;
 use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\Google2FAController;
+use App\Http\Controllers\NotificationController;
 use BotMan\BotMan\BotManFactory;
 use BotMan\BotMan\Drivers\DriverManager;
 use App\Http\Controllers\BotManController;
@@ -103,9 +104,12 @@ Route::post('/supprimer_annonce', [AnnonceController::class, 'supprimer_annonce'
 Route::get('/modifier_annonce', [AnnonceController::class, 'view_modifier_annonce'])->middleware('auth');
 Route::put('/modifier_annonce/update/{id}', [AnnonceController::class, 'modifier_annonce'])->middleware('auth');
 
+Route::get('/notifications', [NotificationController::class, 'index'])->middleware('auth')->name('notifications.index');
+Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->middleware('auth')->name('notifications.read');
+
 Route::get('/email/verify', function () {
     return view('auth.verify-email');
-})->middleware('auth')->name('verification.notice');
+})->name('verification.notice');
 
 Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
     $request->fulfill();

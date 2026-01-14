@@ -452,7 +452,6 @@
         <button type="submit" class="other-btn">Se déconnecter</button>
     </form>
 </div>
-</div>
 
 @if($utilisateur->administrateur && $utilisateur->administrateur->typeAdmin->nom_type_admin === 'Service Immobilier')
     <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">

@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Utilisateur;
 use Illuminate\Http\Request;
 use App\Models\Contact;
 use App\Models\Message;
 use Illuminate\Support\Facades\Auth;
+use App\Notifications\CustomNotification;
 
 class MsgController extends Controller
 {
@@ -44,6 +46,12 @@ class MsgController extends Controller
             'contenu' => $request->contenu,
         ]);
 
+        
+        $destinataireUser = Utilisateur::findOrFail($destinataireId);
+        $destinataireUser->notify(new CustomNotification(
+            "Vous avez reçu un nouveau message de {$request->user()->nom_utilisateur}.",
+            route('messagerie', ['id' => $contact->id])
+        ));
         return redirect()->route('messagerie', ['id' => $contact->id]);
     }
 

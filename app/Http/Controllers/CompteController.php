@@ -19,6 +19,7 @@ use App\Models\Reservation;
 use PragmaRX\Google2FAQRCode\Google2FA;
 use Illuminate\Support\Str;
 use Illuminate\Auth\Events\Registered;
+use App\Notifications\CustomNotification;
 
 class CompteController extends Controller {
 
@@ -263,6 +264,7 @@ class CompteController extends Controller {
 
         if ($req->email !== $originamMail) {
             $user->sendEmailVerificationNotification();
+            $user->notify(new CustomNotification("Votre adresse email a été modifiée. Veuillez vérifier votre nouveau mail."));
         }
 
         // DB::table('utilisateur')->where('idutilisateur', $id)->update($userData);
@@ -293,8 +295,14 @@ class CompteController extends Controller {
                 ->update(['piece_identite' => $fileName]);
             }
         }
-                
+        
+        
         if ($req->input('telephone') !== $user->telephone) {
+            $user->notify(new CustomNotification(
+                "Votre numéro de téléphone a été modifié. Veuillez vérifier le nouveau numéro.",
+                route('verif_telephone')
+            ));
+
             $user->save();
             return redirect()->route('verif_telephone')->with('info', 'Votre numéro a changé. Veuillez le vérifier.');
         }
