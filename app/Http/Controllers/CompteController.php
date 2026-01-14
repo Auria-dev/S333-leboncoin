@@ -152,7 +152,7 @@ class CompteController extends Controller {
             );
         }
 
-        return redirect()->intended(RouteServiceProvider::HOME);
+        return redirect()->route('verif_telephone')->with('info', 'Votre numéro a changé. Veuillez le vérifier.');
     }
 
     function destroy(Request $request) { 
@@ -276,6 +276,11 @@ class CompteController extends Controller {
                     ->where('idparticulier', $id)
                     ->update(['piece_identite' => $fileName]);
             }
+        }
+
+        if ($req->input('telephone') !== $user->telephone) {
+            $user->save();
+            return redirect()->route('verif_telephone')->with('info', 'Votre numéro a changé. Veuillez le vérifier.');
         }
 
         return back()->with('success', 'Compte mis à jour avec succès.');

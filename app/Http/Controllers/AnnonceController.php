@@ -170,31 +170,11 @@ class AnnonceController extends Controller
                 'idsimilaire' => $s->idannonce,
             ]);
         }
-
-        if (!$user->telephoneverifie) {
-            
-            $code = rand(1000, 9999);
-            session(['code_sms_temporaire' => $code]);
-
-            $numero = $user->telephone;
-            if (substr($numero, 0, 1) == '0') {
-                $numero = '33' . substr($numero, 1);
-            }
-
-                
-            if (!$user->telephone_verifie) {
-                if (empty($user->telephone)) {
-                    return redirect('/telephone')->with('warning', 'Annonce créée ! Vérifiez votre téléphone.');
-                }
-                return $this->lancerProcessusVerification($user->telephone);
-            }
-
-            return redirect('/profile')->with('success', 'Annonce publiée avec succès !');
-        }
     }
 
-    private function lancerProcessusVerification($numero) {
+    public function lancerProcessusVerification() {
         $user = Auth::user();
+        $numero = $user->telephone;
         $numeroClean = str_replace([' ', '.', '-', '/'], '', $numero);
         if (substr($numeroClean, 0, 1) == '0') $numeroClean = '+33' . substr($numeroClean, 1);
         elseif (substr($numeroClean, 0, 2) == '33') $numeroClean = '+' . $numeroClean;
@@ -210,21 +190,21 @@ class AnnonceController extends Controller
             $client->setHttpClient(new GuzzleClient(['verify' => storage_path('cacert.pem')]));
 
             $client->sms()->send(new SMS($numeroClean, "Lemauvaiscoin", "Votre code de vérification : " . $code));
-            return redirect('/telephone')->with('success', 'Annonce créée ! Un code SMS vous a été envoyé.');
+            return redirect('/telephone')->with('success', 'Un code SMS vous a été envoyé.');
 
         } catch (\Exception $e) {
             return redirect('/telephone')->with('error', 'Erreur SMS : ' . $e->getMessage());
         }
     }
+    
+    public function envoyerCodeSms(Request $request) {
+        $request->validate(['telephone' => 'required']);
+        return lancerProcessusVerification($request->telephone);
+    }
 
     public function afficherFormVerification() {
         if (Auth::user()->telephone_verifie) return redirect('/profile')->with('success', 'Déjà vérifié.');
         return view('telephone', ['user' => Auth::user()]);
-    }
-
-    public function envoyerCodeSms(Request $request) {
-        $request->validate(['telephone' => 'required']);
-        return $this->lancerProcessusVerification($request->telephone);
     }
 
     public function traiterVerification(Request $request) {

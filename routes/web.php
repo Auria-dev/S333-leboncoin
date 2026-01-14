@@ -155,19 +155,11 @@ Route::middleware(['auth'])->group(function () {
     })->name('admin.avis.update');
 
 });
+
 Route::get('/telephone', [AnnonceController::class, 'afficherFormVerification'])->name('form.verification');
+Route::get('/verif_telephone', [AnnonceController::class, 'lancerProcessusVerification'])->name('verif_telephone');
 Route::post('/envoyer-sms', [AnnonceController::class, 'envoyerCodeSms'])->name('action.envoyer.sms');
 Route::post('/verifier-code', [AnnonceController::class, 'traiterVerification'])->name('action.verifier.code');
-Route::get('/verification/telephone', [AnnonceController::class, 'afficherFormVerification']) ->middleware('auth')->name('form.verification.telephone');
-Route::post('/verification/telephone', [AnnonceController::class, 'traiterVerification'])->middleware('auth')->name('traiter.verification.telephone');
-Route::get('/verification/telephone', [AnnonceController::class, 'afficherFormVerification'])
-    ->middleware('auth')
-    ->name('form.verification.telephone');
-Route::post('/verification/telephone', [AnnonceController::class, 'traiterVerification'])
-    ->middleware('auth')
-    ->name('traiter.verification.telephone');
-
-
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/compte/2fa/activer', [CompteController::class, 'activationdoublefacteur'])->name('2fa.enable');
