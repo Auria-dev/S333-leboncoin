@@ -573,14 +573,18 @@ class AnnonceController extends Controller
     {
         $idannonce = $req->annonce_supp;
 
-        Annonce::where("idannonce", $idannonce)->update(["code_verif" => 'supprimée']);
-
+        
         $reservations = Reservation::where("idannonce", $idannonce)->get();
+        $canDelete = true;
+        
         foreach($reservations as $resa) {
-            if($resa->date_debut_resa >= now()) {
-                $resa->update(["statut_reservation" => 'annulée']);
+            if($resa->date_debut_resa >= now() || $resa->date_fin_resa >= now()) {
+                $canDelete = false;
             }
         }
+
+        if ($canDelete) Annonce::where("idannonce", $idannonce)->update(["code_verif" => 'supprimée']);
+        else return redirect()->back()->with('error', 'Impossible de supprimer l\'annonce, il existe des réservations à venir.');
 
         return redirect()->back()->with('success', 'Annonce supprimée !');
     }
