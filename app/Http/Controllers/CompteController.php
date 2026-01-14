@@ -247,9 +247,25 @@ class CompteController extends Controller {
             'idville' => $ville->idville,
         ];
 
+        $originamMail = $user->mail;
+        $user->nom_utilisateur = $req->nom;
+        $user->prenom_utilisateur = $req->prenom;
+        $user->mail = $req->email;
+        $user->telephone = $req->telephone;
+        $user->adresse_utilisateur = $req->adresse;
+        $user->idville = $ville->idville;
         if ($req->filled('password')) $userData['mot_de_passe'] = Hash::make($req->password);
+        if ($req->email !== $user->getOriginal('mail')) {
+            $user->email_verified_at = null;
+        }
 
-        DB::table('utilisateur')->where('idutilisateur', $id)->update($userData);
+        $user->save();
+
+        if ($req->email !== $originamMail) {
+            $user->sendEmailVerificationNotification();
+        }
+
+        // DB::table('utilisateur')->where('idutilisateur', $id)->update($userData);
         
         if ($isEntreprise) {
             $secteurObj = SecteurActivite::where('nom_secteur', $req->secteur)->first();
@@ -283,12 +299,6 @@ class CompteController extends Controller {
             return redirect()->route('verif_telephone')->with('info', 'Votre numéro a changé. Veuillez le vérifier.');
         }
         
-        if ($req->email !== $user->mail) {
-            $user->email_verified_at = null;
-            $user->sendEmailVerificationNotification();
-            $user->update();
-        }
-
         return back()->with('success', 'Compte mis à jour avec succès.');
     }
 

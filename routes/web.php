@@ -117,8 +117,13 @@ Route::post('/email/verification-notification', function (Request $request) {
     return back()->with('message', 'Lien de vérification envoyé !');
 })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
-Route::put('modifier_compte/email', [App\Http\Controllers\CompteController::class, 'modifierEmail']);
-
+Route::post('/email/resend-verification', function () {
+    $user = auth()->user();
+    if (!$user->hasVerifiedEmail()) {
+        $user->sendEmailVerificationNotification();
+    }
+    return back()->with('success', 'Lien de vérification renvoyé !');
+})->middleware('auth')->name('verification.resend');
 
 // TODO : Revoir toutes ces routes
 Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('login.google');
