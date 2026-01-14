@@ -8,9 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 
-
-class Utilisateur extends Authenticatable {
+class Utilisateur extends Authenticatable implements MustVerifyEmail {
     use HasFactory, Notifiable;
 
     protected $table = 'utilisateur';
@@ -28,8 +28,14 @@ class Utilisateur extends Authenticatable {
         'adresse_utilisateur',
         'date_creation',
         'photo_profil',
+        'email_verified_at'
 
     ];
+
+    public function routeNotificationForMail($notification)
+    {
+        return $this->mail;
+    }
 
     public function getAuthPassword() {
         return $this->mot_de_passe;

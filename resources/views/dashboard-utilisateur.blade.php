@@ -44,7 +44,7 @@
                            style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px; font-family: inherit; background-color: #f8fafc;">
                 </div>
 
-                <button type="submit" onclick="return confirm('⚠️ CONFIRMATION REQUISE\n\nVous êtes sur le point d\'anonymiser définitivement les comptes sélectionnés.\nLes noms, emails, téléphones et documents d\'identité seront supprimés.\n\nContinuer ?');"
+                <button type="submit" onclick="return confirm('CONFIRMATION REQUISE\n\nVous êtes sur le point d\'anonymiser définitivement les comptes sélectionnés.\nLes noms, emails, téléphones et documents d\'identité seront supprimés.\n\nContinuer ?');"
                         style="background-color: #ef4444; color: white; border: none; padding: 0 24px; border-radius: 6px; font-weight: 600; font-size: 14px; cursor: pointer; height: 42px; display: flex; align-items: center; justify-content: center; transition: background 0.2s;"
                         onmouseover="this.style.backgroundColor='#dc2626';"
                         onmouseout="this.style.backgroundColor='#ef4444';">
@@ -55,8 +55,27 @@
     </div>
     @endif
 
-
-
+    <style>
+        .mailwarning {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            flex-direction: column;
+            padding: 1rem;
+            border-radius: 1rem;
+            gap:1rem;
+            /* box-shadow: 0px 0px 10px 0px var(--primary); */
+            background-color: var(--primary-light);
+        }
+    </style>
+    
+    @if(!$utilisateur->hasVerifiedEmail())
+    <div class="mailwarning">
+        <h2>Votre adresse e-mail n’est pas encore vérifiée ! </h2>
+        <h3>Veuillez cliquer sur le lien de confirmation envoyé par e-mail pour accéder à toutes les fonctionnalités du site.</h3>
+    </div>
+    @endif
 
     @if ($utilisateur->getTypeParticulier() == 'Propriétaire' || $utilisateur->getTypeParticulier() == 'Locataire & Propriétaire' || $utilisateur->getTypeParticulier() == 'Entreprise')
     <div class="res-section">

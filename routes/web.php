@@ -21,6 +21,8 @@ use BotMan\BotMan\Drivers\DriverManager;
 use App\Http\Controllers\BotManController;
 use App\Http\Controllers\StatsController;
 use App\Http\Controllers\LegalController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
 
 
 
@@ -40,63 +42,45 @@ Route::get('/', function () {
 });
 
 Route::get('/recherche', [RechercheController::class, 'index']);
-
 Route::get('/resultats', [RechercheController::class, 'results'])->name('resultats');
 Route::get('/annonce/{id}', [AnnonceController::class, 'view'])->name('annonce');
-
 Route::get('/proprio/{id}', [ProprietaireController::class, 'view']);
-
 Route::get('/login', [CompteController::class, 'login'])->name('login');
 Route::post('/login', [CompteController::class, 'authenticate']);
-
 Route::get('/register', [CompteController::class, 'create']);
 Route::post('/register', [CompteController::class, 'store']);
-
 Route::post('/logout', [CompteController::class, 'destroy'])->name('logout');
-
 Route::get('/locations/search', [LocationController::class, 'search'])->name('locations.search');
-
 Route::get('/profile', [DashboardController::class, 'view'])->middleware('auth')->name('profile');
-
 Route::get('/ajouter_fav/{id}', [AnnonceController::class, 'addFav'])->middleware('auth');
-
 Route::post('/sauvegarder_recherche', [RechercheController::class, 'sauvegarderRecherche'])->middleware('auth');
 Route::delete('/recherche/{id}', [RechercheController::class, 'destroy'])->name('recherche.destroy')->middleware('auth');
-
 Route::get('/modifier_compte', [CompteController::class, 'view_modifier'])->middleware('auth');
 Route::get('/modifier_compte', [App\Http\Controllers\CompteController::class, 'view_modifier'])->name('view_modifier_compte');
 Route::put('/modifier_compte/update', [CompteController::class, 'modifier'])->middleware('auth');
 Route::post('/modifier_compte/upload', [CompteController::class, 'upload'])->middleware('auth');
-
 Route::get('/demander_reservation/{id}', [AnnonceController::class, 'view_reserver'])->middleware('auth');
 Route::post('/confirmer_reservation', [AnnonceController::class, 'reserver'])->middleware('auth');
-    
 Route::get('/creer_annonce', [AnnonceController::class, 'afficher_form'])->middleware('auth');
 Route::post('/ajouter_annonce', [AnnonceController::class, 'ajouter_annonce'])->middleware('auth');
-
 Route::get('/ajouter_paiement', [CompteController::class, 'afficher_ajout_paiement'])->middleware('auth');
 Route::post('/ajouter_paiement', [CompteController::class, 'ajouter_paiement'])->middleware('auth');
 Route::post('/modifier_paiement', [CompteController::class, 'modifier_paiement'])->middleware('auth');
 Route::get('/payer/{id}', [CompteController::class, 'afficher_paiement'])->middleware('auth');
-
 Route::get('/admin/ajout_equipements', [AnnonceController::class, 'afficher_ajout_equipements'])->middleware('auth')->name('admin/ajout_equipements');
 Route::get('/admin/ajout_typehebergement', [AnnonceController::class, 'afficher_ajout_typehebergement'])->middleware('auth')->name('admin/ajout_typehebergement');
 Route::post('admin/typehebergement/store', [AnnonceController::class, 'store_typehebergement'])->middleware('auth');
 Route::post('admin/annonce/update-type', [AnnonceController::class,'update_annonce_type'])->middleware('auth');
-
 Route::get('/admin/gerer_annonce', [AnnonceController::class, 'view_gerer_annonce'])->middleware('auth')->name('admin/gerer_annonce');
 Route::get('/afficher_attente', [AnnonceController::class, 'afficher_annonce_attente'])->middleware('auth');
 Route::post('/enregistrer_statut_annonce', [AnnonceController::class, 'save_statut_annonce'])->middleware('auth');
 Route::post('/admin/equipement/store', [AnnonceController::class, 'store_equipement']);
 Route::post('/admin/equipement/link', [AnnonceController::class, 'lier_equipement_annonce']);
 Route::post('/ajouter_indisponibilité', [AnnonceController::class, 'ajouter_indisponibilite'])->middleware('auth');
-
 Route::get('/messagerie/{id?}', [MsgController::class, 'afficher_messagerie'])->middleware('auth')->name('messagerie');
 Route::post('/messagerie/envoyer', [MsgController::class, 'envoyer_message'])->middleware('auth')->name('messagerie.envoyer');
 Route::post('/contact/creer', [MsgController::class, 'creer_contact'])->middleware('auth')->name('contact.create');
-
 Route::get('suppression_compte', [CompteController::class, 'suppression_compte'])->middleware('auth')->name('suppression_compte');
-
 Route::get('/reservation/{id}', [ReservationController::class, 'view_modifier'])->middleware('auth');
 Route::put('/reservation/update/{id}', [ReservationController::class, 'modifier_reservation'])->middleware('auth');
 Route::post('/reservation/cancel/{id}', [ReservationController::class, 'annuler_reservation'])->middleware('auth');
@@ -106,10 +90,8 @@ Route::get('/reservation/declare/{id}', [ReservationController::class, 'declarer
 Route::post('/reservation/save_incident', [ReservationController::class, 'save_incident'])->middleware('auth');
 Route::post('/reservation/clore_incident', [ReservationController::class, 'clore_incident'])->middleware('auth');
 Route::post('/reservation/justifier_incident', [ReservationController::class, 'justifier_incident'])->middleware('auth');
-
 Route::get('/admin/gerer_incident', [ServiceComptableController::class, 'view_gerer_incident'])->middleware('auth')->name('admin/gerer_LES_incidents');
 Route::post('/enregistrer_remboursement_incident', [ServiceComptableController::class, 'save_remboursement_incident'])->middleware('auth');
-
 
 Route::get('/admin/gerer_incidents', [IncidentController::class, 'view_gerer_incidents'])->middleware('auth')->name('admin/gerer_incidents');
 Route::get('/admin/incidents_attente', [IncidentController::class, 'afficher_incidents_attente'])->middleware('auth')->name('admin/incidents_attente');
@@ -121,7 +103,21 @@ Route::post('/supprimer_annonce', [AnnonceController::class, 'supprimer_annonce'
 Route::get('/modifier_annonce', [AnnonceController::class, 'view_modifier_annonce'])->middleware('auth');
 Route::put('/modifier_annonce/update/{id}', [AnnonceController::class, 'modifier_annonce'])->middleware('auth');
 
+Route::get('/email/verify', function () {
+    return view('auth.verify-email');
+})->middleware('auth')->name('verification.notice');
 
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+    return redirect('/profile')->with('success', 'Email vérifié !');
+})->middleware(['auth', 'signed'])->name('verification.verify');
+
+Route::post('/email/verification-notification', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+    return back()->with('message', 'Lien de vérification envoyé !');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+
+Route::put('modifier_compte/email', [App\Http\Controllers\CompteController::class, 'modifierEmail']);
 
 
 // TODO : Revoir toutes ces routes

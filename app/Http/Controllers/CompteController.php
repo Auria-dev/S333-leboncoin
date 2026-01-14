@@ -18,6 +18,7 @@ use App\Models\SecteurActivite;
 use App\Models\Reservation; 
 use PragmaRX\Google2FAQRCode\Google2FA;
 use Illuminate\Support\Str;
+use Illuminate\Auth\Events\Registered;
 
 class CompteController extends Controller {
 
@@ -121,6 +122,7 @@ class CompteController extends Controller {
         ]);
 
         Auth::login($user);
+        event(new Registered($user));
 
         $user = auth()->user();
         
@@ -247,23 +249,21 @@ class CompteController extends Controller {
 
         if ($req->filled('password')) $userData['mot_de_passe'] = Hash::make($req->password);
 
-        DB::table('utilisateur')
-            ->where('idutilisateur', $id)
-            ->update($userData);
-
+        DB::table('utilisateur')->where('idutilisateur', $id)->update($userData);
+        
         if ($isEntreprise) {
             $secteurObj = SecteurActivite::where('nom_secteur', $req->secteur)->first();
             
             if ($secteurObj) {
-                DB::table('entreprise')
-                    ->where('identreprise', $id)
-                    ->update([
-                        'numsiret' => $req->siret,
-                        'idsecteur' => $secteurObj->idsecteur
-                    ]);
-            }
+            DB::table('entreprise')
+            ->where('identreprise', $id)
+            ->update([
+                'numsiret' => $req->siret,
+                'idsecteur' => $secteurObj->idsecteur
+                ]);
         }
-
+        }
+        
         if($isParticulier) {
             if($req->hasFile('file')) { 
                 $manager = new ImageManager(new Driver); 
@@ -271,16 +271,22 @@ class CompteController extends Controller {
                 $fileName = '/CNI/cni_utilisateur_' . $user->idutilisateur . '.pdf';
                 $file->move(public_path('CNI'), $fileName);
                 $url = asset('CNI/'. $fileName);
-
+                
                 DB::table('particulier')
-                    ->where('idparticulier', $id)
-                    ->update(['piece_identite' => $fileName]);
+                ->where('idparticulier', $id)
+                ->update(['piece_identite' => $fileName]);
             }
         }
-
+                
         if ($req->input('telephone') !== $user->telephone) {
             $user->save();
             return redirect()->route('verif_telephone')->with('info', 'Votre numéro a changé. Veuillez le vérifier.');
+        }
+        
+        if ($req->email !== $user->mail) {
+            $user->email_verified_at = null;
+            $user->sendEmailVerificationNotification();
+            $user->update();
         }
 
         return back()->with('success', 'Compte mis à jour avec succès.');
