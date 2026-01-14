@@ -584,7 +584,7 @@ class AnnonceController extends Controller
         }
 
         if ($canDelete) Annonce::where("idannonce", $idannonce)->update(["code_verif" => 'supprimée']);
-        else return redirect()->back()->with('error', 'Impossible de supprimer l\'annonce, il existe des réservations à venir.');
+        else return redirect()->back()->with('error', 'Impossible de supprimer l\'annonce, il existe une ou plusieurs réservations à venir.');
 
         return redirect()->back()->with('success', 'Annonce supprimée !');
     }
