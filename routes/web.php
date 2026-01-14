@@ -117,6 +117,9 @@ Route::post('/enregistrer_statut_incident', [IncidentController::class, 'enregis
 
 Route::match(['get', 'post'], '/botman', [BotManController::class, 'handle']);
 
+Route::post('/supprimer_annonce', [AnnonceController::class, 'supprimer_annonce'])->middleware('auth');
+Route::get('/modifier_annonce', [AnnonceController::class, 'view_modifier_annonce'])->middleware('auth');
+Route::put('/modifier_annonce/update/{id}', [AnnonceController::class, 'modifier_annonce'])->middleware('auth');
 
 
 
@@ -175,8 +178,6 @@ Route::get('/login/2fa', [Google2FAController::class, 'index'])->name('2fa.index
 Route::post('/login/2fa', [Google2FAController::class, 'verify'])->name('2fa.verify');
 Route::get('/login/2fa', [Google2FAController::class, 'index'])->name('2fa.index');
 Route::post('/login/2fa', [Google2FAController::class, 'verify'])->name('2fa.verify');
-
-
 
 Route::get('/stat', [StatsController::class, 'afficher']);
 Route::post('/check-stat-login', [StatsController::class, 'verifier']);

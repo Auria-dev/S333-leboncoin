@@ -209,7 +209,7 @@ class AnnonceController extends Controller
             $client = new Client($basic);
             $client->setHttpClient(new GuzzleClient(['verify' => storage_path('cacert.pem')]));
 
-            $client->sms()->send(new SMS($numeroClean, "Vonage APIs", "Code : " . $code));
+            $client->sms()->send(new SMS($numeroClean, "Lemauvaiscoin", "Votre code de vérification : " . $code));
             return redirect('/telephone')->with('success', 'Annonce créée ! Un code SMS vous a été envoyé.');
 
         } catch (\Exception $e) {
