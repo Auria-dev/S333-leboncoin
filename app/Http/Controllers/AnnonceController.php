@@ -442,8 +442,6 @@ class AnnonceController extends Controller
         ]);
 
         $bool = $req->boolean('action_fermeture');
-
-
         $annonce = Annonce::findOrFail($validated['id_annonce']);
 
         $updatedRows = DB::table('calendrier')

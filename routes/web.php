@@ -194,3 +194,24 @@ Route::prefix('infos')->name('legal.')->group(function () {
 
 Route::middleware(['auth'])->post('/dpo/anonymiser', [App\Http\Controllers\CompteController::class, 'anonymiserDpo'])->name('dpo.process');
 Route::delete('/favoris/{id}', [CompteController::class, 'supprimerFavori'])->name('favoris.destroy');
+
+Route::get('/dashboard', [DashboardController::class, 'newDashboard'])->middleware('auth')->name('dashboard');
+Route::get('/dashboard/filter', [DashboardController::class, 'filterLayout'])->middleware('auth');
+
+
+Route::get('/dashboard/mes-annonces', [DashboardController::class, 'mesAnnonces'])->middleware('auth');
+Route::get('/dashboard/mes-favoris', [DashboardController::class, 'mesFavoris'])->middleware('auth');
+Route::get('/dashboard/mes-voyages', [DashboardController::class, 'mesVoyages'])->middleware('auth');
+Route::get('/dashboard/mes-demandes', [DashboardController::class, 'mesDemandes'])->middleware('auth');
+Route::get('/dashboard/mes-recherches', [DashboardController::class, 'mesRecherches'])->middleware('auth');
+Route::get('/dashboard/centre-d-aide', [DashboardController::class, 'centreDAide'])->middleware('auth');
+
+
+
+
+
+
+
+
+
+
