@@ -10,6 +10,8 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Notifications\NotifVerifierMail;
+
 class Utilisateur extends Authenticatable implements MustVerifyEmail {
     use HasFactory, Notifiable;
 
@@ -35,6 +37,11 @@ class Utilisateur extends Authenticatable implements MustVerifyEmail {
     public function routeNotificationForMail($notification)
     {
         return $this->mail;
+    }
+
+    public function sendEmailVerificationNotification()
+    {
+        $this->notify(new NotifVerifierMail);
     }
 
     public function getAuthPassword() {

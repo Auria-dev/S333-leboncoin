@@ -35,13 +35,14 @@ class CustomNotification extends Notification
     public function toMail($notifiable) : MailMessage
     {
         $mail = (new MailMessage)
-            ->subject('Notification')
+            ->subject('Nouvelle notification')
+            ->greeting('Bonjour !')
             ->line($this->message);
 
         if ($this->link) {
-            $mail->action('Voir', $this->link);
+            $mail->action('Voir les détails', $this->link);
         }
 
-        return $mail;
+        return $mail->salutation('Cordialement, Lemauvaiscoin');
     }
 }

@@ -21,7 +21,34 @@
                 <p>Bienvenue dans le tableau de bord de votre compte {{ strtolower($utilisateur->getTypeParticulier()) }}.</p>
                 <a href="{{ url('/modifier_compte') }}" class="other-btn w-fit" wire:navigate>Modifier mon compte</a>
             </div>
+
         </div>
+            <style>
+                .mailwarning {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    text-align: center;
+                    flex-direction: column;
+                    padding: 1rem;
+                    border-radius: 1rem;
+                    gap:1rem;
+                    /* box-shadow: 0px 0px 10px 0px var(--primary); */
+                    background-color: var(--primary-light);
+                }
+            </style>
+                
+            @if(!$utilisateur->hasVerifiedEmail())
+            <div class="mailwarning">
+                <h2>Votre adresse e-mail n’est pas encore vérifiée ! </h2>
+                <h3>Veuillez cliquer sur le lien de confirmation envoyé par e-mail pour accéder à toutes les fonctionnalités du site.</h3>
+
+                <form method="POST" action="{{ route('verification.resend') }}">
+                    @csrf
+                    <button type="submit" class="submit-btn">Renvoyer un lien de vérification</button>
+                </form>
+            </div>
+            @endif
 
         <div class="bento-grid">
             

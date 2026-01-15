@@ -43,7 +43,9 @@ class NotifVerifierMail extends Notification
             ->greeting('Bonjour !')
             ->line('Veuillez cliquer sur le bouton ci-dessous pour vérifier votre adresse e-mail.')
             ->action('Vérifier mon e-mail', $url)
-            ->line('Merci d\'utiliser Lemauvaiscoin.');
+            ->line('Merci d\'utiliser Lemauvaiscoin.')
+            ->salutation('Cordialement, Lemauvaiscoin');
+
     }
 
     /**
