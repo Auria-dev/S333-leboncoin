@@ -60,7 +60,17 @@ class BotManController extends Controller
         2. Tes réponses doivent être COURTES (2-3 phrases maximum).
         3. Base-toi UNIQUEMENT sur les infos ci-dessus. Si tu ne sais pas, dis-le.
         4. Pour guider l'utilisateur, utilise le vocabulaire visuel du site (ex: "Clique sur le bouton en haut à droite...").
-EOT;
+        EOT;
+
+// 
+//
+// RAG
+// write search query from user input
+// Apply it server side; return first outcome / "not found" custom message (not ai)
+// 
+// 
+
+
 
         $response = $client->chat()->create([
             'model' => 'gpt-3.5-turbo',

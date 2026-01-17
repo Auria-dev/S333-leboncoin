@@ -2551,6 +2551,10 @@ tr:last-child td {
     background-color: rgb(var(--primary-rgb)) !important;
 }
 
+#botmanWidgetRoot > div {
+    z-index: 100 !important; 
+}
+
 .tooltip-container {
   position: relative;
   display: inline-block;

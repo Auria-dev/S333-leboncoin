@@ -2,7 +2,8 @@
  
 namespace App\Http\Controllers;
  
-use Illuminate\Http\Request;
+use App\Models\Incident;
+ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth; 
  use App\Mail\VerifyEmail;
  use Illuminate\Support\Facades\Mail;
@@ -206,8 +207,46 @@ class DashboardController extends Controller
         ]);
     }
 
-    public function centreDAide() {
-        return view('/dashboard/centre-d-aide');
+    public function centreDAide(Request $request) {
+        
+        $tenantQuery = auth()->user()->reservation()
+            ->has('incident')
+            ->with(['incident', 'annonce.photo', 'annonce.ville']);
+
+        $tenantQuery->when($request->filled('search'), function ($q) use ($request) {
+            $term = '%' . $request->search . '%';
+            $q->whereHas('annonce', fn($a) => $a->where('titre_annonce', 'like', $term));
+        });
+        
+        $tenantQuery->when($request->filled('statut'), function ($q) use ($request) {
+            $q->whereHas('incident', fn($i) => $i->where('statut_incident', $request->statut));
+        });
+
+        $ownerQuery = auth()->user()->demandesReservations()
+            ->has('incident')
+            ->with(['incident', 'annonce.photo', 'particulier.utilisateur']);
+
+        $ownerQuery->when($request->filled('search'), function ($q) use ($request) {
+            $term = '%' . $request->search . '%';
+            $q->whereHas('annonce', fn($a) => $a->where('titre_annonce', 'like', $term));
+        });
+
+        $ownerQuery->when($request->filled('statut'), function ($q) use ($request) {
+            $q->whereHas('incident', fn($i) => $i->where('statut_incident', $request->statut));
+        });
+
+        $myIncidents = $tenantQuery->latest('date_debut_resa')
+            ->paginate(3, ['*'], 'my_page')
+            ->withQueryString();
+
+        $propertyIncidents = $ownerQuery->latest('date_debut_resa')
+            ->paginate(3, ['*'], 'prop_page')
+            ->withQueryString();
+
+        return view('dashboard/centre-d-aide', [
+            'myIncidents' => $myIncidents,
+            'propertyIncidents' => $propertyIncidents
+        ]);
     }
 }
 

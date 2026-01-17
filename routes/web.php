@@ -52,7 +52,7 @@ Route::get('/register', [CompteController::class, 'create']);
 Route::post('/register', [CompteController::class, 'store']);
 Route::post('/logout', [CompteController::class, 'destroy'])->name('logout');
 Route::get('/locations/search', [LocationController::class, 'search'])->name('locations.search');
-Route::get('/profile', [DashboardController::class, 'view'])->middleware('auth')->name('profile');
+Route::get('/profile', [DashboardController::class, 'newDashboard'])->middleware('auth')->name('profile');
 Route::get('/ajouter_fav/{id}', [AnnonceController::class, 'addFav'])->middleware('auth');
 Route::post('/sauvegarder_recherche', [RechercheController::class, 'sauvegarderRecherche'])->middleware('auth');
 Route::delete('/recherche/{id}', [RechercheController::class, 'destroy'])->name('recherche.destroy')->middleware('auth');

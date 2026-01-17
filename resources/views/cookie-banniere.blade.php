@@ -17,7 +17,7 @@
     border-radius: var(--radius-card);
     box-shadow: var(--shadow-card);
     padding: 24px;
-    z-index: 9999;
+    z-index: 9999999;
 }
 
 .banner-header {
