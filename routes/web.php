@@ -53,6 +53,7 @@ Route::post('/register', [CompteController::class, 'store']);
 Route::post('/logout', [CompteController::class, 'destroy'])->name('logout');
 Route::get('/locations/search', [LocationController::class, 'search'])->name('locations.search');
 Route::get('/profile', [DashboardController::class, 'newDashboard'])->middleware('auth')->name('profile');
+Route::get('/profileOLD', [DashboardController::class, 'view'])->middleware('auth')->name('profile');
 Route::get('/ajouter_fav/{id}', [AnnonceController::class, 'addFav'])->middleware('auth');
 Route::post('/sauvegarder_recherche', [RechercheController::class, 'sauvegarderRecherche'])->middleware('auth');
 Route::delete('/recherche/{id}', [RechercheController::class, 'destroy'])->name('recherche.destroy')->middleware('auth');
@@ -145,17 +146,20 @@ Route::post('/contact/creer', [MsgController::class, 'creer_contact'])->middlewa
 Route::get('/annonce/{id}/avis', [AnnonceController::class, 'showReviews'])->name('annonce.avis');
 Route::middleware(['auth'])->group(function () {
     Route::get('/admin/avis', function () {
-        if (auth()->user()->idutilisateur != 52) { // i hate whoever did this.
-            abort(403, 'Accès réservé au Service Immobilier.');
+        $user = auth()->user();
+        if (!$user->administrateur || !$user->administrateur->typeAdmin || $user->administrateur->typeAdmin->nom_type_admin !== 'Service Immobilier') {
+            return redirect()->back()->with('error', 'Accès réservé au Service Immobilier.');
         }
-        return app(ServiceImmoController::class)->indexAvis();
+
+        return app(App\Http\Controllers\ServiceImmoController::class)->indexAvis();
     })->name('admin.avis.index');
 
-
     Route::post('/admin/avis/{id}', function ($id) {
-        if (auth()->user()->idutilisateur != 52) {
-            abort(403, 'Accès réservé au Service Immobilier.');
+        $user = auth()->user();
+        if (!$user->administrateur || !$user->administrateur->typeAdmin || $user->administrateur->typeAdmin->nom_type_admin !== 'Service Immobilier') {
+            return redirect()->back()->with('error', 'Accès réservé au Service Immobilier.');
         }
+        
         return app()->call([app(ServiceImmoController::class), 'updateStatutAvis'], ['id' => $id]);
     })->name('admin.avis.update');
 

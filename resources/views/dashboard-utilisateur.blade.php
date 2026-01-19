@@ -19,7 +19,7 @@
             <a href="{{ url('/modifier_compte') }}" class="other-btn w-fit" wire:navigate>Modifier mon compte</a>
         </div>
     </div>
-
+    
     @if($utilisateur->mail === 'muneretjarod@gmail.com')
     <div class="res-section">
         <p class="section-title" style="display: flex; justify-content: space-between; align-items: center;">
@@ -514,7 +514,6 @@
             Incidents & Remboursements
         </a>
     </div>
-
 @endif
 
 @endsection
