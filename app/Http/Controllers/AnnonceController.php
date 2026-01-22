@@ -426,7 +426,7 @@ class AnnonceController extends Controller
                 url('reservation/'.strval($idReservation))
             ));
             
-            return redirect()->route('profile')->with('success', 'Réservation envoyée !');
+             return redirect('/profile')->with('success', 'Réservation envoyée !');
 
         } catch (\Exception $e) {
             DB::rollBack();
