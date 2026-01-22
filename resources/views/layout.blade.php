@@ -137,11 +137,11 @@
         
         <div class="light-box-content">
             <h4 class="text-center" style="margin-bottom: 1rem; font-size: 22px;">Pour déposer une annonce veuillez transmettre votre pièce d'identité</h4>         
-            <button type="button" id="customSelectBtn" class="btn btn-select">
+            <button type="button" id="customSelectBtnStart" class="btn btn-select">
                 Sélectionner un fichier
             </button>
-            <span id="fileChosen">Aucun fichier sélectionné</span>
-            <input type="file" name="file" id="realFileInput" accept=".pdf" hidden>
+            <span id="fileChosenStart">Aucun fichier sélectionné</span>
+            <input type="file" name="file" id="realFileInputStart" accept=".pdf" hidden>
 
             <div class="lightbox-actions">
                 <button type="button" class="other-btn" id="btn-cancel-first-ad">Annuler</button>               
@@ -185,9 +185,9 @@
             });
         }
         
-        const customBtn = document.getElementById('customSelectBtn');
-        const fileText = document.getElementById('fileChosen');
-        const realInput = document.getElementById('realFileInput');
+        const customBtn = document.getElementById('customSelectBtnStart');
+        const fileText = document.getElementById('fileChosenStart');
+        const realInput = document.getElementById('realFileInputStart');
 
         if (customBtn && realInput && fileText) {
             customBtn.addEventListener('click', function(e) {

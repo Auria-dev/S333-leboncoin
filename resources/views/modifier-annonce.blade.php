@@ -12,9 +12,9 @@
             @submit.prevent="submitForm" enctype="multipart/form-data">
             @csrf  
             @method('PUT')
-            <div>
+            <div class="previews-container">
                 @if(isset($annonce->photo))
-                    @foreach($annonce->photo as $photo)
+                    @foreach($annonce->photo as $photo)  
                         <img src="{{$photo->nomphoto}}" alt="" class="img-depot-annonce">
                     @endforeach
                 @endif
@@ -22,7 +22,7 @@
             <div id="previewsContainer" class="previews-container"></div>
             <div class="upload-container">
                 <div class="button-group">
-                    <button type="button" id="customSelectBtn" class="btn btn-select">
+                    <button type="button" id="customSelectBtn" class="btn-select">
                         Choisir des images
                     </button>
                 </div>

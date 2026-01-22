@@ -242,11 +242,8 @@
                             const img = document.createElement('img');
                             img.src = e.target.result; 
                             img.alt = 'Aperçu photo ' + (i + 1);
-                            img.style.maxWidth = '200px';
-                            img.style.maxHeight = '200px';
-                            img.style.borderRadius = '10px';
-                            img.style.marginBottom = '1rem';
-
+                            img.classList.add("img-depot-annonce");
+                            
                             container.appendChild(img);
                         };
                         reader.readAsDataURL(file);
