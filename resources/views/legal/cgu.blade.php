@@ -1,6 +1,6 @@
 @extends('layout')
 
-@section('title', 'CGU - Leboncoin')
+@section('title', 'CGU - Lemauvaiscoin')
 
 @section('content')
 <div class="legal-wrapper">
@@ -10,7 +10,7 @@
 
         <div style="line-height: 1.8; color: #4a4a4a; text-align: justify; font-size: 15px;">
             <p style="margin-bottom: 30px;">
-                Les présentes Conditions Générales d'Utilisation et de Vente (ci-après « CGUV ») ont pour objet de définir les modalités et conditions dans lesquelles la société Leboncoin SAS (ci-après « l'Opérateur ») met à la disposition des utilisateurs (ci-après « les Utilisateurs ») sa plateforme numérique de location saisonnière. L'accès et l'utilisation des services impliquent l'acceptation sans réserve des présentes CGUV par l'Utilisateur.
+                Les présentes Conditions Générales d'Utilisation et de Vente (ci-après « CGUV ») ont pour objet de définir les modalités et conditions dans lesquelles la société Lemauvaiscoin SAS (ci-après « l'Opérateur ») met à la disposition des utilisateurs (ci-après « les Utilisateurs ») sa plateforme numérique de location saisonnière. L'accès et l'utilisation des services impliquent l'acceptation sans réserve des présentes CGUV par l'Utilisateur.
             </p>
 
             <section style="margin-bottom: 40px;">

@@ -1,6 +1,6 @@
 @extends('layout')
 
-@section('title', 'Centre d\'Aide - Leboncoin')
+@section('title', 'Centre d\'Aide - Lemauvaiscoin')
 
 @section('content')
 <div class="legal-wrapper">
@@ -33,7 +33,7 @@
                         <div>
                             <strong style="display: block; color: #2b323e; margin-bottom: 5px;">Données Personnelles (DPO)</strong>
                             Pour exercer vos droits RGPD, contactez directement : 
-                            <a href="mailto:privacy@leboncoin.fr" style="color: #ec5a13; font-weight: 600; text-decoration: none;">privacy@leboncoin.fr</a>
+                            <a href="mailto:privacy@Lemauvaiscoin.fr" style="color: #ec5a13; font-weight: 600; text-decoration: none;">privacy@Lemauvaiscoin.fr</a>
                         </div>
                     </div>
                 </div>
@@ -41,7 +41,7 @@
                 <div style="background: #f8fafc; padding: 25px; border-radius: 12px; border: 1px solid #e2e8f0;">
                     <strong style="display: block; color: #2b323e; margin-bottom: 5px; font-size: 14px;">Adresse Postale (Siège)</strong>
                     <span style="font-size: 14px; color: #64748b;">
-                        Leboncoin SAS - Service Relations Membres<br>
+                        Lemauvaiscoin SAS - Service Relations Membres<br>
                         24 rue des Jeûneurs<br>
                         75002 Paris - France
                     </span>

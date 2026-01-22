@@ -1,6 +1,6 @@
 @extends('layout')
 
-@section('title', 'Nos Engagements RSE - Leboncoin')
+@section('title', 'Nos Engagements RSE - Lemauvaiscoin')
 
 @section('content')
 <div class="legal-wrapper">
@@ -10,7 +10,7 @@
 
         <div style="line-height: 1.8; color: #4a4a4a; text-align: justify; font-size: 15px;">
             <p style="margin-bottom: 40px; border-left: 4px solid #ec5a13; padding-left: 20px; font-weight: 500;">
-                Chez Leboncoin, nous sommes convaincus que le numérique doit être un levier de transition écologique et solidaire. Notre stratégie RSE (Responsabilité Sociétale des Entreprises) est au cœur de notre modèle d'affaires, alignée sur les Objectifs de Développement Durable (ODD) de l'ONU.
+                Chez Lemauvaiscoin, nous sommes convaincus que le numérique doit être un levier de transition écologique et solidaire. Notre stratégie RSE (Responsabilité Sociétale des Entreprises) est au cœur de notre modèle d'affaires, alignée sur les Objectifs de Développement Durable (ODD) de l'ONU.
             </p>
 
             <section style="margin-bottom: 50px;">
@@ -34,7 +34,7 @@
             <section style="margin-bottom: 50px;">
                 <h2 style="font-size: 22px; font-weight: 800; color: #2b323e; margin-bottom: 20px;">PILIER 2 : INCLUSION SOCIALE ET DIVERSITÉ</h2>
                 <p>
-                    Leboncoin s'engage à être un employeur exemplaire et une plateforme ouverte à tous, sans distinction d'origine, de genre ou de handicap.
+                    Lemauvaiscoin s'engage à être un employeur exemplaire et une plateforme ouverte à tous, sans distinction d'origine, de genre ou de handicap.
                 </p>
                 <div style="margin-top: 20px;">
                     <h4 style="font-size: 16px; font-weight: 700; color: #2b323e;">Égalité Femmes-Hommes</h4>
@@ -52,7 +52,7 @@
             <section>
                 <h2 style="font-size: 22px; font-weight: 800; color: #2b323e; margin-bottom: 20px;">PILIER 3 : DYNAMISME DES TERRITOIRES</h2>
                 <p>
-                    Contrairement aux géants du web dématérialisés, Leboncoin est ancré dans les territoires. Nous favorisons le commerce de proximité et les échanges en circuit court.
+                    Contrairement aux géants du web dématérialisés, Lemauvaiscoin est ancré dans les territoires. Nous favorisons le commerce de proximité et les échanges en circuit court.
                 </p>
                 <p style="margin-top: 15px;">
                     En matière de tourisme, notre offre de location saisonnière permet de répartir les flux touristiques sur l'ensemble du territoire français, y compris dans les zones rurales souvent délaissées par l'hôtellerie traditionnelle, contribuant ainsi directement à l'économie locale des communes.

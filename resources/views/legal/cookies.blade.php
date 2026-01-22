@@ -1,6 +1,6 @@
 @extends('layout')
 
-@section('title', 'Gestion des Cookies - Leboncoin')
+@section('title', 'Gestion des Cookies - Lemauvaiscoin')
 
 @section('content')
 <div class="legal-wrapper">

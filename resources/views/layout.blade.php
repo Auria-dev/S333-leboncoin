@@ -99,7 +99,7 @@
         @section('nav')
             <div>
                 <a href="{{ url('/') }}" class="logo" wire:navigate>
-                    <img src="{{ asset('assets/logo.svg') }}" alt="Leboncoin Logo" height="40">
+                    <img src="{{ asset('assets/logo.svg') }}" alt="Lemauvaiscoin Logo" height="40" id="logo">
                 </a>
             </div>
 
@@ -121,7 +121,7 @@
     </nav>
 
     <header>
-        <h1>@yield('title', 'Leboncoin')</h1>
+        <h1>@yield('title', 'Lemauvaiscoin')</h1>
     </header>
 
     <main>
@@ -387,7 +387,7 @@
         </div>
 
         <div class="footer-bottom">
-            &copy; {{ date('Y') }} Leboncoin (ScoobyFoo). Tous droits réservés.
+            &copy; {{ date('Y') }} Lemauvaiscoin (ScoobyFoo). Tous droits réservés.
         </div>
     </footer>
 
