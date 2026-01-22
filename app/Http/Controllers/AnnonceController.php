@@ -40,7 +40,7 @@ class AnnonceController extends Controller
     public function afficher_form()
     {
         $types = TypeHebergement::all();
-        $equipements = Equipement::all();
+        $equipements = Equipement::all()->groupBy('idcategorie');
         $services = Service::all();
         return view("ajouter-annonce", ['types' => $types, 'equipements' => $equipements, 'services' => $services]);
     }
@@ -145,15 +145,13 @@ class AnnonceController extends Controller
                 )
         );
 
-        $nomsEquipements = $req->DepotEquipement;
-        if (!empty($nomsEquipements) && is_array($nomsEquipements)) {
-            $idsEquipements = Equipement::whereIn('nom_equipement', $nomsEquipements)->pluck('idequipement')->toArray();
+        $idsEquipements = $req->DepotEquipement;
+        if (!empty($idsEquipements) && is_array($idsEquipements)) {
             $annonce->equipement()->sync($idsEquipements);
         }
 
-        $nomsServices = $req->DepotService;
-        if (!empty($nomsServices) && is_array($nomsServices)) {
-            $idsServices = Service::whereIn('nom_service', $nomsServices)->pluck('idservice')->toArray();
+        $idsServices = $req->DepotService;
+        if (!empty($idsServices) && is_array($idsServices)) {
             $annonce->service()->sync($idsServices);
         }
 
@@ -171,6 +169,7 @@ class AnnonceController extends Controller
                 'idsimilaire' => $s->idannonce,
             ]);
         }
+        return redirect('/profile')->with('success', 'Annonce créée !');
     }
 
     public function lancerProcessusVerification() {
@@ -261,11 +260,14 @@ class AnnonceController extends Controller
             'avisValides.utilisateur' 
         ])->findOrFail($id);
 
+        $equipements = $annonce->equipement->groupBy('idcategorie');
+
         return view("detail-annonce", [
             'annonceAsArray' => collect([Annonce::findOrFail($id)]),
             'annonce' => $annonce,
             'isFav' => $exists,
-            'dispoJson' => json_encode($dispoMap)
+            'dispoJson' => json_encode($dispoMap),
+            'equipements' => $equipements
         ]);
     }
 
@@ -601,7 +603,7 @@ class AnnonceController extends Controller
 
     function view_modifier_annonce(Request $req) {
         $annonce = Annonce::where('idannonce', $req->annonce_modif)->first();
-        $equipements = Equipement::all(); 
+        $equipements = Equipement::all()->groupBy('idcategorie'); 
         $services = Service::all();
         $types = TypeHebergement::all();
         $ville = Ville::find($annonce->ville->idville);

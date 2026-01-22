@@ -229,18 +229,25 @@
             </div>
         </div>
         <div>
-        <h3 style="margin-bottom: 1rem;">Equipements</h3>
-            @foreach ($annonce->equipement as $eq)
-                {{ $eq->nom_equipement }}<br>
+            @foreach ($equipements as $equipements)
+                <div style="margin-bottom: 1rem;">
+                    <h3 style="margin-bottom: 0.35rem;">{{ $equipements->first()->categorieEquipement->nom_categorie }}</h3>
+                    <div>
+                        @foreach ($equipements as $eq)
+                            <span>- &nbsp; {{ $eq->nom_equipement }}</span><br>
+                        @endforeach
+                    </div>
+                </div>
             @endforeach
+            <div>
+                <h3 style="margin-bottom: 0.35rem;">Services</h3>
+                    @foreach ($annonce->service as $se)
+                        <span>- &nbsp; {{ $se->nom_service }}</span><br>
+                    @endforeach
+            </div>
         </div>
-        <div>
-        <h3 style="margin-bottom: 1rem;">Services</h3>
-            @foreach ($annonce->service as $se)
-                {{ $se->nom_service }}<br>
-            @endforeach
-        </div>
-            <div class="partage-container" style="margin-top: 2rem; margin-bottom: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-default);">
+        
+    <div class="partage-container" style="margin-top: 2rem; margin-bottom: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-default);">
     <h3 style="margin-bottom: 1rem; font-size: 1.1rem;">Partager cette annonce</h3>
 
     @php

@@ -161,30 +161,36 @@
             </div>
 
             <div class="form-group">
-                <label>Equipements</label>
                 <div>
                     @if(isset($equipements))
-                        @foreach($equipements as $eq)
-                            <label class="pill-label">
-                                <input type="checkbox" 
-                                    name="DepotEquipement[]" 
-                                    value="{{ $eq->idequipement }}" 
-                                    @checked(in_array($eq->idequipement, request('DepotEquipement', [])))>
-                                
-                                <span class="pill-content">
-                                    <span class="icon-wrapper">
-                                        <span class="checkmark-draw"></span>
-                                    </span>
-                                    <span>{{ $eq->nom_equipement }}</span>
-                                </span>
-                            </label>
+                        @foreach ($equipements as $equipements)
+                            <div>
+                                <label style="font-size: 18px">{{ $equipements->first()->categorieEquipement->nom_categorie }}</label>
+                                <div>
+                                    @foreach ($equipements as $eq)
+                                         <label class="pill-label">
+                                            <input type="checkbox" 
+                                                name="DepotEquipement[]" 
+                                                value="{{ $eq->idequipement }}" 
+                                                @checked(in_array($eq->idequipement, request('DepotEquipement', [])))>
+                                            
+                                            <span class="pill-content">
+                                                <span class="icon-wrapper">
+                                                    <span class="checkmark-draw"></span>
+                                                </span>
+                                                <span>{{ $eq->nom_equipement }}</span>
+                                            </span>
+                                        </label>
+                                    @endforeach
+                                </div>
+                            </div>
                         @endforeach
                     @endif
                 </div>
             </div>
 
             <div class="form-group mt-4">
-                <label>Services</label>
+                <label style="font-size: 18px">Services</label>
                 <div>
                     @if(isset($services))
                         @foreach($services as $sv)

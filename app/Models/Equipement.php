@@ -14,9 +14,9 @@ class Equipement extends Model
     protected $primaryKey = "idequipement";
     public $timestamps = false;
 
-    // public function categorieEquipement() {
-    //     return $this->belongsTo(CategorieEquipement::class, "idcategorie");
-    // }
+    public function categorieEquipement() {
+        return $this->belongsTo(CategorieEquipement::class, "idcategorie");
+    }
 
     public function annonce() {
         return $this->belongsToMany(Annonce::class, 
