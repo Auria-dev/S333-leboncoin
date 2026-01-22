@@ -14,6 +14,7 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         $schedule->command('reservation:update-status')->daily();
+        $schedule->command('photo:delete-photos')->daily();
     }
 
     /**

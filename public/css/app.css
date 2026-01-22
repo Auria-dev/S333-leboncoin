@@ -3048,6 +3048,12 @@ input.date-custom-input {
     background-color: var(--input-bg);
     border: 1px solid var(--input-border);
     color: var(--text-main);
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+    flex: 1;
 }
 .btn-select:hover {
     background-color: var(--input-bg-hover);
@@ -3057,6 +3063,13 @@ input.date-custom-input {
 .btn-upload {
     background-color: var(--primary);
     color: var(--primary-light);
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+    flex: 1;
 }
 .btn-upload:hover {
     background-color: var(--primary-hover);

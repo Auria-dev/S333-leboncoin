@@ -526,7 +526,7 @@
                     <div style="display: flex; align-items: center; gap: 12px; font-weight: bold;">
                         
                         @if($avis->utilisateur->photo_profil === null)
-                            <img src="/images/photo-profil.jpg" class="profile-img" style="width: 50px; height: 50px; border-radius: 50%; ">
+                            <img src="/profil/photo-profil.jpg" class="profile-img" style="width: 50px; height: 50px; border-radius: 50%; ">
                         @else
                             <img src="{{ $avis->utilisateur->photo_profil }}" class="profile-img" style="width: 50px; height: 50px; border-radius: 50%;">
                         @endif

@@ -119,7 +119,7 @@ class CompteController extends Controller {
             'mail' => $req->email,
             'adresse_utilisateur' => $req->adresse,
             'date_creation' => now(),
-            'photo_profil' => "/images/photo-profil.jpg",
+            'photo_profil' => "/profil/photo-profil.jpg",
         ]);
 
         Auth::login($user);
@@ -319,9 +319,9 @@ class CompteController extends Controller {
             $file = $req->file('file');  
         
             $fileName = 'photo_utilisateur_' . $user->idutilisateur . '.jpg';
-            $fileNameDB = '/images/photo_utilisateur_' . $user->idutilisateur . '.jpg';
-            $url = asset('images/'. $fileName);
-            $imgDestination = public_path('images');
+            $fileNameDB = '/profil/photo_utilisateur_' . $user->idutilisateur . '.jpg';
+            $url = asset('profil/'. $fileName);
+            $imgDestination = public_path('profil');
 
             $img = $manager->read($file);
             $img->scaleDown(width: 500, height: 500);
@@ -428,7 +428,7 @@ class CompteController extends Controller {
             $u->adresse_utilisateur = 'Adresse supprimée';
 
             $u->mot_de_passe = Hash::make(\Illuminate\Support\Str::random(16));
-            $u->photo_profil = '/images/photo-profil.jpg';
+            $u->photo_profil = '/profil/photo-profil.jpg';
 
             $particulier = DB::table('particulier')->where('idparticulier', $u->idutilisateur)->first();
             if ($particulier && $particulier->piece_identite) {
@@ -459,7 +459,8 @@ class CompteController extends Controller {
             'telephone' => null,
             'adresse_utilisateur' => "X",
             'idville' => 29195, // paris
-            'mot_de_passe' => ''
+            'mot_de_passe' => '',
+            'photo_profil' => null
         ];
 
 
@@ -468,7 +469,7 @@ class CompteController extends Controller {
             DB::table('annonce')->where('idannonce', $a->idannonce)->update(['code_verif' => 'supprimée']);
         }
 
-        $imgDestination = public_path('images');
+        $imgDestination = public_path('profil');
 
         File::delete($imgDestination . '/' . $user->photo_profil);
         

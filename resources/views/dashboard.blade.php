@@ -12,7 +12,7 @@
 
             <div class="side-by-side dashboard-header">
                 @if ($utilisateur->photo_profil === null)
-                    <img src="/images/photo-profil.jpg" class="profile-img">
+                    <img src="/profil/photo-profil.jpg" class="profile-img">
                 @else
                     <img src="{{ $utilisateur->photo_profil }}" class="profile-img">
                 @endif

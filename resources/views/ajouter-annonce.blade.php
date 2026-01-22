@@ -12,7 +12,7 @@
             <div id="previewsContainer" class="previews-container"></div>
             <div class="upload-container">
                 <div class="button-group">
-                    <button type="button" id="customSelectBtn" class="btn btn-select">
+                    <button type="button" id="customSelectBtn" class="btn-select">
                         Choisir des images
                     </button>
                 </div>

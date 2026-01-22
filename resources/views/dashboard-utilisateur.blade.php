@@ -9,7 +9,7 @@
     {{-- EN-TÊTE PROFIL --}}
     <div class="side-by-side dashboard-header">
         @if($utilisateur->photo_profil === null)
-            <img src="/images/photo-profil.jpg" class="profile-img">
+            <img src="/profil/photo-profil.jpg" class="profile-img">
         @else
             <img src="{{ $utilisateur->photo_profil }}" class="profile-img">
         @endif   
@@ -298,7 +298,7 @@
                                 @if($demande->particulier->utilisateur->photo_profil)
                                     <img src="{{ $demande->particulier->utilisateur->photo_profil }}" class="user-pfp" alt="User">
                                 @else
-                                    <img src="/images/photo-profil.jpg" class="user-pfp" alt="User">
+                                    <img src="/profil/photo-profil.jpg" class="user-pfp" alt="User">
                                 @endif
                                 <div class="user-text-col">
                                     <span class="user-label">Voyageur</span>

@@ -6,7 +6,7 @@
     <!-- Ici $proprietaire c'est jeankevin  -->
     <div id="info-proprio">
         @if($proprietaire->photo_profil === null)
-            <img src="/images/photo-profil.jpg" id="img-proprio" class="profile-img">
+            <img src="/profil/photo-profil.jpg" id="img-proprio" class="profile-img">
         @else
             <img src="{{ $proprietaire->photo_profil }}" id="img-proprio" class="profile-img">
         @endif

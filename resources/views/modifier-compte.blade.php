@@ -15,7 +15,7 @@
                 @endphp
 
                 @if ($user->photo_profil === null)
-                    <img src="/images/photo-profil.jpg" class="profile-img">
+                    <img src="/profil/photo-profil.jpg" class="profile-img">
                 @else
                     <img src="{{ asset($currentPhoto) }}" id="imagePreview" class="profile-img">
                 @endif
@@ -30,7 +30,7 @@
                             Choisir
                         </button>
 
-                        <button type="submit" id="uploadBtn" class="btn btn-upload">
+                        <button type="submit" id="uploadBtn" class="btn-upload">
                             Modifier
                         </button>
                     </div>
