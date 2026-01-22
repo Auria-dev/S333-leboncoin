@@ -22,6 +22,7 @@ use BotMan\BotMan\Drivers\DriverManager;
 use App\Http\Controllers\BotManController;
 use App\Http\Controllers\StatsController;
 use App\Http\Controllers\LegalController;
+use App\Http\Controllers\AccueilController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 
@@ -38,10 +39,7 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::get('/', function () {
-    return view('home');
-});
-
+Route::get('/', [AccueilController::class, 'index']);
 Route::get('/recherche', [RechercheController::class, 'index']);
 Route::get('/resultats', [RechercheController::class, 'results'])->name('resultats');
 Route::get('/annonce/{id}', [AnnonceController::class, 'view'])->name('annonce');

@@ -95,8 +95,6 @@
 
 
 <body class="container">
-
-
     <nav>
         @section('nav')
             <div>

@@ -1,7 +1,141 @@
 @extends('layout')
 
-@section('title', 'Bienvenue')
+@section('title', 'Lemauvaiscoin')
 
 @section('content')
-    <h2>Découvrez les dernières annonces publiées par nos utilisateurs en effectuant une recherche</h2>
+    <div class="accueil-container">
+        <div class="recent-announcements">
+            <h2>Découvrer les annonces les plus récentes</h2>
+            <div class="res-scroller">
+                @forelse($annoncesRecentes as $similaire)
+                    @if($similaire->code_verif !== 'supprimée')
+                        <div class="card-global">
+                            <a class="similaire-card" href="{{ url('annonce/'.strval($similaire->idannonce)) }}">
+                                <div class="similaire-card-img">
+                                    @if(isset($similaire->photo) && count($similaire->photo) > 0)
+                                        <img class="similaire-image" loading="lazy" src="{{ $similaire->photo[0]->nomphoto }}" alt="Photo annonce"/>
+                                    @else
+                                        <div class="no-photo-placeholder">
+                                            Sans photo
+                                        </div>
+                                    @endif
+                                </div>
+                                <div class="similaire-info">
+                                        <h2 class="similaire-card-title">{{ $similaire->titre_annonce }}</h2>
+                                        <span class="similaire-card-price">{{ ceil($similaire->prix_nuit) }}€ / nuit</span>
+                                        
+                                        <div class="similaire-card-meta">
+                                            {{ $similaire->type_hebergement->nom_type_hebergement ?? 'Type inconnu' }} &bull; 
+                                            {{ $similaire->nb_personnes_max }} pers &bull; 
+                                            {{ $similaire->nb_bebe_max }} bébé
+                                        </div>
+
+                                        <div class="card-footer">
+                                            <span class="similaire-location-badge">
+                                                <svg class="icon-pin" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+                                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                                    <circle cx="12" cy="10" r="3"></circle>
+                                                </svg>
+                                                {{ $similaire->adresse_annonce }} &bull; {{ $similaire->ville->nom_ville ?? 'Ville' }}
+                                            </span>
+                                        </div>
+                                </div>
+                            </a>
+                        </div>
+                    @endif
+                @empty
+                    <div class="res-empty">
+                        <p>Aucune annonce postée.</p>
+                    </div>
+                @endforelse
+            </div>
+        </div>
+        <form method="get" action="{{ url('resultats') }}" style="width: 100%; margin: 0 auto;">
+            <h2 style="margin-bottom:1rem;">Ou effectuer une recherche</h2>
+            @csrf
+
+            <div style="display: flex; gap:1rem;">
+
+            <div class="full-width " 
+                x-data="{
+                    query: '',
+                    results: [],
+                    showResults: false,
+                    
+                    selectLocation(name) {
+                        this.query = name;
+                        this.showResults = false;
+                    },
+                    
+                    async search() {
+                        try {
+                            let response = await fetch(`{{ route('locations.search') }}?query=${this.query}`);
+                            if (!response.ok) throw new Error('Network response was not ok');
+                            this.results = await response.json();
+                            this.showResults = true;
+                        } catch (e) {
+                            console.error(e);
+                        }
+                    }
+                }"
+                @click.outside="showResults = false">
+
+                <label for="search">Sélectionnez un lieu</label>
+                
+                <div class="input-groupe">
+                    <input 
+                        type="text" 
+                        id="search" 
+                        name="search" 
+                        x-model="query"
+                        @input.debounce.300ms="search()"
+                        @keydown.enter.prevent="$el.form.submit()"
+                        placeholder="Paris, Haute-Savoie, Rhône-Alpes..." 
+                        required
+                        autocomplete="off"
+                    />
+
+                    <div class="input-icon input-icon-search">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search-icon lucide-search"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+                    </div>
+                </div>
+
+                <ul x-show="showResults && query.length >= 1" 
+                    style="display: none; left:2rem; top:auto; width:50%;" 
+                    class="autocomplete-dropdown">
+                    
+                    <template x-for="result in results" :key="result.name + result.type">
+                        <li @click="selectLocation(result.name)" class="suggestion-item">
+                            <span x-text="result.name" class="suggestion-name"></span>
+                            <span x-text="result.type" class="suggestion-badge"></span>
+                        </li>
+                    </template>
+                    
+                    <li x-show="results.length === 0" class="suggestion-empty">
+                        Aucun lieu trouvé pour "<span x-text="query"></span>"
+                    </li>
+                </ul>
+            </div>
+
+            <div class="full-width input-groupe">
+                <label for="vyg">Dates du séjour</label>
+                
+                <input 
+                    type="date" 
+                    id="vyg"
+                    data-picker-dual="true"
+                    data-target-start="datedebut" 
+                    data-target-end="datefin"
+                />
+
+                <input type="hidden" name="datedebut" id="datedebut">
+                <input type="hidden" name="datefin" id="datefin">
+            </div>
+            </div>
+            
+            <div class="full-width">
+                <input type="submit" class="submit-btn" value="Rechercher" />
+            </div>
+        </form>
+    </div>
 @endsection

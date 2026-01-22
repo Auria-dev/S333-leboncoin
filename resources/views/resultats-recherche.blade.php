@@ -61,7 +61,6 @@
                 </div>
 
                 <div class="filters-supp">
-
                     <div>
                         <label for="filtreTypeHebergement">Filtrer par type</label>
                         <select name="filtreTypeHebergement" id="filtreTypeHebergement">
@@ -95,6 +94,7 @@
                         <label for="nbChambres">Nombre de chambres</label>
                         <input type="number" id="nbChambres" name="nbChambres" min="1" value="{{ old('nbChambres', request('nbChambres', 1)) }}" />
                     </div>
+                    <span class="flex-break"></span>
                     <div>
                         <label for="prixMin">Prix min (€)</label>
                         <input type="number" id="prixMin" name="prixMin" min="0" value="{{ old('prixMin', request('prixMin', 0)) }}" />
@@ -105,12 +105,12 @@
                     </div>
                     
                     <input id="filter-btn" type="submit" class="submit-btn" value="Filtrer"/>
+                    <div id="save-search-btn" class="submit-btn">Sauvegarder recherche</div>
                 </div>
             </div>
         </form>
 
         <div class ="results-summary">
-            
             <p class="results-count">
                 @if (isset($annonces) && count($annonces) > 1)
                 {{ count($annonces) }} résultats trouvés
@@ -120,10 +120,8 @@
                 Aucun résultat
                 @endif
             </p>
-            <div id="save-search-btn" class="submit-btn">Sauvegarder recherche</div>
         </div>
 
-        
     </div>
 
     <div class="search-results-container">
