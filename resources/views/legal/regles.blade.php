@@ -1,6 +1,6 @@
 @extends('layout')
 
-@section('title', 'Règles de diffusion - Leboncoin')
+@section('title', 'Règles de diffusion - Lemauvaiscoin')
 
 @section('content')
 <div class="legal-wrapper">
@@ -10,7 +10,7 @@
 
         <div style="line-height: 1.8; color: #4a4a4a; text-align: justify; font-size: 15px;">
             <p style="margin-bottom: 30px;">
-                Afin de garantir une qualité de service optimale et de sécuriser les échanges, Leboncoin a établi des règles de diffusion strictes. Tout utilisateur (particulier ou professionnel) souhaitant publier une annonce sur notre plateforme s'engage à respecter l'intégralité des dispositions ci-dessous ainsi que nos Conditions Générales d'Utilisation. Le non-respect de ces règles entraînera le refus systématique de l'annonce, et en cas de récidive, la suspension ou la suppression définitive du compte utilisateur.
+                Afin de garantir une qualité de service optimale et de sécuriser les échanges, Lemauvaiscoin a établi des règles de diffusion strictes. Tout utilisateur (particulier ou professionnel) souhaitant publier une annonce sur notre plateforme s'engage à respecter l'intégralité des dispositions ci-dessous ainsi que nos Conditions Générales d'Utilisation. Le non-respect de ces règles entraînera le refus systématique de l'annonce, et en cas de récidive, la suspension ou la suppression définitive du compte utilisateur.
             </p>
 
             <section style="margin-bottom: 40px;">
@@ -72,7 +72,7 @@
             <section>
                 <h3 style="font-size: 18px; font-weight: 700; color: #2b323e; border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 20px;">ARTICLE 5. DOUBLONS ET MODÉRATION</h3>
                 <p>
-                    Il est interdit de publier plusieurs annonces pour un même bien. Pour remonter une annonce en tête de liste, l'utilisateur doit souscrire à une option payante et non supprimer puis recréer son annonce. Leboncoin utilise des algorithmes de détection automatique couplés à une modération humaine. Tout contournement de ces règles entraînera le blocage immédiat du compte.
+                    Il est interdit de publier plusieurs annonces pour un même bien. Pour remonter une annonce en tête de liste, l'utilisateur doit souscrire à une option payante et non supprimer puis recréer son annonce. Lemauvaiscoin utilise des algorithmes de détection automatique couplés à une modération humaine. Tout contournement de ces règles entraînera le blocage immédiat du compte.
                 </p>
             </section>
         </div>

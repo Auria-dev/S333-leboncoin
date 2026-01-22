@@ -1,6 +1,6 @@
 @extends('layout')
 
-@section('title', 'Politique de Confidentialité - Leboncoin')
+@section('title', 'Politique de Confidentialité - Lemauvaiscoin')
 
 @section('content')
 <div class="legal-wrapper">
@@ -12,7 +12,7 @@
 
         <div style="line-height: 1.8; color: #4a4a4a; text-align: justify; font-size: 15px;">
             <p style="margin-bottom: 24px;">
-                La société <strong>Leboncoin SAS</strong>, filiale du groupe Adevinta, accorde une importance primordiale à la protection de la vie privée de ses utilisateurs. Dans un environnement numérique en constante évolution, nous nous engageons à garantir la confidentialité, l'intégrité et la disponibilité de vos données personnelles, conformément au Règlement (UE) 2016/679 du Parlement européen et du Conseil du 27 avril 2016 (RGPD) et à la Loi n° 78-17 du 6 janvier 1978 modifiée dite « Informatique et Libertés ».
+                La société <strong>Lemauvaiscoin SAS</strong>, filiale du groupe Adevinta, accorde une importance primordiale à la protection de la vie privée de ses utilisateurs. Dans un environnement numérique en constante évolution, nous nous engageons à garantir la confidentialité, l'intégrité et la disponibilité de vos données personnelles, conformément au Règlement (UE) 2016/679 du Parlement européen et du Conseil du 27 avril 2016 (RGPD) et à la Loi n° 78-17 du 6 janvier 1978 modifiée dite « Informatique et Libertés ».
             </p>
             <p style="margin-bottom: 40px;">
                 La présente Politique de Confidentialité a pour objet d'exposer en toute transparence les modalités de collecte, de traitement et de conservation de vos données lors de votre navigation sur notre plateforme de location saisonnière. Elle détaille également les droits dont vous disposez et la manière de les exercer auprès de nos services.
@@ -21,10 +21,10 @@
             <section style="margin-bottom: 50px;">
                 <h2 style="font-size: 20px; font-weight: 700; color: #2b323e; margin-bottom: 20px; border-left: 4px solid #ec5a13; padding-left: 16px;">ARTICLE 1. RESPONSABLE DE TRAITEMENT ET GOUVERNANCE</h2>
                 <p style="margin-bottom: 15px;">
-                    Le responsable du traitement des données est la société <strong>Leboncoin SAS</strong>, dont le siège social est situé au 24 rue des Jeûneurs, 75002 Paris.
+                    Le responsable du traitement des données est la société <strong>Lemauvaiscoin SAS</strong>, dont le siège social est situé au 24 rue des Jeûneurs, 75002 Paris.
                 </p>
                 <p>
-                    Conscients des enjeux, nous avons nommé un <strong>Délégué à la Protection des Données (Data Protection Officer - DPO)</strong>, enregistré auprès de la CNIL. Ce dernier est chargé de veiller à la conformité de nos traitements et d'être l'interlocuteur privilégié des utilisateurs et de l'autorité de contrôle. Il peut être contacté pour toute question relative à la protection des données à l'adresse électronique dédiée : <em>privacy@leboncoin.fr</em>.
+                    Conscients des enjeux, nous avons nommé un <strong>Délégué à la Protection des Données (Data Protection Officer - DPO)</strong>, enregistré auprès de la CNIL. Ce dernier est chargé de veiller à la conformité de nos traitements et d'être l'interlocuteur privilégié des utilisateurs et de l'autorité de contrôle. Il peut être contacté pour toute question relative à la protection des données à l'adresse électronique dédiée : <em>privacy@Lemauvaiscoin.fr</em>.
                 </p>
             </section>
 
@@ -61,7 +61,7 @@
             <section style="margin-bottom: 50px;">
                 <h2 style="font-size: 20px; font-weight: 700; color: #2b323e; margin-bottom: 20px; border-left: 4px solid #ec5a13; padding-left: 16px;">ARTICLE 3. DESTINATAIRES DES DONNÉES</h2>
                 <p>
-                    Vos données personnelles sont destinées aux services internes habilités de Leboncoin (Service Client, Direction Technique, Service Juridique). Elles peuvent toutefois être communiquées à nos sous-traitants agissant sur nos instructions strictes :
+                    Vos données personnelles sont destinées aux services internes habilités de Lemauvaiscoin (Service Client, Direction Technique, Service Juridique). Elles peuvent toutefois être communiquées à nos sous-traitants agissant sur nos instructions strictes :
                 </p>
                 <ul style="list-style-type: disc; margin-left: 20px; margin-top: 15px;">
                     <li style="margin-bottom: 8px;"><strong>OVHcloud SAS (France) :</strong> Hébergement des serveurs, stockage des bases de données et sauvegardes chiffrées.</li>

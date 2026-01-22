@@ -1,6 +1,6 @@
 @extends('layout')
 
-@section('title', 'Sécurité et Confiance - Leboncoin')
+@section('title', 'Sécurité et Confiance - Lemauvaiscoin')
 
 @section('content')
 <div class="legal-wrapper">
@@ -13,7 +13,7 @@
             <section style="margin-bottom: 50px;">
                 <h2 style="font-size: 22px; font-weight: 700; color: #2b323e; margin-bottom: 20px; border-bottom: 1px solid #ddd; padding-bottom: 10px;">1. LE PAIEMENT SÉCURISÉ INTÉGRÉ</h2>
                 <p style="margin-bottom: 20px;">
-                    Pour garantir la sérénité absolue des transactions entre particuliers, Leboncoin agit en tant que Tiers de Confiance. Nous avons développé une infrastructure de paiement qui séquestre les fonds jusqu'à la bonne exécution du service.
+                    Pour garantir la sérénité absolue des transactions entre particuliers, Lemauvaiscoin agit en tant que Tiers de Confiance. Nous avons développé une infrastructure de paiement qui séquestre les fonds jusqu'à la bonne exécution du service.
                 </p>
                 
                 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 30px;">
@@ -45,7 +45,7 @@
                     <strong style="display: block; color: #c53030; font-size: 16px; margin-bottom: 10px;">RÈGLES D'OR DE SÉCURITÉ :</strong>
                     <ul style="list-style-type: disc; margin-left: 20px; color: #2b323e;">
                         <li style="margin-bottom: 10px;"><strong>Ne sortez jamais de la messagerie sécurisée :</strong> Si un interlocuteur insiste pour communiquer par WhatsApp, SMS ou Email personnel, coupez court à la conversation. C'est le signe précurseur d'une arnaque.</li>
-                        <li style="margin-bottom: 10px;"><strong>Méfiez-vous des liens :</strong> Leboncoin ne vous enverra jamais de SMS contenant un lien pour "valider un paiement" ou "confirmer une vente". Connectez-vous toujours directement via l'application ou le site officiel.</li>
+                        <li style="margin-bottom: 10px;"><strong>Méfiez-vous des liens :</strong> Lemauvaiscoin ne vous enverra jamais de SMS contenant un lien pour "valider un paiement" ou "confirmer une vente". Connectez-vous toujours directement via l'application ou le site officiel.</li>
                         <li style="margin-bottom: 10px;"><strong>Modes de paiement interdits :</strong> Refusez systématiquement les paiements par coupons PCS, Transcash, Toneo, Mandat Cash ou Western Union. Ces moyens sont in-traçables et utilisés exclusivement par les escrocs.</li>
                     </ul>
                 </div>

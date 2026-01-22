@@ -252,7 +252,7 @@
 
     @php
         $currentUrl = url()->current();
-        $titreAnnonce = urlencode($annonce->titre_annonce ?? 'Annonce Leboncoin');
+        $titreAnnonce = urlencode($annonce->titre_annonce ?? 'Annonce Lemauvaiscoin');
     @endphp
 
     <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
