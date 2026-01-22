@@ -19,7 +19,7 @@
             :withType="true"
             :types="$types"
             :withPrice="true"
-            placeholder="Rechercher dans mes favoris..."
+            placeholder="Lyon, Paris, ..."
         />
 
         <div class="listings-list"> 

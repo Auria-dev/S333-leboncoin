@@ -15,7 +15,7 @@
 
         <x-filter-bar 
             action="{{ url('/dashboard/mes-recherches') }}"
-            :withLocation="false" 
+            :withLocation="true" 
             :withType="true"
             :types="$types"
             placeholder="Rechercher par titre..."

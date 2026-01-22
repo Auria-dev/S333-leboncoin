@@ -18,7 +18,7 @@
             :withLocation="true"
             :withDates="true"
             :customSlot="true"
-            placeholder="Rechercher une destination..."
+            placeholder="Lyon, Paris, ..."
         >
             <label class="filter-label">Statut</label>
             <select name="statut">

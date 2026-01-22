@@ -24,7 +24,7 @@
                     this.showResults = false;
                 },
                 async search() {
-                    if (this.query.length < 2) { this.results = []; return; }
+                    if (this.query.length < 1) { this.results = []; return; }
                     try {
                         let response = await fetch(`{{ route('locations.search') }}?query=${this.query}`); 
                         if (!response.ok) throw new Error('Network response');
@@ -67,9 +67,16 @@
         <div class="filter-group">
             <label class="filter-label">Dates</label>
             <div class="date-group-row">
-                <input type="date" name="datedebut" value="{{ request('datedebut') }}" placeholder="Début">
-                <span class="date-sep">➝</span>
-                <input type="date" name="datefin" value="{{ request('datefin') }}" placeholder="Fin">
+                <input 
+                    type="date" 
+                    id="vyg"
+                    data-picker-dual="true"
+                    data-target-start="datedebut" 
+                    data-target-end="datefin"
+                />
+
+                <input type="hidden" name="datedebut" id="datedebut">
+                <input type="hidden" name="datefin" id="datefin">
             </div>
         </div>
         @endif

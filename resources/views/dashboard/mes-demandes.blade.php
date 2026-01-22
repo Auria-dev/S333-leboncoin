@@ -18,7 +18,7 @@
             :withLocation="true" 
             :withDates="true"
             :customSlot="true"
-            placeholder="Rechercher une annonce ou un voyageur..."
+            placeholder="Rechercher..."
         >
             <label class="filter-label">Statut</label>
             <select name="statut">

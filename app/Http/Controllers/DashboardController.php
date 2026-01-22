@@ -57,11 +57,11 @@ class DashboardController extends Controller
 
             $q->where(function($sub) use ($term)
             {
-                $sub->where('titre_annonce', 'like', $term)
-                    ->orWhere('adresse_annonce', 'like', $term)
+                $sub->where('titre_annonce', 'ilike', $term)
+                    ->orWhere('adresse_annonce', 'ilike', $term)
                     ->orWhereHas('ville', function($v) use ($term)
                     {
-                        $v->where('nom_ville', 'like', $term);
+                        $v->where('nom_ville', 'ilike', $term);
                     });
             });
         });
@@ -91,10 +91,10 @@ class DashboardController extends Controller
         $query->when($request->filled('search'), function ($q) use ($request) {
             $term = '%' . $request->search . '%';
             $q->where(function($sub) use ($term) {
-                $sub->where('titre_annonce', 'like', $term)
-                    ->orWhere('adresse_annonce', 'like', $term)
+                $sub->where('titre_annonce', 'ilike', $term)
+                    ->orWhere('adresse_annonce', 'ilike', $term)
                     ->orWhereHas('ville', function($v) use ($term) {
-                        $v->where('nom_ville', 'like', $term);
+                        $v->where('nom_ville', 'ilike', $term);
                     });
             });
         });
@@ -122,10 +122,10 @@ class DashboardController extends Controller
         $query->when($request->filled('search'), function ($q) use ($request) {
             $term = '%' . $request->search . '%';
             $q->whereHas('annonce', function($sub) use ($term) {
-                $sub->where('titre_annonce', 'like', $term)
-                    ->orWhere('adresse_annonce', 'like', $term)
+                $sub->where('titre_annonce', 'ilike', $term)
+                    ->orWhere('adresse_annonce', 'ilike', $term)
                     ->orWhereHas('ville', function($v) use ($term) {
-                        $v->where('nom_ville', 'like', $term);
+                        $v->where('nom_ville', 'ilike', $term);
                     });
             });
         });
@@ -136,11 +136,11 @@ class DashboardController extends Controller
         $query->when($request->filled('statut'), function ($q) use ($request) {
             $s = $request->statut;
             if($s === 'accepted') {
-                $q->where(function($w) { $w->where('statut_reservation', 'like', '%valid%')->orWhere('statut_reservation', 'like', '%accept%'); });
+                $q->where(function($w) { $w->where('statut_reservation', 'ilike', '%valid%')->orWhere('statut_reservation', 'ilike', '%accept%'); });
             } elseif($s === 'pending') {
-                $q->where('statut_reservation', 'like', '%attent%');
+                $q->where('statut_reservation', 'ilike', '%attent%');
             } elseif($s === 'cancelled') {
-                $q->where(function($w) { $w->where('statut_reservation', 'like', '%refus%')->orWhere('statut_reservation', 'like', '%annul%'); });
+                $q->where(function($w) { $w->where('statut_reservation', 'ilike', '%refus%')->orWhere('statut_reservation', 'ilike', '%annul%'); });
             }
         });
 
@@ -158,10 +158,10 @@ class DashboardController extends Controller
         $query->when($request->filled('search'), function ($q) use ($request) {
             $term = '%' . $request->search . '%';
             $q->where(function($sub) use ($term) {
-                $sub->whereHas('annonce', fn($a) => $a->where('titre_annonce', 'like', $term))
+                $sub->whereHas('annonce', fn($a) => $a->where('titre_annonce', 'ilike', $term))
                 ->orWhereHas('particulier.utilisateur', fn($u) => 
-                    $u->where('nom_utilisateur', 'like', $term)
-                    ->orWhere('prenom_utilisateur', 'like', $term)
+                    $u->where('nom_utilisateur', 'ilike', $term)
+                    ->orWhere('prenom_utilisateur', 'ilike', $term)
                 );
             });
         });
@@ -172,11 +172,11 @@ class DashboardController extends Controller
         $query->when($request->filled('statut'), function ($q) use ($request) {
             $s = $request->statut;
             if($s === 'accepted') {
-                $q->where(function($w) { $w->where('statut_reservation', 'like', '%valid%')->orWhere('statut_reservation', 'like', '%accept%'); });
+                $q->where(function($w) { $w->where('statut_reservation', 'ilike', '%valid%')->orWhere('statut_reservation', 'ilike', '%accept%'); });
             } elseif($s === 'pending') {
-                $q->where('statut_reservation', 'like', '%attent%');
+                $q->where('statut_reservation', 'ilike', '%attent%');
             } elseif($s === 'cancelled') {
-                $q->where(function($w) { $w->where('statut_reservation', 'like', '%refus%')->orWhere('statut_reservation', 'like', '%annul%'); });
+                $q->where(function($w) { $w->where('statut_reservation', 'ilike', '%refus%')->orWhere('statut_reservation', 'ilike', '%annul%'); });
             }
         });
 
@@ -193,8 +193,8 @@ class DashboardController extends Controller
         $query->when($request->filled('search'), function ($q) use ($request) {
             $term = '%' . $request->search . '%';
             $q->where(function($sub) use ($term) {
-                $sub->where('mot_clef', 'like', $term)
-                    ->orWherePivot('titre_recherche', 'like', $term);
+                $sub->where('mot_clef', 'ilike', $term)
+                    ->orWhere('titre_recherche', 'ilike', $term);
             });
         });
 
@@ -215,7 +215,7 @@ class DashboardController extends Controller
 
         $tenantQuery->when($request->filled('search'), function ($q) use ($request) {
             $term = '%' . $request->search . '%';
-            $q->whereHas('annonce', fn($a) => $a->where('titre_annonce', 'like', $term));
+            $q->whereHas('annonce', fn($a) => $a->where('titre_annonce', 'ilike', $term));
         });
         
         $tenantQuery->when($request->filled('statut'), function ($q) use ($request) {
@@ -228,7 +228,7 @@ class DashboardController extends Controller
 
         $ownerQuery->when($request->filled('search'), function ($q) use ($request) {
             $term = '%' . $request->search . '%';
-            $q->whereHas('annonce', fn($a) => $a->where('titre_annonce', 'like', $term));
+            $q->whereHas('annonce', fn($a) => $a->where('titre_annonce', 'ilike', $term));
         });
 
         $ownerQuery->when($request->filled('statut'), function ($q) use ($request) {
