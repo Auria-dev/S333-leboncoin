@@ -291,6 +291,18 @@ class AnnonceController extends Controller
         return redirect()->route('annonce', ['id' => $idannonce, 'isFav' => !$exists]);
     }
     
+    public function delete_favoris($idannonce)
+    {
+        $user = auth()->user();
+        $iduser = $user->idutilisateur;
+
+        Favoris::where('idutilisateur', '=', $iduser)
+            ->where('idannonce', '=', $idannonce)
+            ->delete();
+        
+        return redirect()->back()->with('success', 'Annonce retirée de vos favoris !');
+    }
+
     public function view_reserver(Request $req, $idannonce) {
         $annonce = Annonce::findOrFail($idannonce);
         if (!$annonce || !$req->start_date || !$req->end_date) {

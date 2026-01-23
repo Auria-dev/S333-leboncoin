@@ -208,7 +208,7 @@ Route::get('/dashboard/mes-demandes', [DashboardController::class, 'mesDemandes'
 Route::get('/dashboard/mes-recherches', [DashboardController::class, 'mesRecherches'])->middleware('auth');
 Route::get('/dashboard/centre-d-aide', [DashboardController::class, 'centreDAide'])->middleware('auth');
 
-
+Route::get('/supprimer_fav/{id}', [AnnonceController::class, 'delete_favoris'])->middleware('auth');
 
 
 

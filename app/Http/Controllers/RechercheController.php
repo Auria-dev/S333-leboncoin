@@ -9,7 +9,7 @@ use App\Models\TypeHebergement;
 use App\Models\Date;
 use App\Models\Calendrier;
 use App\Models\Critere;
-use App\Models\recherche;
+use App\Models\Recherche;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
