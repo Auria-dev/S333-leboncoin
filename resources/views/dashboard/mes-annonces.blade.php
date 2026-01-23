@@ -103,9 +103,8 @@
         </div>
 
         <div style="margin-top: 2rem;">
-            {{ $annonces->links() }}
+            {{ $annonces->links('pagination.custom')}}
         </div>
-
     </div>
 </div>
 @endsection
